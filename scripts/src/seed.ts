@@ -2,35 +2,30 @@ import { db } from "@workspace/db";
 import { productsTable, blogPostsTable } from "@workspace/db";
 import { sql } from "drizzle-orm";
 
-// Wikimedia Commons — public domain, no hotlink restrictions
-const GOLD_EAGLE_IMG   = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/US_one_ounce_gold_eagle_coin_%28obverse%29.jpg/480px-US_one_ounce_gold_eagle_coin_%28obverse%29.jpg";
-const GOLD_BUFFALO_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/American_Buffalo_gold_coin_obverse.jpg/480px-American_Buffalo_gold_coin_obverse.jpg";
-const GOLD_MAPLE_IMG   = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/2013_Canadian_Gold_Maple_Leaf.jpg/480px-2013_Canadian_Gold_Maple_Leaf.jpg";
-const GOLD_KRUGER_IMG  = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Krugerrand_obverse_new.jpg/480px-Krugerrand_obverse_new.jpg";
-const GOLD_PHILHAR_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Vienna_Philharmonic_gold.jpg/480px-Vienna_Philharmonic_gold.jpg";
-const GOLD_BRIT_IMG    = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Britannia_gold_coin.jpg/480px-Britannia_gold_coin.jpg";
-const GOLD_KANG_IMG    = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/2014_Australian_Gold_Kangaroo.jpg/480px-2014_Australian_Gold_Kangaroo.jpg";
-// Unsplash — finance/gold bar imagery (onError fallback: CoinPlaceholder)
-const GOLD_BAR_PAMP    = "https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&w=480&h=480&fit=crop&q=80";
-const GOLD_BAR_CREDIT  = "https://images.unsplash.com/photo-1574607383476-f517f562d92f?auto=format&w=480&h=480&fit=crop&q=80";
-const GOLD_BAR_VALC    = "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&w=480&h=480&fit=crop&q=80";
-const GOLD_BAR_10      = "https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&w=480&h=480&fit=crop&q=80";
-// Silver — Wikimedia Commons
-const SILVER_EAGLE_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/US_Silver_Eagle_obv.png/480px-US_Silver_Eagle_obv.png";
-const SILVER_MAPLE_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/2015_Canadian_Silver_Maple_Leaf.jpg/480px-2015_Canadian_Silver_Maple_Leaf.jpg";
-const SILVER_BRIT_IMG  = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/2015_Silver_Britannia.jpg/480px-2015_Silver_Britannia.jpg";
-const SILVER_PHIL_IMG  = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Vienna_Philharmonic_silver.jpg/480px-Vienna_Philharmonic_silver.jpg";
-// Silver bars — Unsplash (silver-toned photography)
-const SILVER_BAR_10    = "https://images.unsplash.com/photo-1620230874645-0d85522b1b6c?auto=format&w=480&h=480&fit=crop&q=80";
-const SILVER_BAR_100   = "https://images.unsplash.com/photo-1518544801976-3e159e50e5bb?auto=format&w=480&h=480&fit=crop&q=80";
-const SILVER_ROUND_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Silver_round_ounce.jpg/480px-Silver_round_ounce.jpg";
-// Platinum / Palladium — Wikimedia
-const PLAT_EAGLE_IMG   = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Proof_platinum_eagle.jpg/480px-Proof_platinum_eagle.jpg";
-const PLAT_MAPLE_IMG   = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/2015_Canadian_Platinum_Maple_Leaf.jpg/480px-2015_Canadian_Platinum_Maple_Leaf.jpg";
-const PLAT_BAR_IMG     = "https://images.unsplash.com/photo-1518544801976-3e159e50e5bb?auto=format&w=480&h=480&fit=crop&q=80";
-const PALL_BAR_IMG     = "https://images.unsplash.com/photo-1518544801976-3e159e50e5bb?auto=format&w=480&h=480&fit=crop&q=80";
-// Copper
-const COPPER_ROUND_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Copper_round_coin.jpg/480px-Copper_round_coin.jpg";
+// AI-generated product images served from local public directory
+const GOLD_EAGLE_IMG   = "/images/products/gold-eagle.png";
+const GOLD_BUFFALO_IMG = "/images/products/gold-buffalo.png";
+const GOLD_MAPLE_IMG   = "/images/products/gold-maple.png";
+const GOLD_KRUGER_IMG  = "/images/products/gold-krugerrand.png";
+const GOLD_PHILHAR_IMG = "/images/products/gold-philharmonic.png";
+const GOLD_BRIT_IMG    = "/images/products/gold-britannia.png";
+const GOLD_KANG_IMG    = "/images/products/gold-kangaroo.png";
+const GOLD_BAR_PAMP    = "/images/products/gold-bar-pamp.png";
+const GOLD_BAR_CREDIT  = "/images/products/gold-bar-credit-suisse.png";
+const GOLD_BAR_VALC    = "/images/products/gold-bar-pamp.png";
+const GOLD_BAR_10      = "/images/products/gold-bar-10oz.png";
+const SILVER_EAGLE_IMG = "/images/products/silver-eagle.png";
+const SILVER_MAPLE_IMG = "/images/products/silver-maple.png";
+const SILVER_BRIT_IMG  = "/images/products/silver-britannia.png";
+const SILVER_PHIL_IMG  = "/images/products/silver-eagle.png";
+const SILVER_BAR_10    = "/images/products/silver-bar-10oz.png";
+const SILVER_BAR_100   = "/images/products/silver-bar-100oz.png";
+const SILVER_ROUND_IMG = "/images/products/silver-round.png";
+const PLAT_EAGLE_IMG   = "/images/products/platinum-eagle.png";
+const PLAT_MAPLE_IMG   = "/images/products/platinum-eagle.png";
+const PLAT_BAR_IMG     = "/images/products/platinum-bar.png";
+const PALL_BAR_IMG     = "/images/products/platinum-bar.png";
+const COPPER_ROUND_IMG = "/images/products/copper-round.png";
 
 // Fallback aliases kept for compatibility
 const GOLD_COIN_IMG  = GOLD_EAGLE_IMG;

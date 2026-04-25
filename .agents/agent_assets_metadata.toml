@@ -1,0 +1,122 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "kE3nPkYHsKYQmqDz88urX"
+uri = "file://artifacts/puregold/public/images/products/gold-eagle.png"
+type = "image"
+title = "gold eagle coin"
+
+[[generated]]
+id = "Et7lrXMigf2kVJPHtb0d9"
+uri = "file://artifacts/puregold/public/images/products/gold-buffalo.png"
+type = "image"
+title = "gold buffalo coin"
+
+[[generated]]
+id = "bznJyKjBG6DvF68cEPCHu"
+uri = "file://artifacts/puregold/public/images/products/gold-maple.png"
+type = "image"
+title = "gold maple leaf coin"
+
+[[generated]]
+id = "rM_glf7mHWA0BYggeRqYJ"
+uri = "file://artifacts/puregold/public/images/products/gold-krugerrand.png"
+type = "image"
+title = "krugerrand gold coin"
+
+[[generated]]
+id = "5oyxs5tzvDCuAsZsPzBFU"
+uri = "file://artifacts/puregold/public/images/products/gold-philharmonic.png"
+type = "image"
+title = "vienna philharmonic gold coin"
+
+[[generated]]
+id = "gPNXCengrU1xB5PEf6SCg"
+uri = "file://artifacts/puregold/public/images/products/gold-bar-pamp.png"
+type = "image"
+title = "PAMP gold bar"
+
+[[generated]]
+id = "u4F4a21vGuDADLDJGTlG_"
+uri = "file://artifacts/puregold/public/images/products/gold-bar-credit-suisse.png"
+type = "image"
+title = "credit suisse gold bar"
+
+[[generated]]
+id = "FLDwcZWMRQ_Qqbpcv-QfF"
+uri = "file://artifacts/puregold/public/images/products/gold-bar-10oz.png"
+type = "image"
+title = "10oz gold bar"
+
+[[generated]]
+id = "FUbAZ1YLRwaKErd-OpF1R"
+uri = "file://artifacts/puregold/public/images/products/gold-britannia.png"
+type = "image"
+title = "british gold britannia coin"
+
+[[generated]]
+id = "W0ET08HcKn7CRbB8bdK9N"
+uri = "file://artifacts/puregold/public/images/products/gold-kangaroo.png"
+type = "image"
+title = "australian gold kangaroo coin"
+
+[[generated]]
+id = "pzzJHPm3iKj22I_Aq8LcY"
+uri = "file://artifacts/puregold/public/images/products/silver-eagle.png"
+type = "image"
+title = "silver eagle coin"
+
+[[generated]]
+id = "h-_9JeNi-_fzbJItwwjhR"
+uri = "file://artifacts/puregold/public/images/products/silver-maple.png"
+type = "image"
+title = "silver maple coin"
+
+[[generated]]
+id = "Ox4NmVDHZ903asdhX4JyK"
+uri = "file://artifacts/puregold/public/images/products/silver-britannia.png"
+type = "image"
+title = "silver britannia coin"
+
+[[generated]]
+id = "RJ_3sUzVSH56TGYk7ppp-"
+uri = "file://artifacts/puregold/public/images/products/silver-bar-10oz.png"
+type = "image"
+title = "10oz silver bar"
+
+[[generated]]
+id = "M6xfVsMPj1y3lNN3bqOJV"
+uri = "file://artifacts/puregold/public/images/products/silver-round.png"
+type = "image"
+title = "silver round coin"
+
+[[generated]]
+id = "L-q20Njkmy_ArbLeub_-i"
+uri = "file://artifacts/puregold/public/images/products/silver-bar-100oz.png"
+type = "image"
+title = "100oz silver bar"
+
+[[generated]]
+id = "kn-SUUM59vPj48rv7pQgk"
+uri = "file://artifacts/puregold/public/images/products/platinum-eagle.png"
+type = "image"
+title = "platinum eagle coin"
+
+[[generated]]
+id = "z6m5ydpvYwOpa3I_dJW-9"
+uri = "file://artifacts/puregold/public/images/products/platinum-bar.png"
+type = "image"
+title = "platinum bar"
+
+[[generated]]
+id = "IgN_LMVgvQv6uAvxDhut4"
+uri = "file://artifacts/puregold/public/images/products/copper-round.png"
+type = "image"
+title = "copper buffalo round"
+
+[[generated]]
+id = "6wS3SaTWkj6bgtgGSBqRo"
+uri = "file://artifacts/puregold/public/images/products/silver-eagle-monster-box.png"
+type = "image"
+title = "silver eagle monster box"
