@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Heart, ShoppingCart } from "lucide-react";
 import type { Product } from "@workspace/api-client-react";
 import { useCartContext } from "@/contexts/CartContext";
 import { useWatchlist } from "@/contexts/WatchlistContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { CoinPlaceholder } from "@/components/CoinPlaceholder";
 
@@ -14,19 +15,30 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCartContext();
   const { hasItem, addItem: addToWatchlist, removeItem: removeFromWatchlist } = useWatchlist();
+  const { isLoggedIn } = useAuth();
+  const [, setLocation] = useLocation();
   const isWatched = hasItem(product.id);
   const [imgError, setImgError] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    addItem({
+    const item = {
       productId: product.id,
       name: product.name,
       price: product.price,
       quantity: 1,
       image: product.images[0],
       metalType: product.metalType,
-    });
+    };
+
+    if (!isLoggedIn) {
+      // Save pending cart item so it can be restored after login
+      localStorage.setItem("pg_pending_cart", JSON.stringify(item));
+      setLocation(`/account/login?redirect=/cart`);
+      return;
+    }
+
+    addItem(item);
   };
 
   const toggleWatchlist = (e: React.MouseEvent) => {
@@ -43,8 +55,10 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       <div className="bg-card border border-[#C9A84C]/25 rounded-lg overflow-hidden flex flex-col h-full transition-all duration-300 hover:border-[#C9A84C] hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] hover:scale-[1.012]">
         {/* Image container */}
-        <div className="relative bg-[#111] flex items-center justify-center overflow-hidden"
-          style={{ height: "220px" }}>
+        <div
+          className="relative bg-[#111] flex items-center justify-center overflow-hidden"
+          style={{ height: "220px" }}
+        >
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
             {product.isOnSale && (
@@ -139,7 +153,11 @@ export function ProductCard({ product }: ProductCardProps) {
               data-testid={`btn-addtocart-${product.id}`}
             >
               <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
+              {product.inStock
+                ? isLoggedIn
+                  ? "Add to Cart"
+                  : "Sign In to Buy"
+                : "Out of Stock"}
             </Button>
           </div>
         </div>

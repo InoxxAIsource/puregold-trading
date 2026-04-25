@@ -1,8 +1,23 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Trash2, ShieldCheck, ArrowRight } from "lucide-react";
 import { useCartContext } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { PriceLockTimer } from "@/components/PriceLockTimer";
+import { CoinPlaceholder } from "@/components/CoinPlaceholder";
+
+function CartItemImage({ src, name, metal }: { src?: string; name: string; metal?: string }) {
+  const [err, setErr] = useState(false);
+  if (!src || err) return <CoinPlaceholder metal={metal || "gold"} name={name} size={68} />;
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="max-w-full max-h-full object-contain"
+      onError={() => setErr(true)}
+    />
+  );
+}
 
 export default function CartPage() {
   const { items, removeItem, updateQty, subtotal, totalItems } = useCartContext();
@@ -47,12 +62,8 @@ export default function CartPage() {
               {items.map(item => (
                 <div key={item.productId} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center">
                   <div className="col-span-1 md:col-span-6 flex gap-4 items-center">
-                    <div className="w-20 h-20 bg-background rounded border border-border p-2 shrink-0">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-screen" />
-                      ) : (
-                        <div className="w-full h-full bg-secondary" />
-                      )}
+                    <div className="w-20 h-20 bg-[#111] rounded border border-border p-1 shrink-0 flex items-center justify-center overflow-hidden">
+                      <CartItemImage src={item.image} name={item.name} metal={item.metalType} />
                     </div>
                     <div>
                       <Link href={`/product/${item.slug || item.productId}`} className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-2">
