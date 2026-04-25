@@ -2,7 +2,7 @@
 
 ## Overview
 
-Full-stack precious metals e-commerce website modelled after JM Bullion. Production-ready with 40 products, 40+ pages, live price ticker, charts, IRA section, blog, and complete checkout flow.
+Full-stack precious metals e-commerce website modelled after JM Bullion. Production-ready with 40 products, 50+ pages, live price ticker, charts, IRA section, blog, complete checkout flow, and a **Bitcoin OTC Desk** for purchasing 0.20–10 BTC with KYC and bank wire settlement.
 
 ## Architecture
 
@@ -67,10 +67,21 @@ pnpm monorepo with TypeScript throughout.
 - `/blog` — Market Insights blog
 - `/blog/:slug` — Individual posts
 
+### Bitcoin OTC Desk
+- `/bitcoin-otc` — OTC landing with live BTC price card + calculator (Coinbase API)
+- `/bitcoin-otc/apply` — Purchase application form (KYC-gated)
+- `/bitcoin-otc/how-it-works` — 5-step guide with step timeline
+- `/bitcoin-otc/otc-vs-exchange` — Comparison table
+- `/bitcoin-otc/bitcoin-ira` — Bitcoin IRA information page
+- `/bitcoin-otc/faq` — Accordion FAQ
+- `/charts/bitcoin-price` — Live BTC price chart (Chart.js)
+
 ### Account
-- `/account/login`, `/account/register`
-- `/account/dashboard` — Portfolio metrics
+- `/account/login`, `/account/register` (with BTC OTC interest checkbox)
+- `/account/dashboard` — Portfolio metrics + KYC unlock card + OTC order preview
 - `/account/orders`, `/account/watchlist`, `/account/price-alerts`
+- `/account/kyc` — 4-step KYC wizard (personal info, address, ID upload, selfie)
+- `/account/otc-orders` — OTC order list + `/account/otc-orders/:id` detail view
 
 ### Info
 - `/about`, `/faq`, `/contact`, `/about/shipping`
@@ -103,9 +114,18 @@ All routes at `/api/*`, prefix applied by Nginx proxy in production.
 
 ## Price Data
 
-- Primary: `api.metals.live/v1/spot` (live)
-- Fallback: Gold $4,735.48 | Silver $76.42 | Platinum $2,029.30 | Palladium $1,524.44
-- Prices refresh every 60 seconds via `PriceContext`
+- **Metals**: Primary `api.metals.live/v1/spot` (live), fallback hardcoded. Refreshes every 60s via `PriceContext`.
+- **Bitcoin**: Primary `api.coinbase.com/v2/prices/BTC-USD/spot`, fallback Binance, fallback $94,250. Refreshes every 30s via `useBTCPrice` hook in `src/lib/btcPrice.ts`.
+
+## Bitcoin OTC Desk
+
+- **KYC state**: stored in `localStorage` key `kyc_status`; auto-approves after 30s (demo)
+- **OTC orders**: stored in `localStorage` key `otc_orders` as JSON array
+- **KYC context**: `src/lib/kycContext.tsx` — `KYCProvider` wraps entire app
+- **BTC price hook**: `src/lib/btcPrice.ts` — `useBTCPrice()` + `calculateSpread()`
+- **OTC order utilities**: `src/lib/otcOrders.ts` — CRUD helpers for localStorage orders
+- **Shared components**: `src/components/btc/` (`LiveBTCPrice`, `BTCCalculator`, `TierTable`) and `src/components/kyc/` (`KYCStatusBadge`, `FileUpload`)
+- **OTC tiers**: Bronze 0.20–0.49 BTC (1.5% over spot), Silver 0.50–1.99 BTC (1.2%), Gold 2.00–4.99 BTC (0.9%), Platinum 5.00–10.00 BTC (0.6%)
 
 ## Cart
 

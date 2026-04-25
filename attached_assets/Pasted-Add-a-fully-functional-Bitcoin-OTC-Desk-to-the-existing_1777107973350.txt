@@ -1,0 +1,803 @@
+Add a fully functional Bitcoin OTC Desk to the existing 
+PureGold Trading bullion e-commerce site. This is a physical 
+Bitcoin purchase service (NOT a trading platform, NOT an 
+exchange). Users buy real BTC in fractional amounts from 
+0.20 BTC to 10 BTC, settled via bank wire, delivered to 
+their personal wallet address.
+
+This follows the same trust model as the physical gold store —
+professional, compliance-first, high-touch service.
+
+══════════════════════════════════════════════════════════
+SECTION 1 — NAVIGATION & TAB
+══════════════════════════════════════════════════════════
+
+Add "Bitcoin OTC" to the main navigation bar as a TOP-LEVEL 
+tab with an orange Bitcoin ₿ icon, positioned between 
+"Palladium" and "Rare Coins".
+
+Mega-menu dropdown under Bitcoin OTC:
+├── Buy Bitcoin OTC → /bitcoin-otc
+├── Bitcoin Price Live → /charts/bitcoin-price
+├── How BTC OTC Works → /bitcoin-otc/how-it-works
+├── OTC vs Exchange → /bitcoin-otc/otc-vs-exchange
+├── Bitcoin IRA → /bitcoin-otc/bitcoin-ira
+├── Apply to Buy → /bitcoin-otc/apply (requires login)
+└── BTC FAQ → /bitcoin-otc/faq
+
+Top announcement bar update:
+"🪙 Physical Gold | 🥈 Silver | ₿ Bitcoin OTC — 0.20 to 10 BTC 
+ | Insured Wire Settlement | KYC Required"
+
+Live price ticker bar — add BTC alongside metals:
+[Gold $4,735] [Silver $76.42] [BTC $94,250 ▲$1,240]
+
+══════════════════════════════════════════════════════════
+SECTION 2 — BITCOIN OTC LANDING PAGE (/bitcoin-otc)
+══════════════════════════════════════════════════════════
+
+HERO SECTION:
+Background: deep black with subtle orange-to-gold gradient 
+mesh. Bitcoin ₿ symbol as large faded watermark.
+
+H1: "Buy Bitcoin OTC — Private, Compliant, Delivered to 
+     Your Wallet"
+Subtext: "Purchase 0.20 to 10 BTC directly from our desk. 
+No exchange. No order book. Fixed price. Bank wire settlement. 
+KYC verified buyers only."
+
+Two CTA buttons:
+[₿ Get a BTC Quote →]  [How OTC Works →]
+
+LIVE BTC PRICE CARD (prominent, center):
+┌─────────────────────────────────────────────────────────┐
+│  ₿ BITCOIN — LIVE OTC DESK PRICE                        │
+│                                                         │
+│  $94,250.00            ▲ +$1,240 (+1.33%) today        │
+│                                                         │
+│  Our Desk Spread: +0.75% over market                    │
+│  Your price: $95,157.19 per BTC                         │
+│                                                         │
+│  [  ₿ Apply to Buy Bitcoin Now  ]  ← gold button       │
+│                                                         │
+│  🔄 Price refreshes every 30 seconds                    │
+│  ⏰ Apr 25, 2026 at 14:22 EDT                           │
+└─────────────────────────────────────────────────────────┘
+
+API for live BTC price:
+Primary: https://api.coinbase.com/v2/prices/BTC-USD/spot
+Fallback: https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT
+Display: fetch every 30 seconds, show $ change from open
+
+TIER PRICING TABLE:
+Show volume-based spread reduction table:
+
+┌────────────────────────────────────────────────────────┐
+│  BTC AMOUNT      DESK SPREAD    EST. PRICE PER BTC    │
+├────────────────────────────────────────────────────────┤
+│  0.20 – 0.99     +1.25%         $95,427.50            │
+│  1.00 – 2.99     +1.00%         $95,192.50            │
+│  3.00 – 4.99     +0.85%         $95,050.63            │
+│  5.00 – 7.99     +0.75%         $94,957.50            │
+│  8.00 – 10.00    +0.60%         $94,817.00            │
+└────────────────────────────────────────────────────────┘
+All prices update in real time based on live BTC spot price.
+"Prices shown are indicative. Final price locked at quote."
+
+BTC CALCULATOR WIDGET:
+┌─────────────────────────────────────────────────────────┐
+│  ₿ BITCOIN OTC CALCULATOR                               │
+│                                                         │
+│  I want to buy:  [____] BTC  ← input, range 0.20-10   │
+│  Slider: ○──────────────────────────────────────○      │
+│          0.20 BTC                          10 BTC       │
+│                                                         │
+│  Spot Price:          $94,250.00 / BTC                  │
+│  Desk Spread:         +0.75% ($706.88)                  │
+│  Your Price Per BTC:  $94,956.88                        │
+│  ─────────────────────────────────────────────────────  │
+│  TOTAL COST:          $474,784.40 USD                   │
+│  Settlement:          Bank Wire (USD)                   │
+│  Delivery:            BTC to your wallet                │
+│  Est. Settlement:     Within 24 hours of wire receipt   │
+│                                                         │
+│  [  Apply to Buy 5 BTC — $474,784.40  ]                │
+└─────────────────────────────────────────────────────────┘
+
+Calculator logic:
+- Input: BTC amount (0.20 min, 10.00 max, step 0.01)
+- Real-time fetch BTC spot price from Coinbase API
+- Spread tier auto-selected based on amount
+- Total = BTC amount × (spot × (1 + spread))
+- Update instantly on input change, refresh API every 30s
+- "Apply to Buy" button pre-fills BTC amount in the OTC form
+
+HOW IT WORKS — 5 STEP VISUAL TIMELINE:
+
+Step 1: 📝 Create Account
+"Register and verify your email address"
+
+Step 2: 🪪 Complete KYC
+"Submit government ID and proof of address. 
+Approval in 1-2 business days."
+
+Step 3: ₿ Submit OTC Request
+"Choose your BTC amount (0.20–10 BTC) and 
+submit your purchase application."
+
+Step 4: 💰 Wire Your Funds
+"Receive personalized wire instructions. 
+Send USD via domestic or international wire."
+
+Step 5: 🔐 Receive Your BTC
+"Once wire clears, BTC is sent to your 
+verified wallet address within 24 hours."
+
+WHY OTC OVER AN EXCHANGE — comparison table:
+┌──────────────────┬──────────────┬──────────────┐
+│                  │  OTC Desk    │  Exchange    │
+├──────────────────┼──────────────┼──────────────┤
+│ Price Slippage   │  None        │  High        │
+│ Order Book Vis.  │  Private     │  Public      │
+│ Minimum          │  0.20 BTC    │  Any         │
+│ Settlement       │  24 hrs      │  Instant     │
+│ KYC Required     │  Yes         │  Yes         │
+│ Market Impact    │  Zero        │  Significant │
+│ Personal Service │  Dedicated   │  None        │
+│ Wire Settlement  │  ✅          │  Varies      │
+└──────────────────┴──────────────┴──────────────┘
+
+TRUST SIGNALS ROW:
+🔒 AML/KYC Compliant | 📋 FinCEN Registered MSB | 
+⚡ 24hr Settlement | 🛡️ Funds held in escrow | 
+🇺🇸 US-Based Desk | 📞 Dedicated Account Manager
+
+══════════════════════════════════════════════════════════
+SECTION 3 — FULL ACCOUNT + KYC + OTC FLOW
+══════════════════════════════════════════════════════════
+
+THE COMPLETE USER JOURNEY HAS 4 STAGES:
+
+STAGE 1 → ACCOUNT CREATION (/account/register)
+STAGE 2 → KYC VERIFICATION (/account/kyc)
+STAGE 3 → OTC APPLICATION (/bitcoin-otc/apply)
+STAGE 4 → WIRE & SETTLEMENT (/account/otc-orders)
+
+Each stage gates the next. User cannot proceed to Stage 3 
+without completing Stages 1 and 2.
+
+────────────────────────────────────────────────────────
+STAGE 1: ACCOUNT CREATION (/account/register)
+────────────────────────────────────────────────────────
+
+Standard registration page (already built) — but add:
+- Checkbox: "I am interested in Bitcoin OTC purchases"
+  (pre-tags account for OTC onboarding email sequence)
+- After email verification: redirect to KYC prompt banner:
+  "✅ Account created! Complete KYC to unlock Bitcoin OTC."
+
+────────────────────────────────────────────────────────
+STAGE 2: KYC VERIFICATION (/account/kyc)
+────────────────────────────────────────────────────────
+
+Full KYC page accessible from:
+- Account dashboard → "Complete KYC" CTA card
+- Bitcoin OTC page → "Apply to Buy" button (if not KYC'd)
+- Direct URL /account/kyc
+
+KYC STATUS SYSTEM:
+const KYC_STATUS = {
+  NOT_STARTED: 'not_started',
+  IN_PROGRESS: 'in_progress', 
+  PENDING_REVIEW: 'pending_review',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  MORE_INFO: 'more_info_required'
+}
+
+Store in localStorage: 
+localStorage.setItem('kyc_status', KYC_STATUS.NOT_STARTED)
+
+KYC PAGE LAYOUT:
+
+Progress bar: [Personal Info] → [Identity] → [Address] → [Review]
+
+── STEP 1: PERSONAL INFORMATION ──
+Fields:
+- Legal First Name * 
+- Legal Last Name *
+- Date of Birth * (must be 18+, validate)
+- Nationality (dropdown — all countries)
+- Country of Residence *
+- Phone Number * (with country code)
+- Social Security Number (last 4 digits) * — US residents
+  Note: "Used for identity verification only. Never stored in full."
+- Occupation *
+- Source of Funds * (dropdown):
+  Employment Income | Business Income | Investment Returns |
+  Inheritance | Real Estate Sale | Savings | Other
+- Purpose of Bitcoin Purchase * (dropdown):
+  Investment / Wealth Preservation | Portfolio Diversification |
+  Business Treasury | IRA/Retirement | Personal Savings | Other
+- Expected Annual BTC Purchase Volume * (dropdown):
+  $10,000–$50,000 | $50,001–$250,000 | $250,001–$1,000,000 | $1M+
+- Are you a US citizen or resident? * (Yes/No)
+- Are you a politically exposed person (PEP)? * (Yes/No)
+  Tooltip: "A PEP is a person with a prominent public function"
+
+── STEP 2: IDENTITY DOCUMENT ──
+Document Type selection (radio):
+◉ US Driver's License
+◉ US Passport  
+◉ State ID Card
+◉ Non-US Passport
+
+Upload fields (drag-and-drop or click):
+┌─────────────────────────────────────────────────┐
+│  📄 FRONT OF DOCUMENT                           │
+│  Drag & drop or click to upload                 │
+│  Accepted: JPG, PNG, PDF — Max 10MB             │
+│  [  Choose File  ]                              │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│  📄 BACK OF DOCUMENT (if applicable)            │
+│  [  Choose File  ]                              │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│  🤳 SELFIE WITH DOCUMENT                        │
+│  Hold your ID next to your face                 │
+│  [  Choose File  ]  or  [  Use Camera  ]        │
+└─────────────────────────────────────────────────┘
+
+Requirements checklist (live validation):
+☑ Document is clearly readable
+☑ All four corners visible
+☑ No flash glare or blur  
+☑ Not expired
+☑ Selfie shows face + document clearly
+
+File handling: 
+- Store files as base64 in localStorage (simulated)
+- Show preview thumbnails after upload
+- In real implementation: upload to secure S3/Supabase bucket
+
+── STEP 3: PROOF OF ADDRESS ──
+Document Type (radio):
+◉ Bank Statement (last 90 days)
+◉ Utility Bill (last 90 days)
+◉ Government Letter
+◉ Lease Agreement
+
+Upload field (same drag-and-drop component)
+
+Address confirmation fields:
+- Street Address *
+- City *
+- State *
+- ZIP Code *
+- Country *
+"Must match the address on your uploaded document."
+
+── STEP 4: REVIEW & SUBMIT ──
+Summary card showing all entered info (read-only)
+Edit buttons on each section
+
+Legal checkboxes (all required):
+☐ I confirm all information provided is true and accurate
+☐ I understand KYC is required by US law (Bank Secrecy Act)
+☐ I consent to identity verification and document storage
+☐ I am not acting on behalf of a third party
+☐ I understand purchases over $10,000 are reported to FinCEN
+
+[  Submit KYC Application  ] — gold button
+
+POST-SUBMISSION STATE:
+Show status page:
+┌─────────────────────────────────────────────────────────┐
+│  🕐 KYC UNDER REVIEW                                    │
+│                                                         │
+│  Application #KYC-2026-48291 submitted                  │
+│  Submitted: April 25, 2026 at 2:34 PM EDT               │
+│                                                         │
+│  Our compliance team reviews applications within        │
+│  1–2 business days. You'll receive an email when        │
+│  your account is approved.                              │
+│                                                         │
+│  What happens next?                                     │
+│  ✅ Application received                                │
+│  🔄 Compliance review (1-2 business days)               │
+│  ⏳ Identity verification                               │
+│  📧 Approval email sent                                 │
+│  ₿  Bitcoin OTC unlocked                               │
+│                                                         │
+│  Questions? Call 1-800-GOLD-NOW or email               │
+│  otc@puregoldtrading.com                               │
+└─────────────────────────────────────────────────────────┘
+
+KYC STATUS BADGE in account dashboard:
+- NOT STARTED: 🔴 "KYC Required — Complete to buy BTC"
+- PENDING: 🟡 "KYC Under Review — 1-2 business days"
+- APPROVED: 🟢 "KYC Verified ✓"
+- REJECTED: 🔴 "KYC Rejected — See details"
+- MORE INFO: 🟠 "Action Required — Additional docs needed"
+
+Simulate auto-approval after 30 seconds for demo:
+setTimeout(() => {
+  localStorage.setItem('kyc_status', 'approved');
+  window.dispatchEvent(new Event('kycUpdated'));
+}, 30000);
+
+────────────────────────────────────────────────────────
+STAGE 3: OTC PURCHASE APPLICATION (/bitcoin-otc/apply)
+────────────────────────────────────────────────────────
+
+ACCESS CONTROL:
+const canAccessOTC = () => {
+  const user = JSON.parse(localStorage.getItem('auth_user'));
+  const kycStatus = localStorage.getItem('kyc_status');
+  
+  if (!user) {
+    // Not logged in → redirect to login
+    window.location.href = '/account/login?redirect=/bitcoin-otc/apply';
+    return false;
+  }
+  
+  if (kycStatus !== 'approved') {
+    // Logged in but not KYC approved → show KYC gate
+    return 'kyc_required';
+  }
+  
+  return true;
+};
+
+KYC GATE (shown if logged in but KYC not approved):
+┌─────────────────────────────────────────────────────────┐
+│  🔐 KYC VERIFICATION REQUIRED                           │
+│                                                         │
+│  To purchase Bitcoin OTC, you must complete our         │
+│  Know Your Customer (KYC) verification process.         │
+│  This is required by US federal law.                    │
+│                                                         │
+│  Status: [PENDING REVIEW / NOT STARTED]                 │
+│                                                         │
+│  [  Complete KYC Now →  ]    [  Check Status  ]        │
+└─────────────────────────────────────────────────────────┘
+
+OTC APPLICATION FORM (shown only to KYC-approved users):
+
+Page header:
+"₿ Bitcoin OTC Purchase Application"
+"KYC Verified ✅ | Account: john@email.com | #ACC-48291"
+
+── FORM SECTION 1: PURCHASE DETAILS ──
+
+Live BTC price display at top of form:
+"Current BTC Spot: $94,250.00 | Your desk spread: +0.75%"
+[Auto-refreshes every 30 seconds with 🔄 spinner]
+
+Field 1 — BTC Amount:
+Label: "How much Bitcoin do you want to buy?"
+Input: Number field, step=0.01, min=0.20, max=10.00
+Helper: "Minimum: 0.20 BTC | Maximum: 10.00 BTC per transaction"
+Validation: real-time error if outside range
+
+Field 2 — USD Value (auto-calculated, read-only):
+Label: "Estimated Total Cost (USD)"
+Value: auto-updates as BTC amount changes
+Formula: BTC amount × (spot × (1 + spread_for_tier))
+Styled as large gold price display
+
+Tier indicator (updates with amount):
+"Your tier: 5.00–7.99 BTC → Spread: +0.75% 
+ ← Enter 8+ BTC for 0.60% spread (save $XXX)"
+
+Field 3 — Settlement Currency:
+Radio buttons:
+◉ USD (Bank Wire) — most common
+◉ USDC (Stablecoin wire) — +0.25% fee
+◉ USDT (Tether) — +0.25% fee
+
+Field 4 — Bitcoin Delivery Wallet:
+Label: "Your Bitcoin Wallet Address"
+Input: text, long
+Placeholder: "bc1q... or 3... or 1..."
+Validation: basic BTC address format check (26-35 chars, 
+            starts with 1, 3, or bc1)
+Helper: "This is where we will send your BTC after 
+         settlement. Double-check this address carefully.
+         Transactions cannot be reversed."
+Warning banner: 
+⚠️ "We are not responsible for BTC sent to incorrect 
+    addresses. Verify your wallet address carefully."
+
+Wallet type detection (auto, based on prefix):
+- bc1q... → "Detected: Native SegWit (Bech32) — ✅ Recommended"
+- 3...    → "Detected: P2SH (SegWit compatible) — ✅ Supported"  
+- 1...    → "Detected: Legacy P2PKH — ✅ Supported"
+
+Field 5 — Preferred Settlement Timeline:
+Radio:
+◉ Standard (within 24 hours of wire clearance) — no fee
+◉ Priority (within 4 hours of wire clearance) — +0.25%
+
+── FORM SECTION 2: WIRE TRANSFER DETAILS ──
+
+"After submission, you'll receive personalized wire 
+ instructions. Here's what to expect:"
+
+┌─────────────────────────────────────────────────────────┐
+│  WIRE INSTRUCTIONS (Sent after form submission)         │
+│                                                         │
+│  Bank Name:        JPMorgan Chase Bank, N.A.            │
+│  Account Name:     PureGold Trading LLC                 │
+│  ABA Routing:      021000021                            │
+│  Account Number:   847293018475                         │
+│  Reference/Memo:   [YOUR ORDER # — auto-assigned]       │
+│  Amount:           [CALCULATED FROM YOUR REQUEST]       │
+│                                                         │
+│  ⚠️ Wire must be received within 3 business days        │
+│  ⚠️ Reference number MUST appear in wire memo field    │
+│  ⚠️ Wire must come from account in your verified name  │
+└─────────────────────────────────────────────────────────┘
+
+Your sending bank details (collected for AML compliance):
+- Your Bank Name *
+- Your Bank Account Number (last 4 digits) *
+- Wire Originating Bank Country *
+"Funds must originate from a bank account in your 
+ legal name as verified in your KYC application."
+
+── FORM SECTION 3: ADDITIONAL INFORMATION ──
+
+Field — Purpose of this purchase * (dropdown):
+Investment | Portfolio Diversification | Business Treasury | 
+IRA Contribution | Personal Savings | Gift | Other
+
+Field — Additional notes (optional):
+Textarea — any special instructions or questions
+
+── FORM SECTION 4: LEGAL AGREEMENTS ──
+
+☐ I confirm this purchase is for my own account and not 
+  on behalf of any third party *
+
+☐ I understand Bitcoin prices fluctuate and the final price
+  will be locked at the time my wire is received *
+
+☐ I confirm the wallet address I provided is correct and 
+  I accept sole responsibility for delivery accuracy *
+
+☐ I understand transactions over $10,000 USD are reported 
+  to the IRS and FinCEN as required by US law *
+
+☐ I have read and agree to the OTC Desk Terms of Service *
+
+☐ I confirm I am not a resident of a sanctioned country 
+  (OFAC list) *
+
+[  Submit OTC Application  ] — large gold button
+
+── POST-SUBMISSION CONFIRMATION ──
+
+Immediately after submit:
+1. Generate order ID: OTC-2026-[random 5 digits]
+2. Save to localStorage: otc_orders array
+3. Show confirmation modal:
+
+┌─────────────────────────────────────────────────────────┐
+│  ✅ OTC APPLICATION SUBMITTED                           │
+│                                                         │
+│  Order Reference: OTC-2026-84729                        │
+│  BTC Amount: 5.00 BTC                                   │
+│  Indicative Total: $474,784.40 USD                      │
+│  Delivery Wallet: bc1q...xyz (last 6 shown)             │
+│  Submitted: April 25, 2026 at 2:47 PM EDT               │
+│                                                         │
+│  NEXT STEPS:                                            │
+│  1. Check your email for wire instructions              │
+│  2. Send wire within 3 business days                    │
+│  3. Include reference: OTC-2026-84729 in memo           │
+│  4. BTC delivered within 24hrs of wire clearance        │
+│                                                         │
+│  Questions? otc@puregoldtrading.com | 1-800-GOLD-NOW   │
+│                                                         │
+│  [  View My OTC Orders  ]  [  Print Instructions  ]    │
+└─────────────────────────────────────────────────────────┘
+
+────────────────────────────────────────────────────────
+STAGE 4: OTC ORDER MANAGEMENT (/account/otc-orders)
+────────────────────────────────────────────────────────
+
+Tab in account sidebar: "₿ Bitcoin OTC Orders"
+
+Orders table:
+┌──────────────────────────────────────────────────────────────────┐
+│ Order ID      │ BTC Amt │ USD Total  │ Status      │ Date        │
+├──────────────────────────────────────────────────────────────────┤
+│ OTC-2026-84729│ 5.00    │ $474,784   │ 🟡 Pending  │ Apr 25 2026 │
+│ OTC-2026-61023│ 1.50    │ $142,784   │ 🟢 Settled  │ Apr 10 2026 │
+│ OTC-2026-48201│ 0.20    │ $19,000    │ 🔴 Expired  │ Mar 15 2026 │
+└──────────────────────────────────────────────────────────────────┘
+
+OTC Order Status Flow:
+SUBMITTED → WIRE_AWAITED → WIRE_RECEIVED → 
+BTC_DISPATCHED → SETTLED | EXPIRED | CANCELLED
+
+Status badges:
+🟡 Awaiting Wire    — yellow
+🔵 Wire Received    — blue  
+🟠 BTC Dispatched   — orange
+🟢 Settled          — green
+🔴 Expired          — red
+⚫ Cancelled        — gray
+
+Individual order detail page (/account/otc-orders/[id]):
+- Full timeline of order events
+- Wire instructions (copy to clipboard)
+- Wallet address confirmed
+- BTC TX hash (dummy: show after "settlement")
+- Download PDF confirmation button
+- "Need help?" contact button
+
+══════════════════════════════════════════════════════════
+SECTION 4 — SUPPORTING PAGES
+══════════════════════════════════════════════════════════
+
+/bitcoin-otc/how-it-works — Long-form SEO guide:
+H1: "How Bitcoin OTC Works: Step-by-Step Guide"
+1500+ words explaining the 5-step process, why OTC, 
+who it's for, what to expect. 
+Schema: HowTo markup with step-by-step structured data.
+
+/bitcoin-otc/otc-vs-exchange — Comparison SEO page:
+H1: "Bitcoin OTC vs Exchange: Which is Better for Large Buys?"
+Comparison table + pros/cons + use cases.
+Target keywords: "buy bitcoin without exchange", 
+"OTC bitcoin broker USA", "buy 5 BTC privately"
+
+/bitcoin-otc/bitcoin-ira — BTC IRA guide:
+H1: "Bitcoin IRA: How to Buy BTC for Retirement"
+Explain self-directed IRA, IRS rules, custodians.
+CTA: "Open OTC Account to Start Bitcoin IRA"
+
+/bitcoin-otc/faq — BTC OTC FAQ (15 questions):
+Q: What is the minimum BTC I can buy?
+A: 0.20 BTC (approximately $19,000 at current prices).
+
+Q: How long does settlement take?
+A: BTC is delivered within 24 hours of wire clearance.
+
+Q: Is KYC required?
+A: Yes. Required by US law (Bank Secrecy Act, FinCEN).
+
+Q: What if BTC price changes after I submit?
+A: Price is locked when your wire is received, not when 
+   you apply. Final price = spot at wire receipt + spread.
+
+Q: Can I send wire from a business account?
+A: Only if the business name matches your KYC entity.
+
+Q: What wallets are accepted?
+A: Any self-custody Bitcoin wallet. We support Legacy, 
+   SegWit, and Native SegWit (Bech32) addresses.
+
+Q: Is there a maximum purchase per transaction?
+A: 10 BTC per single OTC transaction. For larger amounts,
+   contact our desk directly.
+
+... (add 8 more realistic Q&As)
+FAQPage schema markup on this page.
+
+══════════════════════════════════════════════════════════
+SECTION 5 — REAL-TIME BTC PRICE ON /charts/bitcoin-price
+══════════════════════════════════════════════════════════
+
+Dedicated BTC price chart page matching gold/silver pages:
+
+Live price card: $94,250.00 | +$1,240 (+1.33%) today
+Timeframe tabs: 1D | 1W | 1M | 3M | 1Y | 5Y | ALL
+
+Chart.js line chart:
+- Orange/amber color (#F7931A — official Bitcoin orange)
+- Gradient fill below line (orange → transparent)
+- Current price annotation on latest point
+- Volume bars on secondary axis (simulated)
+
+Price stats grid:
+┌────────────┬────────────┬────────────┬────────────┐
+│ Today Open │ 24hr High  │ 24hr Low   │ Mkt Cap    │
+│ $93,010    │ $94,890    │ $92,450    │ $1.86T     │
+├────────────┼────────────┼────────────┼────────────┤
+│ 7D Change  │ 30D Change │ YTD Change │ ATH        │
+│ +4.2%      │ +12.8%     │ +32.1%     │ $108,786   │
+└────────────┴────────────┴────────────┴────────────┘
+
+OTC Desk CTA on this page:
+"Ready to buy Bitcoin? Our OTC desk offers 0.20–10 BTC 
+ at competitive spreads with 24hr settlement."
+[  Apply for OTC Account →  ]
+
+══════════════════════════════════════════════════════════
+SECTION 6 — ACCOUNT DASHBOARD UPDATES
+══════════════════════════════════════════════════════════
+
+Add to /account/dashboard:
+
+NEW METRICS CARDS:
+- Total BTC Purchased (oz equivalent): X.XX BTC
+- Total BTC value at current price: $XXX,XXX
+- Active OTC Orders: X pending
+- KYC Status: [badge]
+
+NEW SIDEBAR LINKS:
+├── Dashboard
+├── My Orders (Gold/Silver)
+├── ₿ Bitcoin OTC Orders  ← NEW
+├── Watchlist
+├── Price Alerts
+├── KYC Status           ← NEW
+├── Profile
+└── Logout
+
+KYC STATUS CARD on dashboard:
+If not approved:
+┌─────────────────────────────────────────────────────────┐
+│  🔐 UNLOCK BITCOIN OTC                                  │
+│  Complete KYC verification to buy 0.20–10 BTC          │
+│  Takes ~5 minutes. Approval in 1-2 business days.      │
+│  [  Complete KYC Now →  ]                              │
+└─────────────────────────────────────────────────────────┘
+
+If approved:
+┌─────────────────────────────────────────────────────────┐
+│  ✅ KYC VERIFIED — Bitcoin OTC Unlocked                 │
+│  [  Apply to Buy Bitcoin →  ]                          │
+└─────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════
+SECTION 7 — SEO KEYWORDS FOR BTC PAGES
+══════════════════════════════════════════════════════════
+
+/bitcoin-otc: 
+"buy bitcoin OTC", "bitcoin OTC desk USA", "buy BTC without exchange",
+"buy 1 BTC privately", "bitcoin fractional OTC"
+
+/bitcoin-otc/how-it-works:
+"how does bitcoin OTC work", "buy bitcoin wire transfer USA",
+"OTC bitcoin purchase process step by step"
+
+/bitcoin-otc/otc-vs-exchange:
+"bitcoin OTC vs exchange which is better", "buy large amounts of bitcoin",
+"avoid bitcoin price slippage buying"
+
+/charts/bitcoin-price:
+"bitcoin price today USD", "BTC price live", "bitcoin price chart 2026"
+
+Long-tail blog posts to add:
+- "How to Buy 1 Bitcoin Without Moving the Market (OTC Guide)"
+- "Bitcoin OTC Minimum: What's the Least You Can Buy?"
+- "Wire Transfer to Buy Bitcoin: Step-by-Step Guide 2026"
+- "Is Bitcoin OTC Legal in the USA? KYC and FinCEN Rules Explained"
+
+All BTC OTC pages:
+- generateMetadata() with unique title/description
+- Product schema not applicable — use FinancialProduct schema
+- FAQPage schema on FAQ page
+- BreadcrumbList on all pages
+- Organization schema referencing MSB registration
+
+══════════════════════════════════════════════════════════
+SECTION 8 — COMPLIANCE ELEMENTS
+══════════════════════════════════════════════════════════
+
+Add these on all BTC OTC pages:
+
+Footer disclaimer for BTC section:
+"Bitcoin OTC services provided by PureGold Trading LLC, 
+a registered Money Services Business (MSB) with FinCEN. 
+Registration #: 31000XXXXXXX. Bitcoin is not a legal tender 
+and is subject to significant price volatility. Past performance 
+does not guarantee future results. All transactions are subject 
+to AML/KYC verification. Transactions over $10,000 are reported 
+to the IRS as required by the Bank Secrecy Act."
+
+OFAC disclaimer:
+"We do not service residents of sanctioned countries including 
+Cuba, Iran, North Korea, Syria, and the Crimea region."
+
+Risk warning banner (top of /bitcoin-otc apply page):
+⚠️ "Bitcoin involves significant financial risk. Only invest 
+what you can afford to lose. This is not financial advice."
+
+══════════════════════════════════════════════════════════
+SECTION 9 — TECHNICAL IMPLEMENTATION
+══════════════════════════════════════════════════════════
+
+NEW FILES TO CREATE:
+/app/bitcoin-otc/page.tsx — Landing page
+/app/bitcoin-otc/apply/page.tsx — OTC application form
+/app/bitcoin-otc/how-it-works/page.tsx
+/app/bitcoin-otc/otc-vs-exchange/page.tsx
+/app/bitcoin-otc/bitcoin-ira/page.tsx
+/app/bitcoin-otc/faq/page.tsx
+/app/account/kyc/page.tsx — KYC multi-step form
+/app/account/otc-orders/page.tsx — OTC order history
+/app/account/otc-orders/[id]/page.tsx — Single order detail
+/app/charts/bitcoin-price/page.tsx — BTC chart page
+
+NEW COMPONENTS:
+/components/btc/LiveBTCPrice.tsx — live price card
+/components/btc/BTCCalculator.tsx — interactive calculator
+/components/btc/TierTable.tsx — spread tier pricing table
+/components/btc/OTCForm.tsx — full purchase form
+/components/btc/OTCOrderCard.tsx — order status card
+/components/kyc/KYCForm.tsx — multi-step KYC wizard
+/components/kyc/KYCStatusBadge.tsx — status indicator
+/components/kyc/FileUpload.tsx — drag-and-drop uploader
+
+NEW LIB FILES:
+/lib/btcPrice.ts — BTC price fetching with 30s refresh
+/lib/kycContext.tsx — KYC state management
+/lib/otcOrders.ts — OTC order CRUD via localStorage
+
+BTC PRICE FETCH (30-second interval):
+const fetchBTCPrice = async () => {
+  try {
+    const res = await fetch(
+      'https://api.coinbase.com/v2/prices/BTC-USD/spot'
+    );
+    const data = await res.json();
+    return parseFloat(data.data.amount);
+  } catch {
+    try {
+      const res2 = await fetch(
+        'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'
+      );
+      const data2 = await res2.json();
+      return parseFloat(data2.price);
+    } catch {
+      return 94250.00; // hardcoded fallback
+    }
+  }
+};
+
+// In components — auto-refresh:
+useEffect(() => {
+  fetchBTCPrice().then(setBtcPrice);
+  const interval = setInterval(() => {
+    fetchBTCPrice().then(setBtcPrice);
+  }, 30000);
+  return () => clearInterval(interval);
+}, []);
+
+SPREAD CALCULATOR:
+const getSpread = (btcAmount) => {
+  if (btcAmount < 1)   return 0.0125; // 1.25%
+  if (btcAmount < 3)   return 0.0100; // 1.00%
+  if (btcAmount < 5)   return 0.0085; // 0.85%
+  if (btcAmount < 8)   return 0.0075; // 0.75%
+  return 0.0060;                       // 0.60%
+};
+
+const calcTotal = (btcAmount, spotPrice) => {
+  const spread = getSpread(btcAmount);
+  return btcAmount * spotPrice * (1 + spread);
+};
+
+BUILD ORDER FOR BTC OTC FEATURE:
+1. /lib/btcPrice.ts + LiveBTCPrice component
+2. BTCCalculator + TierTable components
+3. /bitcoin-otc landing page with all sections
+4. /account/kyc — multi-step KYC form (4 steps)
+5. KYCContext + status management
+6. /bitcoin-otc/apply — full OTC form with access control
+7. Post-submission confirmation + order generation
+8. /account/otc-orders — order history + detail pages
+9. BTC tab in navbar + mega-menu
+10. /charts/bitcoin-price — Chart.js BTC chart
+11. All supporting SEO pages (how-it-works, faq etc.)
+12. Account dashboard KYC card + OTC metrics
+13. All compliance disclaimers + schema markup
+14. Full flow test: register → KYC → apply → confirm

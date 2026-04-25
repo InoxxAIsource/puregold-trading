@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PriceProvider } from "@/contexts/PriceContext";
 import { WatchlistProvider } from "@/contexts/WatchlistContext";
+import { KYCProvider } from "@/lib/kycContext";
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -51,6 +52,17 @@ import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import NotFound from "@/pages/not-found";
 
+// Bitcoin OTC pages
+import BitcoinOTCPage from "@/pages/BitcoinOTCPage";
+import BitcoinOTCApplyPage from "@/pages/BitcoinOTCApplyPage";
+import BitcoinOTCHowItWorksPage from "@/pages/BitcoinOTCHowItWorksPage";
+import BitcoinOTCVsExchangePage from "@/pages/BitcoinOTCVsExchangePage";
+import BitcoinIRAPage from "@/pages/BitcoinIRAPage";
+import BitcoinOTCFAQPage from "@/pages/BitcoinOTCFAQPage";
+import KYCPage from "@/pages/KYCPage";
+import OTCOrdersPage from "@/pages/OTCOrdersPage";
+import BTCChartPage from "@/pages/BTCChartPage";
+
 function Router() {
   return (
     <Switch>
@@ -80,6 +92,7 @@ function Router() {
       {/* Services/Info */}
       <Route path="/charts" component={ChartsPage} />
       <Route path="/charts/gold-silver-ratio" component={GoldSilverRatioPage} />
+      <Route path="/charts/bitcoin-price" component={BTCChartPage} />
       <Route path="/charts/:metal" component={MetalChartPage} />
       <Route path="/fear-greed-index" component={FearGreedIndexPage} />
       <Route path="/autobuy" component={AutoBuyPage} />
@@ -92,6 +105,14 @@ function Router() {
       <Route path="/blog/:slug" component={BlogPostPage} />
       <Route path="/investing-guide" component={InvestingGuidePage} />
       
+      {/* Bitcoin OTC */}
+      <Route path="/bitcoin-otc" component={BitcoinOTCPage} />
+      <Route path="/bitcoin-otc/apply" component={BitcoinOTCApplyPage} />
+      <Route path="/bitcoin-otc/how-it-works" component={BitcoinOTCHowItWorksPage} />
+      <Route path="/bitcoin-otc/otc-vs-exchange" component={BitcoinOTCVsExchangePage} />
+      <Route path="/bitcoin-otc/bitcoin-ira" component={BitcoinIRAPage} />
+      <Route path="/bitcoin-otc/faq" component={BitcoinOTCFAQPage} />
+      
       {/* Account */}
       <Route path="/account/login" component={AccountLoginPage} />
       <Route path="/account/register" component={AccountRegisterPage} />
@@ -99,6 +120,9 @@ function Router() {
       <Route path="/account/orders" component={AccountOrdersPage} />
       <Route path="/account/watchlist" component={AccountWatchlistPage} />
       <Route path="/account/price-alerts" component={AccountPriceAlertsPage} />
+      <Route path="/account/kyc" component={KYCPage} />
+      <Route path="/account/otc-orders/:id" component={OTCOrdersPage} />
+      <Route path="/account/otc-orders" component={OTCOrdersPage} />
       
       {/* About & Policies */}
       <Route path="/about" component={AboutPage} />
@@ -117,24 +141,26 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <PriceProvider>
-          <CartProvider>
-            <WatchlistProvider>
-              <TooltipProvider>
-                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                  <div className="flex flex-col min-h-[100dvh]">
-                    <Navbar />
-                    <main className="flex-1">
-                      <Router />
-                    </main>
-                    <Footer />
-                  </div>
-                  <Toaster />
-                </WouterRouter>
-              </TooltipProvider>
-            </WatchlistProvider>
-          </CartProvider>
-        </PriceProvider>
+        <KYCProvider>
+          <PriceProvider>
+            <CartProvider>
+              <WatchlistProvider>
+                <TooltipProvider>
+                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                    <div className="flex flex-col min-h-[100dvh]">
+                      <Navbar />
+                      <main className="flex-1">
+                        <Router />
+                      </main>
+                      <Footer />
+                    </div>
+                    <Toaster />
+                  </WouterRouter>
+                </TooltipProvider>
+              </WatchlistProvider>
+            </CartProvider>
+          </PriceProvider>
+        </KYCProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
