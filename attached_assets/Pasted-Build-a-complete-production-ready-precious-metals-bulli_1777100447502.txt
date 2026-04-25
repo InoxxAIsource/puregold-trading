@@ -1,0 +1,732 @@
+Build a complete, production-ready precious metals bullion e-commerce website 
+modelled after JM Bullion (jmbullion.com) — America's largest online bullion 
+dealer. This must be a fully operational luxury financial goods platform with 
+every feature, page, SEO funnel, and UX pattern documented below.
+
+Site name: PureGold Trading | Domain: puregoldtrading.com
+Business address: Dallas, TX, USA | Phone: 1-800-GOLD-NOW
+Established: 2018 | Total sold: $8 Billion+ | Reviews: 200,000+
+
+══════════════════════════════════════════════════════════
+SECTION 1 — DESIGN SYSTEM
+══════════════════════════════════════════════════════════
+
+AESTHETIC: Premium dark luxury — editorial meets financial authority.
+
+COLOR TOKENS (tailwind.config.js):
+  gold-primary: #C9A84C
+  gold-light: #E8C96B
+  gold-shine: #F5D97A
+  charcoal: #111111
+  obsidian: #0A0A0A
+  slate: #1C1C1E
+  platinum: #F5F5F0
+  muted: #8A8A8E
+  danger: #E74C3C
+  success: #27AE60
+
+TYPOGRAPHY:
+  Display: "Playfair Display" (Google Fonts) — serif, authoritative
+  Body: "Cormorant Garamond" — refined, legible at all sizes
+  UI/Data: "Barlow Condensed" — clean, numbers-friendly
+  Mono: "JetBrains Mono" — for price display only
+
+VISUAL DETAILS:
+  - Gold shimmer keyframe on hero headline text
+  - Grain texture via CSS noise (opacity 0.04) over all dark panels
+  - 1px gold border on all product cards
+  - Hover: gold glow (box-shadow 0 0 16px rgba(201,168,76,0.4)) + scale(1.015)
+  - Frosted glass sticky navbar (backdrop-filter: blur(12px))
+  - Product images: dark shadow card with subtle gold rim on hover
+  - Animated counter on trust stats (e.g., $8B → counts up on scroll)
+  - Skeleton loaders on all API-driven price data
+
+══════════════════════════════════════════════════════════
+SECTION 2 — COMPLETE PAGE MAP (40 PAGES)
+══════════════════════════════════════════════════════════
+
+MAIN NAVIGATION MEGA-MENU with these exact top-level items:
+Gold | Silver | Platinum | Copper | Rare Coins | On Sale | Featured | 
+New Arrivals | Sell to Us | Charts | IRA | Resources
+
+────────────────────────────────────────
+GOLD PAGES:
+/gold — Gold landing page
+/gold/gold-bars — All gold bars
+/gold/gold-bars/gram-gold-bars — Gram weight bars (1g, 2.5g, 5g, 10g)
+/gold/gold-bars/1-oz-gold-bars — 1 oz gold bars from all mints
+/gold/gold-bars/10-oz-gold-bars — 10 oz gold bars
+/gold/gold-bars/kilo-gold-bars — Kilo (32.15 oz) gold bars
+/gold/gold-coins — All gold coins
+/gold/gold-coins/american-gold-eagles — American Gold Eagle series
+/gold/gold-coins/american-gold-buffalo — Gold Buffalo series
+/gold/gold-coins/gold-maple-leafs — Canadian Gold Maple Leafs
+/gold/gold-coins/gold-britannias — British Gold Britannias
+/gold/gold-coins/south-african-krugerrands — Krugerrands
+/gold/gold-coins/austrian-philharmonics — Austrian Philharmonics
+/gold/gold-coins/australian-kangaroos — Perth Mint Kangaroos
+/gold/fractional-gold — 1/10 oz, 1/4 oz, 1/2 oz coins
+/gold/gold-rounds — Private mint gold rounds
+/gold/goldbacks — Goldback legal tender notes
+/gold/pre-1933-gold-coins — Antique pre-1933 US gold coins
+/gold/ira-gold — IRA-eligible gold products
+
+SILVER PAGES:
+/silver — Silver landing page
+/silver/silver-bars — All silver bars (1oz, 5oz, 10oz, kilo, 100oz)
+/silver/silver-coins — All silver coins
+/silver/silver-coins/american-silver-eagles — ASE series (unc, proof, privy)
+/silver/silver-coins/silver-maple-leafs — Canadian Maple Leafs
+/silver/silver-coins/silver-britannias — British Britannias
+/silver/silver-coins/silver-krugerrands — South African silver
+/silver/silver-coins/silver-philharmonics — Austrian Philharmonics
+/silver/silver-coins/chinese-pandas — Chinese Silver Pandas
+/silver/silver-rounds — Private mint rounds
+/silver/junk-silver — 90%/40%/35% US constitutional silver bags
+/silver/silver-dollars — Morgan, Peace, Eisenhower dollars
+/silver/monster-box — Sealed mint monster boxes (500 coins)
+/silver/bulk-silver — Bulk buying discounts
+/silver/ira-silver — IRA-eligible silver
+
+OTHER METAL PAGES:
+/platinum — Platinum landing
+/platinum/platinum-bars
+/platinum/platinum-coins/american-platinum-eagles
+/palladium — Palladium landing
+/palladium/palladium-bars
+/palladium/palladium-coins
+/copper — Copper landing
+/copper/copper-rounds
+/copper/copper-bars
+/rare-coins — Numismatic and collectible coins
+/rare-coins/pre-1933-gold
+/rare-coins/ancient-coins
+/rare-coins/silver-dollars
+
+ACCESSORIES:
+/accessories — Storage and display accessories
+/accessories/coin-capsules
+/accessories/coin-tubes
+/accessories/monster-boxes
+/accessories/coin-boxes
+/accessories/display-cases
+/accessories/safes — Premium home safes
+
+SPECIAL COLLECTION PAGES:
+/on-sale — Weekly deals (auto-badge "DEAL" on products)
+/on-sale/vault-sale — Deeply discounted vault items
+/new-arrivals — Latest products (past 30 days)
+/coming-soon — Pre-order / upcoming releases
+/best-sellers — Most popular overall
+/best-sellers/best-selling-gold
+/best-sellers/best-selling-silver
+/featured — Featured/promoted products
+/2026-new-releases — Current year releases
+/america250 — America 250th anniversary commemoratives
+/lunar-year-series — Lunar new year coin series
+/sports-bullion — NBA, MLB, NFL licensed bullion
+/zombucks — Zombucks private collection series
+/personalized-engraving — Custom engraved bullion gifts
+/corporate-gifts — Bulk corporate gifting program
+/mother-day — Seasonal gift collection (swap per season)
+/prepper-bullion — Survival/prepper focused products
+
+COMMERCE PAGES:
+/cart — Shopping cart
+/checkout — Multi-step checkout
+/order-confirmation — Post-purchase confirmation
+/order-status — Order tracking (input order # + email)
+/autobuy — AutoBuy recurring purchase program
+/sell-to-us — Sell your metals back to us
+
+USER ACCOUNT:
+/account/login
+/account/register
+/account/dashboard
+/account/orders
+/account/order/[id] — Single order detail
+/account/watchlist — Saved products
+/account/price-alerts — Price alert settings
+/account/profile
+/account/payment-methods — Saved cards/bank info
+
+CHARTS & DATA:
+/charts — All price charts hub
+/charts/gold-price — Gold spot price chart
+/charts/silver-prices — Silver spot price chart
+/charts/platinum-price
+/charts/palladium-price
+/charts/copper-price
+/charts/gold-silver-ratio — GSR ratio chart
+/charts/bitcoin-price — BTC price (yes, JMB has this)
+/fear-greed-index — Gold fear & greed index dashboard
+
+IRA PAGES:
+/ira — Gold IRA landing and guide
+/gold/ira-gold — IRA gold products
+/silver/ira-silver — IRA silver products
+/platinum/ira-platinum
+/palladium/ira-palladium
+
+RESOURCES & SEO CONTENT:
+/investing-guide — Full precious metals investing guide hub
+/investing-guide/why-buy-gold
+/investing-guide/gold-vs-silver
+/investing-guide/how-to-buy-gold
+/investing-guide/storing-precious-metals
+/investing-guide/gold-ira-guide
+/investing-guide/junk-silver-guide
+/investing-guide/gold-silver-ratio-explained
+/blog — Market news and articles listing
+/blog/[slug] — Individual blog posts (5 samples)
+/alert-tools — Price alert sign-up tool
+/storage — Secure storage guide
+/tax — Sales tax by state (all 50 states table)
+/cybermetals — Digital gold ownership program
+/gold-loans — Gold & silver backed loans info
+/mints/government-mints — Government mint profiles
+/mints/private-mints — Private mint profiles
+
+INFO PAGES:
+/about — About us, history, Dallas TX HQ
+/about/shipping — Full shipping policy with rates
+/faq — Comprehensive FAQ (accordion, 40+ questions)
+/contact — Contact form + phone + live chat embed
+/privacy-policy
+/terms-of-service
+/return-policy
+
+PRODUCT PAGE:
+/product/[slug] — Dynamic individual product page
+
+ALL pages must be linked through:
+- Mega-menu dropdowns (exact structure above)
+- 5-column footer link grid
+- Breadcrumb nav on all inner pages (BreadcrumbList schema)
+- Related products on product pages
+- Contextual anchor text links inside all guide/blog pages
+- Category page "You might also like" cross-links
+
+══════════════════════════════════════════════════════════
+SECTION 3 — LIVE PRICE TICKER (JMB-STYLE)
+══════════════════════════════════════════════════════════
+
+IMPLEMENTATION — show in THREE locations:
+1. Sticky header bar (above navbar): horizontal scrolling on mobile
+2. Homepage hero section: large price cards
+3. /charts/* pages: full Chart.js graphs
+
+METALS TO DISPLAY:
+- Gold (XAU/USD) — Ask price + $ change + % change + ▲▼ arrow
+- Silver (XAG/USD) — same format
+- Platinum (XPT/USD) — same
+- Palladium (XPD/USD) — same
+- Copper (XCU/USD) — price per lb
+- Bitcoin (BTC/USD) — for /charts/bitcoin-price page
+
+DATA SOURCE:
+Primary: https://api.metals.live/v1/spot (free, no key)
+Fallback: https://api.coinbase.com/v2/prices/XAU-USD/spot (gold)
+Hardcoded fallback values (show when API fails):
+  Gold: $4,735.48 (+$35.04) | Silver: $76.42 (+$0.58)
+  Platinum: $2,029.30 (+$12.35) | Palladium: $1,524.44 (+$30.54)
+
+DISPLAY FORMAT: "$4,735.48  +$35.04 ▲" in gold text
+Refresh: every 60 seconds using setInterval
+Timestamp: "Apr 25, 2026 at 11:17 EDT" — auto-updating
+
+CHART.JS PRICE CHARTS (on /charts/* pages):
+- 30-day spot price line chart
+- Gold-colored gradient fill below line
+- Timeframe toggle buttons: 1D | 1W | 1M | 3M | 1Y | 5Y | ALL
+- Current price callout label on latest data point
+- Historical data: use realistic generated data seeded from real prices
+- Download chart as PNG button
+- Gold/Silver Ratio chart: computed from both spot prices
+
+══════════════════════════════════════════════════════════
+SECTION 4 — PRODUCT CATALOG (40 PRODUCTS)
+══════════════════════════════════════════════════════════
+
+Expand to 40 products. JMB key patterns to replicate:
+
+PRODUCT CATEGORIES based on JMB navigation:
+1. Gram gold bars (1g, 2.5g, 5g, 10g PAMP Suisse)
+2. 1 oz gold bars (multiple mints: Valcambi, Credit Suisse, Perth)
+3. 10 oz, Kilo gold bars
+4. American Gold Eagles (1oz, 1/2oz, 1/4oz, 1/10oz variants)
+5. Gold Buffalo 1oz
+6. Gold Maple Leaf 1oz
+7. Gold Britannia 1oz
+8. Krugerrand 1oz
+9. Australian Gold Kangaroo 1oz
+10. American Silver Eagles (Uncirculated, Proof, MintSealed tubes)
+11. Silver Maple Leaf 1oz
+12. Silver Britannia 1oz
+13. 10oz, 100oz silver bars
+14. 90% junk silver bags ($1 face, $10 face, $100 face)
+15. American Platinum Eagle 1oz
+16. American Palladium Eagle 1oz
+17. Silver Rounds (Buffalo, Walking Liberty, Morgan designs)
+18. Copper rounds (1oz, novelty)
+19. Monster Box — 500 American Silver Eagles
+20. Goldback notes (Nevada, Wyoming denominations)
+
+PRODUCT DATA SCHEMA (per product):
+{
+  id, slug, name, year, mint, metalType, purity, weight, weightUnit,
+  spotPrice, premiumPct, premiumAmt, price, msrp,
+  inStock, stockQty, lowStockThreshold,
+  isOnSale, saleLabel, isFeatured, isNew, isIRAEligible, 
+  isNumismatic, isPreOrder,
+  images: [main, front, back, detail, lifestyle],
+  grades: ["MS-70", "BU", "Proof"] — where applicable,
+  description, shortDescription, specifications: {
+    diameter, thickness, edgeType, designer, obverse, reverse
+  },
+  shippingWeight, shippingClass,
+  mintCertification, assayCertificate,
+  rating, reviewCount,
+  relatedProductIds[]
+}
+
+PRODUCT LISTING PAGE FEATURES:
+- Filter sidebar: Metal | Weight | Mint | Year | Price Range slider | 
+  In Stock only | IRA Eligible | On Sale | New Arrivals
+- Sort: Lowest Premium | Price Low-High | Price High-Low | 
+  Newest | Best Selling | Highest Rated
+- Toggle: Grid view (4-col) / List view
+- Pagination: 12 per page + Load More
+- Product count: "Showing 1-12 of 156 products"
+- "In Stock" green badge / "Low Stock" amber badge / "Pre-Order" blue badge
+- Quick-add to cart button on hover (without leaving category page)
+- Save to Watchlist heart icon on hover
+
+PRODUCT DETAIL PAGE FEATURES:
+- Image gallery: main image + 4 thumbnails, lightbox zoom on click
+- Price display:
+  "Spot: $4,735.48 | Premium: +4.9% (+$231.84) | Price: $4,967.32"
+- Price lock countdown: "Lock this price for 10:00 minutes" — countdown timer
+- Quantity selector with volume discount table:
+  1-4 units: $4,967.32 each
+  5-19 units: $4,942.50 each (-0.5%)
+  20-99 units: $4,920.00 each (-1.0%)
+  100+ units: Call for pricing
+- Payment method price switcher:
+  [Credit Card Price] [Bank Wire Price -3%] [Crypto -2%]
+- IRA Eligible badge with "Add to IRA" button if applicable
+- Authenticity guarantee: "Ships in tamper-evident packaging with assay card"
+- Product tabs: Description | Specifications | Shipping | Reviews
+- Review section: rating breakdown (5-star to 1-star bar chart), 
+  individual reviews with Verified Buyer badge
+- "You May Also Like" — 4 related product cards
+- Share buttons: Copy link, Email, Twitter/X
+- Buyback value: "We'll buy this back for ~$4,680"
+- Stock indicator: "Only 14 left in stock"
+- Add to Price Alert button
+
+══════════════════════════════════════════════════════════
+SECTION 5 — JUNK SILVER / CONSTITUTIONAL SILVER PAGE
+══════════════════════════════════════════════════════════
+
+This is a unique JMB feature. Build /silver/junk-silver with:
+- Explanation of constitutional silver (pre-1965 US coins, 90% silver)
+- Face value options: $1, $5, $10, $50, $100 face value bags
+- Live calculated silver content and current market value
+- Mixed coin bags (dimes, quarters, half-dollars, dollars)
+- Melt value calculator widget:
+  Input: face value amount → Output: troy oz, melt value at current spot
+- Educational section: "What is junk silver?"
+
+══════════════════════════════════════════════════════════
+SECTION 6 — AUTOBUY / RECURRING PURCHASE PROGRAM
+══════════════════════════════════════════════════════════
+
+/autobuy page with full functionality:
+- "Never miss a dip" — set automatic recurring orders
+- Frequency options: Weekly | Bi-Weekly | Monthly | Quarterly
+- Amount options: $50 | $100 | $250 | $500 | $1000 | Custom
+- Product selection: specific product OR "best available at spot"
+- Email confirmation + order preview before each charge
+- Pause/cancel anytime from account dashboard
+- Trust copy: "Dollar-cost average your precious metals automatically"
+
+══════════════════════════════════════════════════════════
+SECTION 7 — SELL TO US (BUYBACK PROGRAM)
+══════════════════════════════════════════════════════════
+
+/sell-to-us page — full buyback quote system:
+- Live buyback prices table (calculated at 97-99% of spot):
+  Product | We Pay | Spot | Premium to Spot
+- Search by product name to get instant quote
+- How it works: 3-step process (Get Quote → Ship → Get Paid)
+- Payment methods for sellers: Check, ACH Bank Transfer, Store Credit (+2%)
+- Shipping: "We send you a FREE FedEx label"
+- Trust: "Receive payment within 2 business days of receipt"
+- Quantity limits and BSA disclosure for large transactions
+- Sell form: Name, email, what you're selling, qty, condition
+
+══════════════════════════════════════════════════════════
+SECTION 8 — IRA SECTION
+══════════════════════════════════════════════════════════
+
+/ira landing page:
+- Hero: "Protect Your Retirement with Physical Precious Metals"
+- What is a Gold IRA? (plain-language explainer)
+- IRS-approved metals for IRA (purity requirements: .995+ gold, .999+ silver)
+- How to open a Gold IRA: 5-step guide
+- IRA custodian partners list (placeholder: GoldStar Trust, Equity Trust, etc.)
+- IRA-eligible product grids for Gold | Silver | Platinum | Palladium
+- FAQ specific to IRAs (10+ questions)
+- Risk disclaimer required by IRS regulations
+- CTA: "Speak with an IRA specialist: 1-800-GOLD-NOW"
+
+══════════════════════════════════════════════════════════
+SECTION 9 — FEAR & GREED INDEX
+══════════════════════════════════════════════════════════
+
+/fear-greed-index dashboard page:
+- Gauge/dial meter (0-100) showing current gold sentiment
+- Score display: 0-25 = Extreme Fear | 26-50 = Fear | 
+  51-75 = Greed | 76-100 = Extreme Greed
+- Current score: 72 (GREED) — dummy data, update weekly
+- Contributing factors breakdown:
+  Gold price momentum | ETF flows | COT report positioning | 
+  USD strength | Treasury yield | Geopolitical risk
+- 90-day historical index chart
+- Interpretation guide: "What does this mean for buyers?"
+- Color coding: Red (fear) → Yellow (neutral) → Green (greed)
+
+══════════════════════════════════════════════════════════
+SECTION 10 — SALES TAX BY STATE PAGE
+══════════════════════════════════════════════════════════
+
+/tax — Full US state sales tax guide for bullion:
+- Search bar: "Enter your state..."
+- Table: All 50 states + DC with columns:
+  State | Gold Coins/Bars | Silver Coins/Bars | Numismatic | Notes
+- Highlight: states with full bullion exemption (green)
+- States with partial exemption (yellow)
+- States where bullion is fully taxed (red)
+- Note: "Tax laws change frequently. Confirm with a tax advisor."
+- CTA: "Orders shipped to tax-exempt states automatically exclude tax"
+
+══════════════════════════════════════════════════════════
+SECTION 11 — SHOPPING CART & CHECKOUT (ENHANCED)
+══════════════════════════════════════════════════════════
+
+CART PAGE (/cart):
+- Price lock timer: "Your prices are locked for 09:47" — countdown
+- If timer expires: "Prices have refreshed" with updated prices banner
+- Payment method toggle at top of cart:
+  [💳 Credit Card] [🏦 Bank Wire (-3%)] [₿ Crypto (-2%)]
+  Switching recalculates all prices instantly
+- Insurance calculation: 0.5% of subtotal (minimum $8.00)
+- Shipping: Free on $499+, else $9.95 flat (match JMB threshold)
+- State tax lookup: input ZIP → auto-calculate applicable tax
+- Referral code / promo code input field
+- "Secure checkout" icons: SSL lock, BBB seal, payment logos
+- Estimated delivery date range displayed
+
+CHECKOUT — 4 STEPS (not 3, match JMB):
+Step 1: Account — Login OR Guest checkout OR Create Account
+Step 2: Shipping — Address form + method selection
+Step 3: Payment — Full payment options (see below)
+Step 4: Review — Final order confirmation before placing
+
+PAYMENT OPTIONS (all with logos):
+
+A) CREDIT/DEBIT CARDS:
+   Logos row (pixel-perfect SVG/PNG):
+   ┌─────────────────────────────────────────────────────────┐
+   │  [VISA blue logo] [Mastercard red/orange]               │
+   │  [American Express blue centurion]                      │
+   │  [Discover orange D] [Diners Club]                      │
+   └─────────────────────────────────────────────────────────┘
+   
+   Card form with live formatting:
+   - Number: auto-format XXXX XXXX XXXX XXXX
+   - Auto-detect card type → show matching logo
+   - Expiry: MM/YY format
+   - CVV: 3 digits (4 for Amex), tooltip "?" shows card diagram
+   - Billing address form
+   - "Save card for future orders" checkbox
+   
+   DUMMY TEST CARDS:
+   ╔══════════════════════════════════════════════════════════╗
+   ║  ⚠️ SANDBOX MODE — NO REAL CHARGES                      ║
+   ╠══════════════════════════════════════════════════════════╣
+   ║  VISA:        4111 1111 1111 1111  12/29  CVV:123       ║
+   ║  Mastercard:  5500 0000 0000 0004  12/29  CVV:456       ║
+   ║  Amex:        3714 496353 98431    12/29  CVV:7890      ║
+   ║  Discover:    6011 1111 1111 1117  12/29  CVV:321       ║
+   ║  Declined:    4000 0000 0000 0002  (test decline)       ║
+   ╚══════════════════════════════════════════════════════════╝
+   
+   On submit: validate card → show "Processing..." spinner →
+   success → show confirmation. If using declined card: show
+   "Payment declined. Please check your card details."
+
+B) BANK WIRE TRANSFER (USA — priority option, 3% discount):
+   Show highlighted: "SAVE 3% — Most Popular for Large Orders"
+   
+   Wire Instructions display (styled like official bank form):
+   ┌─────────────────────────────────────────────────────────┐
+   │  DOMESTIC WIRE TRANSFER INSTRUCTIONS                    │
+   │  ─────────────────────────────────────────────────────  │
+   │  Beneficiary Name:    PureGold Trading LLC              │
+   │  Bank Name:           JPMorgan Chase Bank, N.A.         │
+   │  Bank Address:        270 Park Ave, New York, NY 10017  │
+   │  ABA Routing No.:     021000021                         │
+   │  Account Number:      847293018475                      │
+   │  Reference / Memo:    [ORDER-2025-XXXXX] ← auto-filled  │
+   │  ─────────────────────────────────────────────────────  │
+   │  ⏰ Wire must be received within 3 business days        │
+   │  📞 Questions? Call 1-800-GOLD-NOW                      │
+   └─────────────────────────────────────────────────────────┘
+   [🖨️ Print Wire Instructions] [📋 Copy to Clipboard]
+   
+   Order is held for 3 business days pending wire receipt.
+   Auto-cancel email sent if not received.
+
+C) CHECK/MONEY ORDER:
+   Mail to: PureGold Trading LLC, PO Box 48293, Dallas TX 75201
+   Same 3% discount as wire
+   Hold period: 5-7 business days for check to clear
+
+D) CRYPTOCURRENCY:
+   Logos: [₿ Bitcoin] [Ξ Ethereum] [◎ USDC] [◎ USDT]
+   2% discount applied
+   Show QR code placeholder + wallet address
+   "Price locked for 15 minutes while you complete payment"
+   Powered by CoinPayments (placeholder)
+
+E) PAYPAL (credit card price — no discount):
+   PayPal logo button → redirect placeholder
+   Note: "Standard credit card pricing applies to PayPal"
+
+══════════════════════════════════════════════════════════
+SECTION 12 — USER ACCOUNT (ENHANCED)
+══════════════════════════════════════════════════════════
+
+/account/price-alerts — NEW feature from JMB:
+- "Get notified when gold drops to your target price"
+- Set alerts for: Gold (XAU) | Silver (XAG) | Platinum | any product
+- Alert types: Price below $X | Price above $X | % drop in 24h
+- Delivery: Email | SMS (phone verification)
+- Active alerts list with edit/delete
+- Alert history log
+
+/account/watchlist:
+- Saved products grid with current price
+- "Price changed since you saved" banner (highlight delta)
+- Quick add to cart from watchlist
+- Share watchlist link feature
+
+/account/payment-methods:
+- Saved cards display (last 4 digits + card type logo)
+- Add new card form
+- Set default payment method
+- Saved bank accounts for wire
+
+/account/dashboard — metrics cards:
+- Lifetime purchase value
+- Total weight of gold owned (oz)
+- Total weight of silver owned (oz)
+- Current market value of purchases (calculated at today's spot)
+- Portfolio gain/loss vs purchase price
+
+══════════════════════════════════════════════════════════
+SECTION 13 — MELT VALUE CALCULATOR (WIDGET)
+══════════════════════════════════════════════════════════
+
+Standalone calculator widget — embed on:
+- /silver/junk-silver page
+- /investing-guide sidebar
+- Homepage (collapsible)
+
+CALCULATOR INPUTS:
+- Metal: Gold | Silver | Platinum | Palladium | Copper
+- Purity: .999 | .9999 | .9167 (22k) | .900 | .800 | .585 | custom
+- Weight: input number
+- Unit: troy oz | grams | kilograms | grains | pennyweights
+- Quantity: number of pieces
+
+OUTPUT (real-time, updates on input change):
+- Total weight in troy oz
+- Current spot price used
+- Melt value: $X,XXX.XX
+- "If you sold to us today: $X,XXX.XX" (at 97% of melt)
+
+══════════════════════════════════════════════════════════
+SECTION 14 — GOLD/SILVER RATIO TRACKER
+══════════════════════════════════════════════════════════
+
+/charts/gold-silver-ratio:
+- Current ratio: large number display (e.g., "62.0")
+- Meaning: "It takes 62 oz of silver to buy 1 oz of gold"
+- Historical context: 20-year average, all-time high/low
+- Chart: 5-year ratio chart with "cheap silver" / "cheap gold" zones
+- Interpretation panel:
+  - Ratio > 80: Silver historically undervalued
+  - Ratio < 40: Gold historically undervalued
+  - Current signal: [SILVER LOOKS CHEAP] or [GOLD LOOKS CHEAP]
+- CTA: "Shop Silver Now" / "Shop Gold Now" based on signal
+
+══════════════════════════════════════════════════════════
+SECTION 15 — HOMEPAGE SECTIONS (COMPLETE — JMB ORDER)
+══════════════════════════════════════════════════════════
+
+1. ANNOUNCEMENT BAR (very top, dismissible):
+   "FREE Shipping on Orders $499+ | Call 1-800-GOLD-NOW Mon-Fri 8-6 CST"
+
+2. STICKY HEADER:
+   Row 1: Logo | Search bar | Live prices ticker | Login | Cart count
+   Row 2: Full mega-menu navigation
+
+3. HERO SLIDER (auto-advancing, 6 slides, 4-second interval):
+   - Slide 1: Featured weekly deal product
+   - Slide 2: New arrival spotlight
+   - Slide 3: Silver Eagles promotion
+   - Slide 4: Gold Bars promotion  
+   - Slide 5: Gift/seasonal promotion
+   - Slide 6: Sell to Us CTA
+   Each slide: full-width image, overlay text, CTA button, product price
+
+4. LIVE PRICE CARDS ROW:
+   [Gold $4,735.48 ▲$35.04] [Silver $76.42 ▲$0.58] 
+   [Platinum $2,029.30 ▲$12.35] [Palladium $1,524.44 ▲$30.54]
+   Each card links to its chart page
+
+5. TRUST BAR (icon row):
+   🚚 Free Shipping $499+ | ⭐ 400K+ Reviews | 
+   💰 $14B+ Sold | 🔒 SSL Secured | 🇺🇸 Dallas TX
+
+6. SHOP BY CATEGORY (image grid, 6 tiles):
+   [Gold] [Silver] [Platinum] [Copper] [New Arrivals] [On Sale]
+
+7. FEATURED PRODUCTS — "Best Selling Gold" (8 cards)
+
+8. FEATURED PRODUCTS — "Best Selling Silver" (8 cards)
+
+9. GOVERNMENT MINTS SECTION (horizontal scroll cards):
+   US Mint | Royal Canadian Mint | Perth Mint | Royal Mint UK | 
+   Austrian Mint | South African Mint
+   Each with mint logo, brief description, "Shop [Mint]" link
+
+10. PRIVATE MINTS SECTION:
+    PAMP Suisse | Valcambi | Credit Suisse | Engelhard | Sunshine Mint
+    JM Bullion Brand | SilverTowne | NWT Mint
+
+11. WHY CHOOSE US (4-column value props):
+    🏆 Lowest Prices Guaranteed | 📦 Insured Shipping | 
+    ✅ Authenticity Guaranteed | 🔄 Easy Buyback Program
+
+12. AUTOBUY PROMO BAND:
+    "Buy Precious Metals on Autopilot — Dollar Cost Average Like a Pro"
+    [Start AutoBuy Program →]
+
+13. TESTIMONIALS CAROUSEL:
+    Real-style quotes: "Samuel T — Verified Customer — Great experience..."
+    Star rating, name, state, date, Verified Customer badge
+    Auto-scroll with pause on hover
+
+14. MARKET NEWS (3 blog card previews with thumbnail + date + excerpt)
+
+15. GOLD IRA CTA BAND (dark, full-width):
+    "Protect your retirement. Diversify into physical gold."
+    [Learn About Gold IRA →] [Call an IRA Specialist →]
+
+16. PRICE ALERT SIGNUP:
+    "Never miss the perfect buying opportunity"
+    Email input + [Set Price Alert] button
+    "We'll email you when gold drops to your target price"
+
+17. NEWSLETTER:
+    "Get weekly precious metals insights"
+    Email + [Subscribe] with unsubscribe note
+
+══════════════════════════════════════════════════════════
+SECTION 16 — SEO (COMPLETE KEYWORD MAP)
+══════════════════════════════════════════════════════════
+
+KEYWORD TARGETS BY PAGE:
+
+Homepage: "buy gold online", "buy silver bullion", "gold bullion dealer USA"
+/gold: "buy gold", "gold bullion for sale", "physical gold investment"
+/gold/gold-bars/1-oz-gold-bars: "1 oz gold bar price", "buy 1 oz gold bar"
+/gold/gold-coins/american-gold-eagles: "American Gold Eagle price", "buy gold eagle coins"
+/silver: "buy silver online", "silver bullion for sale"
+/silver/silver-coins/american-silver-eagles: "American Silver Eagle price 2026"
+/silver/junk-silver: "buy junk silver", "constitutional silver bags", "90% silver coins"
+/silver/monster-box: "silver eagle monster box", "buy 500 silver eagles"
+/charts/gold-price: "gold price today", "gold spot price per ounce"
+/charts/silver-prices: "silver price today", "live silver spot price"
+/charts/gold-silver-ratio: "gold silver ratio today", "when to buy silver vs gold"
+/fear-greed-index: "gold fear greed index", "precious metals sentiment"
+/ira: "gold IRA", "buy gold for retirement", "best gold IRA companies 2026"
+/investing-guide: "how to invest in gold", "precious metals investing guide"
+/sell-to-us: "sell gold online", "sell silver coins", "gold buyback program"
+/tax: "gold sales tax by state", "is gold taxed", "bullion tax exemption"
+/autobuy: "automatic gold purchase", "recurring silver buying", "dollar cost average gold"
+/about/shipping: "gold bullion shipping", "free shipping precious metals"
+
+LONG-TAIL BLOG TOPICS (write 5 full posts):
+1. "Gold Price Forecast 2026: What Analysts Are Saying"
+2. "American Silver Eagle vs Canadian Maple Leaf: Which Should You Buy?"
+3. "How to Store Gold and Silver at Home Safely"
+4. "What is Junk Silver and Why Preppers Love It"
+5. "Gold IRA vs 401k: Which is Better for Retirement?"
+
+SCHEMA MARKUP:
+- Organization + LocalBusiness on homepage (Dallas TX address)
+- Product schema on every product page
+- BreadcrumbList on all category/product pages
+- FAQPage on /faq (40 Q&A pairs)
+- Article schema on all blog posts
+- WebSite with SearchAction sitelinks box
+- AggregateRating on homepage and product pages
+
+══════════════════════════════════════════════════════════
+SECTION 17 — TECHNICAL STACK & BUILD INSTRUCTIONS
+══════════════════════════════════════════════════════════
+
+STACK:
+- Framework: Next.js 14 with App Router (SSR for SEO)
+- Styling: Tailwind CSS with custom gold design tokens
+- State: React Context (CartContext, AuthContext, PriceContext)
+- Animations: Framer Motion (page transitions, card reveals, counter)
+- Charts: react-chartjs-2 + Chart.js
+- Icons: Lucide React
+- Forms: React Hook Form + Zod validation
+- Storage: localStorage (cart, auth session, watchlist, price alerts)
+- Images: next/image with lazy loading
+
+DEPENDENCIES TO INSTALL:
+framer-motion, react-chartjs-2, chart.js, lucide-react, 
+react-hook-form, zod, @hookform/resolvers, clsx, 
+tailwind-merge, next-seo, date-fns, react-countup
+
+BUILD ORDER:
+1. tailwind.config.js — gold design tokens
+2. /lib/products.ts — all 40 product objects
+3. /lib/priceApi.ts — metals price fetching + caching
+4. /lib/taxData.ts — all 50 state tax rules
+5. CartContext, AuthContext, PriceContext providers
+6. Layout: Navbar (with mega-menu) + Footer + AnnouncementBar
+7. PriceTicker component (used in navbar and hero)
+8. ProductCard, ProductGrid, FilterSidebar components
+9. All 40+ pages scaffolded with correct generateMetadata()
+10. Homepage with all 17 sections
+11. Product detail page with all tabs and features
+12. Cart with price lock timer
+13. 4-step Checkout with all payment methods
+14. Account pages with all sub-features
+15. /charts/* pages with Chart.js
+16. /ira, /sell-to-us, /autobuy, /tax, /fear-greed-index
+17. All schema markup + robots.txt + sitemap.xml
+18. Final QA: all links working, no 404s, cart persists, 
+    prices refresh, mobile responsive 320px-1920px
+
+OUTPUT: Full website on port 3000. Every feature working. 
+Zero broken links. Mobile responsive. SEO ready.
