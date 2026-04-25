@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/ProductCard";
+import { CoinPlaceholder } from "@/components/CoinPlaceholder";
 
 export default function ProductDetailPage() {
   const [, params] = useRoute("/product/:slug");
@@ -25,6 +26,7 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'wire' | 'crypto' | 'cc'>('wire');
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'shipping'>('desc');
+  const [imgError, setImgError] = useState(false);
 
   const isWatched = product ? hasItem(product.id) : false;
 
@@ -83,11 +85,17 @@ export default function ProductDetailPage() {
       <div className="grid md:grid-cols-2 gap-12 lg:gap-16 mt-6">
         {/* Images */}
         <div className="space-y-4">
-          <div className="aspect-square bg-[#0f0f0f] rounded-lg border border-border overflow-hidden p-8 flex items-center justify-center relative">
-            {product.images[0] ? (
-              <img src={product.images[0]} alt={product.name} className="w-full h-full object-contain mix-blend-screen" />
+          <div className="bg-[#111] rounded-lg border border-border overflow-hidden flex items-center justify-center relative" style={{ height: "420px" }}>
+            {product.images[0] && !imgError ? (
+              <img
+                src={product.images[0]}
+                alt={`${product.name} - Physical Bullion`}
+                className="max-h-[380px] max-w-full object-contain transition-transform duration-500 hover:scale-105"
+                style={{ filter: "drop-shadow(0 8px 32px rgba(201,168,76,0.2))" }}
+                onError={() => setImgError(true)}
+              />
             ) : (
-              <span className="text-muted-foreground">No image available</span>
+              <CoinPlaceholder metal={product.metalType} name={product.name} size={260} />
             )}
             
             {/* Badges */}
@@ -98,10 +106,11 @@ export default function ProductDetailPage() {
           </div>
           
           {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-4">
-              {product.images.slice(1).map((img, i) => (
-                <div key={i} className="aspect-square bg-[#0f0f0f] rounded border border-border cursor-pointer hover:border-primary transition-colors p-2">
-                  <img src={img} alt="" className="w-full h-full object-contain mix-blend-screen" />
+            <div className="grid grid-cols-4 gap-3">
+              {product.images.slice(0, 4).map((img, i) => (
+                <div key={i} className="bg-[#111] rounded border border-border cursor-pointer hover:border-primary transition-colors p-2 flex items-center justify-center" style={{ height: "80px" }}>
+                  <img src={img} alt="" className="max-h-full max-w-full object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>
               ))}
             </div>

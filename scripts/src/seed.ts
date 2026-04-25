@@ -2,14 +2,40 @@ import { db } from "@workspace/db";
 import { productsTable, blogPostsTable } from "@workspace/db";
 import { sql } from "drizzle-orm";
 
-const GOLD_IMG = "https://images.unsplash.com/photo-1610375461246-83df859d849d?w=600&q=80";
-const GOLD_COIN_IMG = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80";
-const SILVER_IMG = "https://images.unsplash.com/photo-1574607383476-f517f260d30b?w=600&q=80";
-const SILVER_COIN_IMG = "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&q=80";
-const PLATINUM_IMG = "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?w=600&q=80";
-const COPPER_IMG = "https://images.unsplash.com/photo-1599707254554-027aeb4deacd?w=600&q=80";
-const GOLD_BAR_IMG = "https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?w=600&q=80";
-const SILVER_BAR_IMG = "https://images.unsplash.com/photo-1637073849667-6b8a8a1bf073?w=600&q=80";
+// Physical bullion product images — actual coin & bar photos
+const GOLD_EAGLE_IMG   = "https://cdn.jmbullion.com/images/detail/usmint/2024-american-gold-eagle-coin-1-oz-bu/main.jpg";
+const GOLD_BUFFALO_IMG = "https://cdn.jmbullion.com/images/detail/usmint/2024-american-gold-buffalo-coin-1-oz-bu/main.jpg";
+const GOLD_MAPLE_IMG   = "https://cdn.jmbullion.com/images/detail/rcm/2024-canadian-gold-maple-leaf-coin-1-oz/main.jpg";
+const GOLD_KRUGER_IMG  = "https://cdn.jmbullion.com/images/detail/sam/south-african-gold-krugerrand-coin-1-oz-bu/main.jpg";
+const GOLD_PHILHAR_IMG = "https://cdn.jmbullion.com/images/detail/amo/2024-1-oz-austrian-gold-philharmonic-coin/main.jpg";
+const GOLD_BRIT_IMG    = "https://cdn.jmbullion.com/images/detail/royal-mint/2024-british-gold-britannia-coin-1-oz/main.jpg";
+const GOLD_KANG_IMG    = "https://cdn.jmbullion.com/images/detail/pamp/2024-1-oz-gold-kangaroo-nugget-coin/main.jpg";
+const GOLD_BAR_PAMP    = "https://cdn.jmbullion.com/images/detail/pamp/1-oz-pamp-suisse-lady-fortuna-gold-bar/main.jpg";
+const GOLD_BAR_CREDIT  = "https://cdn.jmbullion.com/images/detail/credit-suisse/1-oz-credit-suisse-gold-bar/main.jpg";
+const GOLD_BAR_VALC    = "https://cdn.jmbullion.com/images/detail/valcambi/1-oz-valcambi-gold-bar/main.jpg";
+const GOLD_BAR_10      = "https://cdn.jmbullion.com/images/detail/pamp/10-oz-pamp-suisse-gold-bar/main.jpg";
+const SILVER_EAGLE_IMG = "https://cdn.jmbullion.com/images/detail/usmint/american-silver-eagle-bu-varied-year/main.jpg";
+const SILVER_MAPLE_IMG = "https://cdn.jmbullion.com/images/detail/rcm/2024-canadian-silver-maple-leaf-coin-1-oz/main.jpg";
+const SILVER_BRIT_IMG  = "https://cdn.jmbullion.com/images/detail/royal-mint/2024-british-silver-britannia-coin-1-oz/main.jpg";
+const SILVER_PHIL_IMG  = "https://cdn.jmbullion.com/images/detail/amo/2024-1-oz-austrian-silver-philharmonic-coin/main.jpg";
+const SILVER_BAR_10    = "https://cdn.jmbullion.com/images/detail/sunshine/10-oz-sunshine-silver-bar/main.jpg";
+const SILVER_BAR_100   = "https://cdn.jmbullion.com/images/detail/johnson-matthey/100-oz-johnson-matthey-silver-bar/main.jpg";
+const SILVER_ROUND_IMG = "https://cdn.jmbullion.com/images/detail/sunshine/1-oz-sunshine-mint-silver-round/main.jpg";
+const PLAT_EAGLE_IMG   = "https://cdn.jmbullion.com/images/detail/usmint/american-platinum-eagle-coin-1-oz-bu/main.jpg";
+const PLAT_MAPLE_IMG   = "https://cdn.jmbullion.com/images/detail/rcm/2024-canadian-platinum-maple-leaf-coin-1-oz/main.jpg";
+const PLAT_BAR_IMG     = "https://cdn.jmbullion.com/images/detail/pamp/1-oz-pamp-suisse-platinum-bar/main.jpg";
+const PALL_BAR_IMG     = "https://cdn.jmbullion.com/images/detail/pamp/1-oz-pamp-suisse-palladium-bar/main.jpg";
+const COPPER_ROUND_IMG = "https://cdn.jmbullion.com/images/detail/generic/1-oz-copper-walking-liberty-round/main.jpg";
+
+// Fallback aliases kept for compatibility
+const GOLD_COIN_IMG  = GOLD_EAGLE_IMG;
+const GOLD_IMG       = GOLD_BAR_PAMP;
+const SILVER_IMG     = SILVER_BAR_10;
+const SILVER_COIN_IMG = SILVER_EAGLE_IMG;
+const PLATINUM_IMG   = PLAT_EAGLE_IMG;
+const COPPER_IMG     = COPPER_ROUND_IMG;
+const GOLD_BAR_IMG   = GOLD_BAR_PAMP;
+const SILVER_BAR_IMG = SILVER_BAR_10;
 
 const products = [
   // Gold Coins
@@ -66,7 +92,7 @@ const products = [
     isFeatured: true,
     isNew: true,
     isIRAEligible: true,
-    images: [GOLD_COIN_IMG, GOLD_BAR_IMG],
+    images: [GOLD_BUFFALO_IMG, GOLD_EAGLE_IMG],
     category: "Gold Coins",
     shortDescription: "America's first 24-karat gold coin. Pure .9999 fine gold with the classic Buffalo nickel design.",
     description: "The American Gold Buffalo is the United States' first 24-karat gold coin, introduced in 2006. Struck from .9999 fine gold, it bears James Earle Fraser's iconic Buffalo nickel design — one of the most beloved American coin designs ever created. IRA-eligible due to its .9999 purity.",
@@ -96,7 +122,7 @@ const products = [
     isFeatured: true,
     isNew: true,
     isIRAEligible: true,
-    images: [GOLD_COIN_IMG, GOLD_IMG],
+    images: [GOLD_MAPLE_IMG, GOLD_EAGLE_IMG],
     category: "Gold Coins",
     shortDescription: "Canada's iconic .9999 fine gold coin. Radial lines and maple leaf design with anti-counterfeiting laser mark.",
     rating: "4.8",
@@ -123,7 +149,7 @@ const products = [
     stockQty: 28,
     isNew: true,
     isIRAEligible: true,
-    images: [GOLD_COIN_IMG],
+    images: [GOLD_BRIT_IMG, GOLD_MAPLE_IMG],
     category: "Gold Coins",
     shortDescription: "Great Britain's premier gold coin. 24-karat fine gold featuring the timeless Britannia design.",
     rating: "4.8",
@@ -147,7 +173,7 @@ const products = [
     inStock: true,
     stockQty: 55,
     isFeatured: true,
-    images: [GOLD_COIN_IMG, GOLD_IMG],
+    images: [GOLD_KRUGER_IMG, GOLD_EAGLE_IMG],
     category: "Gold Coins",
     shortDescription: "The world's first modern gold bullion coin. Minted since 1967, the Krugerrand is recognized globally.",
     rating: "4.8",
@@ -171,7 +197,7 @@ const products = [
     stockQty: 41,
     isNew: true,
     isIRAEligible: true,
-    images: [GOLD_COIN_IMG],
+    images: [GOLD_KANG_IMG, GOLD_MAPLE_IMG],
     category: "Gold Coins",
     shortDescription: "Australia's iconic Perth Mint gold coin featuring a new kangaroo design each year. .9999 fine gold.",
     rating: "4.9",
@@ -194,7 +220,7 @@ const products = [
     inStock: true,
     stockQty: 33,
     isIRAEligible: true,
-    images: [GOLD_COIN_IMG],
+    images: [GOLD_PHILHAR_IMG, GOLD_MAPLE_IMG],
     category: "Gold Coins",
     shortDescription: "Europe's best-selling gold coin. The Vienna Philharmonic features musical instruments in .9999 fine gold.",
     rating: "4.8",
@@ -288,7 +314,7 @@ const products = [
     stockQty: 85,
     isFeatured: true,
     isIRAEligible: true,
-    images: [GOLD_BAR_IMG, GOLD_IMG],
+    images: [GOLD_BAR_VALC, GOLD_BAR_PAMP],
     category: "Gold Bars",
     shortDescription: "Swiss-made .9999 fine gold bar from Valcambi, one of the world's most respected refineries. Assay card included.",
     rating: "4.9",
@@ -533,7 +559,7 @@ const products = [
     stockQty: 612,
     isNew: true,
     isIRAEligible: true,
-    images: [SILVER_COIN_IMG],
+    images: [SILVER_MAPLE_IMG, SILVER_EAGLE_IMG],
     category: "Silver Coins",
     shortDescription: "Canada's iconic .9999 fine silver coin. The purest silver coin from a major government mint.",
     rating: "4.8",
@@ -555,7 +581,7 @@ const products = [
     price: "91.32",
     inStock: true,
     stockQty: 389,
-    images: [SILVER_COIN_IMG],
+    images: [SILVER_BRIT_IMG, SILVER_MAPLE_IMG],
     category: "Silver Coins",
     shortDescription: "Great Britain's premium silver bullion coin featuring the iconic Britannia. Legal tender backed by the Crown.",
     rating: "4.8",
@@ -835,7 +861,7 @@ const products = [
     inStock: true,
     stockQty: 19,
     isIRAEligible: true,
-    images: [PLATINUM_IMG],
+    images: [PLAT_BAR_IMG, PLAT_EAGLE_IMG],
     category: "Platinum Bars",
     shortDescription: "Swiss-refined .9995 fine platinum bar from PAMP Suisse. Assay card included. IRA eligible.",
     rating: "4.8",
@@ -861,7 +887,7 @@ const products = [
     stockQty: 18,
     isNew: true,
     isIRAEligible: true,
-    images: [PLATINUM_IMG],
+    images: [PALL_BAR_IMG, PLAT_EAGLE_IMG],
     category: "Palladium Coins",
     shortDescription: "The US Mint's palladium coin — one of the rarest and most exclusive American bullion coins ever produced.",
     rating: "4.9",

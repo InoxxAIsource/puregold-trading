@@ -1,0 +1,242 @@
+CRITICAL FIX REQUIRED — This is a physical precious metals 
+e-commerce store, NOT a trading platform. 
+
+PROBLEM: All product cards are showing candlestick/trading charts 
+as product images. This is completely wrong. Remove every single 
+chart, candlestick, or price graph from product cards immediately.
+
+════════════════════════════════════════════════════════
+FIX 1 — REPLACE ALL PRODUCT IMAGES
+════════════════════════════════════════════════════════
+
+This website sells PHYSICAL bullion coins and bars that are 
+shipped to the customer's door. Products look like real coins 
+and metal bars, not financial charts.
+
+Replace every product image with real bullion product photos 
+using these reliable public image sources:
+
+FOR GOLD COINS — use these exact working image URLs:
+
+American Gold Eagle 1oz:
+https://www.usmint.gov/wordpress/wp-content/uploads/2021/07/2021-american-eagle-gold-proof-coin-obverse.jpg
+
+Gold Buffalo 1oz:
+https://www.usmint.gov/wordpress/wp-content/uploads/2020/07/2020-american-buffalo-gold-proof-coin-obverse.jpg
+
+Alternative: Use picsum.photos with gold-themed overlays:
+https://picsum.photos/seed/gold-eagle/400/400
+
+BEST APPROACH — Use placeholder product images styled correctly:
+For each product card, create an <img> element using this pattern:
+
+<img 
+  src="https://via.placeholder.com/400x400/1a1a1a/C9A84C?text=[PRODUCT+NAME]"
+  alt="[Product Full Name] - Physical Bullion Coin"
+/>
+
+OR use the cdn.jmbullion.com real product images via direct URLs:
+
+Gold Eagle 1oz:
+https://cdn.jmbullion.com/images/detail/usmint/2024-american-gold-eagle-coin-1-oz-bu/main.jpg
+
+Silver Eagle 1oz:
+https://cdn.jmbullion.com/images/detail/usmint/american-silver-eagle-bu-varied-year/main.jpg
+
+Gold Maple Leaf:
+https://cdn.jmbullion.com/images/detail/rcm/2024-canadian-gold-maple-leaf-coin-1-oz/main.jpg
+
+Gold Buffalo:
+https://cdn.jmbullion.com/images/detail/usmint/2024-american-gold-buffalo-coin-1-oz-bu/main.jpg
+
+Krugerrand:
+https://cdn.jmbullion.com/images/detail/sam/south-african-gold-krugerrand-coin-1-oz-bu/main.jpg
+
+Gold Bar 1oz:
+https://cdn.jmbullion.com/images/detail/pamp/1-oz-pamp-suisse-lady-fortuna-gold-bar/main.jpg
+
+Silver Bar 10oz:
+https://cdn.jmbullion.com/images/detail/sunshine/10-oz-sunshine-silver-bar/main.jpg
+
+Silver Eagle Tube (MintSealed):
+https://cdn.jmbullion.com/images/detail/usmint/american-silver-eagle-bu-mintseal-tube-25-coins/main.jpg
+
+American Platinum Eagle:
+https://cdn.jmbullion.com/images/detail/usmint/american-platinum-eagle-coin-1-oz-bu/main.jpg
+
+════════════════════════════════════════════════════════
+FIX 2 — REMOVE ALL TRADING LANGUAGE SITEWIDE
+════════════════════════════════════════════════════════
+
+Search every component, page, and file for these words and 
+REMOVE or REPLACE them entirely:
+
+REMOVE these words/phrases:
+❌ "trading" → ✅ "buying" or "purchasing"
+❌ "trade" → ✅ "purchase" or "order"
+❌ "candlestick" → DELETE entirely
+❌ "chart overlay on product" → DELETE entirely
+❌ "price chart" on product cards → DELETE entirely
+❌ "OHLC" → DELETE entirely
+❌ "volume indicator" → DELETE entirely
+❌ "moving average" → DELETE entirely
+❌ "RSI" / "MACD" / "Bollinger" → DELETE entirely
+❌ "trading platform" → ✅ "bullion dealer"
+❌ "execute trade" → ✅ "place order"
+❌ "market order" → ✅ "purchase order"
+❌ "bid/ask spread" → keep only for spot price display
+❌ Any chart.js component rendered INSIDE a product card → DELETE
+
+REPLACE WITH correct physical product language:
+✅ "Buy Physical Gold" 
+✅ "Add to Cart"
+✅ "Ships to your door in insured packaging"
+✅ "Certified authentic bullion"
+✅ "Price includes dealer premium over spot"
+✅ ".9999 Fine Gold | .999 Fine Silver"
+✅ "IRA Eligible" (where applicable)
+
+════════════════════════════════════════════════════════
+FIX 3 — CORRECT PRODUCT CARD LAYOUT
+════════════════════════════════════════════════════════
+
+Each product card must look EXACTLY like this structure:
+
+┌─────────────────────────────────────┐
+│ [NEW] badge    [IRA] badge  ♡ icon  │
+│                                     │
+│   [PRODUCT PHOTO - coin/bar image]  │
+│   White background or dark bg       │
+│   Image: actual coin face/bar photo │
+│   NO charts, NO graphs, NO candles  │
+│                                     │
+│ UNITED STATES MINT          2026    │
+│ 2026 American Gold Eagle 1 oz       │
+│                                     │
+│ $4,967.32   ~~$5,100.00~~           │
+│ +4.9% over spot                     │
+│                                     │
+│ [  🛒 Add to Cart  ]  (gold button) │
+└─────────────────────────────────────┘
+
+Image container CSS:
+.product-image-container {
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.product-image-container img {
+  max-height: 180px;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(201,168,76,0.3));
+}
+
+NO chart component should ever be rendered inside 
+.product-image-container. 
+
+════════════════════════════════════════════════════════
+FIX 4 — HOMEPAGE MESSAGING AUDIT
+════════════════════════════════════════════════════════
+
+Update hero headline and subtext to make clear this is 
+physical delivery:
+
+Hero H1: "Buy Physical Gold & Silver — Shipped to Your Door"
+Subtext: "Certified bullion coins and bars. Lowest premiums 
+over spot. Fully insured shipping on all orders."
+
+Trust bar must say:
+✅ "Shipped in tamper-evident packaging"
+✅ "100% Authenticity Guaranteed"  
+✅ "Fully insured in transit"
+✅ "IRS-approved for Gold IRA"
+✅ "Free shipping on orders $499+"
+
+Product section titles:
+❌ "Featured Gold Trading" → ✅ "Featured Gold — Physical Bullion"
+❌ "Silver Markets" → ✅ "Buy Silver Bullion"
+❌ "Live Trading" → ✅ "Shop By Metal"
+
+════════════════════════════════════════════════════════
+FIX 5 — CHARTS SECTION (KEEP BUT SEPARATE)
+════════════════════════════════════════════════════════
+
+Charts (gold/silver spot price history) are ONLY allowed on:
+- /charts/gold-price page
+- /charts/silver-prices page  
+- The live price ticker in the top navbar bar
+- The /fear-greed-index page
+
+Charts must NEVER appear:
+- Inside product cards
+- On category/shop pages
+- On the homepage product sections
+- On product detail pages (except a small spot price widget)
+
+On product detail pages (/product/[slug]), you may show:
+A small 7-day spot price sparkline (tiny, 80px height) 
+BELOW the price, labeled clearly:
+"Gold Spot Price — Last 7 Days" 
+This is NOT a trading chart, it shows reference price history only.
+
+════════════════════════════════════════════════════════
+FIX 6 — PRODUCT IMAGE FALLBACK SYSTEM
+════════════════════════════════════════════════════════
+
+If external image URLs fail to load, implement this fallback:
+
+const PRODUCT_IMAGE_MAP = {
+  'american-gold-eagle': 'https://cdn.jmbullion.com/...',
+  'gold-buffalo': 'https://cdn.jmbullion.com/...',
+  // etc
+};
+
+// Fallback SVG coin placeholder (renders as styled coin icon):
+const CoinPlaceholder = ({ metal, name }) => (
+  <div style={{
+    width: '180px', height: '180px',
+    borderRadius: '50%',
+    background: metal === 'gold' 
+      ? 'radial-gradient(circle, #F5D97A, #C9A84C, #8B6914)' 
+      : 'radial-gradient(circle, #F0F0F0, #C0C0C0, #808080)',
+    display: 'flex', alignItems: 'center', 
+    justifyContent: 'center',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3)',
+    fontSize: '12px', textAlign: 'center', 
+    color: metal === 'gold' ? '#3d2b00' : '#2a2a2a',
+    fontWeight: 'bold', padding: '20px'
+  }}>
+    {name}
+  </div>
+);
+
+Use CoinPlaceholder as onError fallback on all <img> tags:
+<img src={productImageUrl} 
+     onError={(e) => e.target.style.display='none'} 
+     alt={product.name} />
+
+════════════════════════════════════════════════════════
+SUMMARY OF ALL CHANGES REQUIRED
+════════════════════════════════════════════════════════
+
+1. Delete ALL chart/candlestick components from product cards
+2. Replace with real product coin/bar photos (URLs above)
+3. Add CoinPlaceholder SVG as image error fallback
+4. Remove all trading language from every page
+5. Update hero copy to say "shipped to your door"
+6. Charts ONLY on /charts/* pages and navbar ticker
+7. Product card layout matches the exact structure above
+8. Add "Add to Cart" button on every product card
+9. Ensure NEW badge = gold, IRA badge = blue (as in screenshot)
+10. Keep the ♡ watchlist icon in top-right of each card
+
+After these fixes, the site should look and feel like 
+jmbullion.com — a physical bullion retailer — not a 
+crypto or forex trading dashboard.
