@@ -1,0 +1,999 @@
+Build a full peer-to-peer marketplace integrated into 
+PureGold Trading covering ALL products:
+
+TRADEABLE ASSETS:
+₿ Bitcoin (BTC) — 0.20 to 10 BTC per trade
+🥇 Gold — 1g to 1kg physical or digital gram certificates  
+🥈 Silver — 1oz to 500oz physical or digital
+🪙 Platinum — 1oz to 100oz
+🟤 Copper — 1lb to 100lb rounds/bars
+
+P2P MODEL (like Binance P2P + LocalBitcoins):
+- Verified SELLERS post offers (price + payment methods)
+- BUYERS browse and initiate trades
+- ESCROW holds asset during transaction
+- Buyer pays → Seller confirms → Escrow releases asset
+- Rating system after every trade
+- Dispute resolution system
+- Admin moderates flagged trades
+
+══════════════════════════════════════════════════════════
+SECTION 1 — NAVIGATION & TABS
+══════════════════════════════════════════════════════════
+
+Add "P2P Market" as TOP-LEVEL nav tab with 🔄 icon.
+Position: between "Bitcoin OTC" and "Rare Coins"
+Color accent: gradient orange-to-gold (#F7931A → #C9A84C)
+
+Mega-menu under P2P Market:
+├── 🔄 P2P Marketplace → /p2p
+├── 💰 Buy Assets → /p2p/buy
+├── 📤 Sell Assets → /p2p/sell
+├── 📋 My P2P Orders → /p2p/orders (auth required)
+├── 🏪 Merchant Dashboard → /p2p/merchant (verified only)
+├── 🔐 How Escrow Works → /p2p/escrow
+├── ⭐ Top Merchants → /p2p/merchants
+├── 📊 P2P Price Index → /p2p/prices
+├── ❓ P2P FAQ → /p2p/faq
+└── 🏅 Become a Merchant → /p2p/merchant/apply
+
+Announcement bar update:
+"🔄 NEW: P2P Marketplace — Buy & Sell Gold, Silver, 
+ Bitcoin P2P with Escrow Protection | KYC Required"
+
+══════════════════════════════════════════════════════════
+SECTION 2 — P2P LANDING PAGE (/p2p)
+══════════════════════════════════════════════════════════
+
+HERO SECTION:
+Background: dark black, subtle animated P2P network 
+nodes (CSS canvas — dots connected by gold lines, 
+slowly moving, representing peer connections).
+
+H1: "Buy & Sell Gold, Silver & Bitcoin — 
+     Peer to Peer, Protected by Escrow"
+
+Subtext: "Browse verified merchant offers. Pay your way.
+Assets held in secure escrow — released only when you
+confirm payment received. KYC verified traders only."
+
+TWO PRIMARY CTA BUTTONS:
+[  💰 Buy Assets P2P  ]  [  📤 Post a Sell Offer  ]
+
+LIVE MARKET STATS BAR:
+┌──────────────────────────────────────────────────────────┐
+│ 🟢 Live Market  │  Updated 14 seconds ago               │
+├──────────┬───────────┬──────────────┬───────────────────┤
+│ Asset    │ P2P Price │ 24h Trades   │ Active Offers     │
+├──────────┼───────────┼──────────────┼───────────────────┤
+│ ₿ BTC    │ $94,960   │ 23 trades    │ 8 offers          │
+│ 🥇 Gold  │ $4,812/oz │ 41 trades    │ 14 offers         │
+│ 🥈 Silver│ $77.20/oz │ 67 trades    │ 19 offers         │
+│ 🪙 Plat  │ $2,041/oz │ 9 trades     │ 5 offers          │
+│ 🟤 Copper│ $4.82/lb  │ 12 trades    │ 7 offers          │
+└──────────┴───────────┴──────────────┴───────────────────┘
+All prices fetched live. Refresh every 30 seconds.
+
+ASSET QUICK-SELECT TILES (below stats):
+Large clickable tiles, 5 across:
+┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐
+│  ₿   │ │  🥇  │ │  🥈  │ │  🪙  │ │  🟤  │
+│ BTC  │ │ GOLD │ │SILVER│ │ PLAT │ │COPPER│
+│8 ads │ │14 ads│ │19 ads│ │5 ads │ │7 ads │
+└──────┘ └──────┘ └──────┘ └──────┘ └──────┘
+Click → goes to /p2p/buy?asset=gold etc.
+
+HOW IT WORKS — 5 STEP VISUAL:
+Step 1: 📝 Create & Verify Account (KYC)
+Step 2: 🔍 Browse Seller Offers
+Step 3: 🔐 Escrow Locks the Asset
+Step 4: 💸 You Pay the Seller Directly
+Step 5: ✅ Seller Confirms → Asset Released to You
+
+TRUST PILLARS (4 cards):
+🔐 Escrow Protection — "Assets locked until payment confirmed"
+✅ KYC Verified — "All merchants identity verified"
+⭐ Rating System — "Trade history and reviews public"
+🛡️ Dispute Resolution — "Admin mediation within 24hrs"
+
+══════════════════════════════════════════════════════════
+SECTION 3 — BUY PAGE (/p2p/buy) — MAIN MARKETPLACE
+══════════════════════════════════════════════════════════
+
+This is the core page. Styled like Binance P2P.
+
+FILTER BAR (sticky, top):
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│  Asset: [₿BTC▼] [🥇Gold▼] [🥈Silver▼] [🪙Plat▼] [🟤Cu▼]  │
+│                                                              │
+│  Pay with: [All▼]  Amount: [$______USD]  [Search Offers]   │
+│                                                              │
+│  Payment: ☐BankWire ☐Zelle ☐ACH ☐USDC ☐USDT ☐CashApp     │
+│                                                              │
+│  Filter: [All Merchants▼]  [Min Rating: ⭐4+▼]  [Reset]    │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+
+ASSET TABS (below filter bar):
+[ ALL ] [ ₿ BTC ] [ 🥇 GOLD ] [ 🥈 SILVER ] [ 🪙 PLATINUM ] [ 🟤 COPPER ]
+Clicking tab filters offer list instantly (no page reload).
+
+BUY/SELL TOGGLE:
+[ BUY ] [ SELL ]  ← toggle switches between buy and sell views
+
+OFFER LIST — each row (Binance P2P style):
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  MERCHANT INFO          PRICE & ASSET      LIMITS    PAYMENT  ACTION │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🟢 GoldVault_Pro       🥇 GOLD            Min: $500  🏦 Wire        │
+│  ⭐ 4.92 | 312 trades   $4,812.50 /oz      Max: $50K  💸 Zelle      │
+│  ✅ Verified Merchant   +1.6% over spot    1oz–100oz  📱 Zelle   [Buy]│
+│  🕐 Responds: <5 min    Available: 847oz                             │
+│                                                                      │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🟢 SilverKing_USA      🥈 SILVER          Min: $200  🏦 Wire        │
+│  ⭐ 4.88 | 521 trades   $77.20 /oz         Max: $25K  💳 ACH        │
+│  ✅ Verified Merchant   +2.1% over spot    5oz–500oz              [Buy]│
+│  🕐 Responds: <2 min    Available: 2,400oz                          │
+│                                                                      │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🟢 CryptoWhale_Mike    ₿ BITCOIN          Min: $5K   🏦 Wire        │
+│  ⭐ 4.95 | 178 trades   $94,960 /BTC       Max: $950K ◎ USDC        │
+│  ✅ Verified Merchant   +0.75% over spot   0.20–10BTC ◎ USDT    [Buy]│
+│  🕐 Responds: <10 min   Available: 8.5 BTC                          │
+│                                                                      │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🟡 PlatMerchant_TX     🪙 PLATINUM        Min: $1K   🏦 Wire        │
+│  ⭐ 4.71 | 89 trades    $2,041 /oz         Max: $100K 💸 Zelle      │
+│  ✅ Verified Merchant   +2.8% over spot    1oz–50oz               [Buy]│
+│  🕐 Responds: <30 min   Available: 120oz                            │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+OFFER DATA MODEL (in /lib/p2pOffers.ts):
+const offers = [
+  {
+    id: "offer_001",
+    merchantId: "merchant_001",
+    merchantName: "GoldVault_Pro",
+    merchantAvatar: "GV",
+    merchantRating: 4.92,
+    merchantTrades: 312,
+    merchantResponseTime: "< 5 min",
+    isVerified: true,
+    isOnline: true,
+    asset: "gold",
+    assetLabel: "Gold",
+    assetIcon: "🥇",
+    pricePerUnit: 4812.50,
+    priceUnit: "oz",
+    premiumPct: 1.6,
+    spotPrice: 4735.00,
+    availableQty: 847,
+    availableUnit: "oz",
+    minOrderUSD: 500,
+    maxOrderUSD: 50000,
+    minQty: 1,
+    maxQty: 100,
+    paymentMethods: ["bankwire", "zelle"],
+    tradeTerms: "Payment must be from verified US bank account 
+                 in your legal name. Wire reference required. 
+                 Gold ships insured within 48hrs of clearance.",
+    completionRate: 98.7,
+    avgReleaseTime: "14 minutes",
+    totalVolume: "$2.4M",
+    createdAt: "2025-01-15",
+    isActive: true,
+  },
+  // ... 12 more offers across all assets
+];
+
+ASSET-SPECIFIC OFFER TEMPLATES:
+
+GOLD OFFERS:
+- Price: spot + 1.2% to 3.5% premium
+- Units: troy ounces (oz)
+- Min: 1oz ($4,735) | Max: 100oz ($473,500)
+- Delivery: Physical insured shipping OR digital certificate
+- Settlement: 48–72hrs after payment clears
+
+SILVER OFFERS:
+- Price: spot + 2.0% to 5.0% premium
+- Units: troy ounces (oz)
+- Min: 5oz ($386) | Max: 500oz ($38,600)
+- Delivery: Physical insured OR digital
+- Settlement: 48hrs after payment
+
+BITCOIN OFFERS:
+- Price: spot + 0.5% to 1.5% spread
+- Units: BTC (fractional, 0.20 min)
+- Min: 0.20 BTC | Max: 10 BTC
+- Delivery: On-chain to buyer wallet
+- Settlement: within 24hrs of wire
+
+PLATINUM OFFERS:
+- Price: spot + 2.5% to 4.0%
+- Units: troy ounces
+- Min: 1oz | Max: 50oz
+- Delivery: Physical insured
+- Settlement: 72hrs
+
+COPPER OFFERS:
+- Price: spot per lb + 5%–12%
+- Units: pounds (lb)
+- Min: 10lb | Max: 500lb
+- Delivery: Physical freight
+- Settlement: 5–7 days
+
+══════════════════════════════════════════════════════════
+SECTION 4 — TRADE INITIATION FLOW
+══════════════════════════════════════════════════════════
+
+When buyer clicks [Buy] on any offer:
+
+STEP 1 — AUTH GATE:
+If not logged in → /account/login?redirect=/p2p/buy
+If logged in, no KYC → show KYC required modal
+If KYC approved → proceed to trade modal
+
+STEP 2 — TRADE MODAL (slides in from right, full screen on mobile):
+
+┌─────────────────────────────────────────────────────────┐
+│  ← Back     BUY GOLD FROM GoldVault_Pro                 │
+│             ⭐ 4.92 | ✅ Verified | 🟢 Online           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  PRICE: $4,812.50 per oz  (+1.6% over spot)            │
+│  Spot reference: $4,735.00                              │
+│                                                         │
+│  I want to buy:                                         │
+│  ┌──────────────────┐  ┌──────────────────┐           │
+│  │  [____] oz       │  │  = $[_______] USD │           │
+│  └──────────────────┘  └──────────────────┘           │
+│  ↕ Toggle between oz and USD input                     │
+│                                                         │
+│  Limits: 1 oz ($4,812) — 100 oz ($481,250)            │
+│  Available: 847 oz                                      │
+│                                                         │
+│  Select Payment Method:                                 │
+│  ◉ 🏦 Bank Wire (USA)                                  │
+│  ◉ 💸 Zelle                                            │
+│                                                         │
+│  Your delivery address: (for physical gold)             │
+│  [____________________________________]  ← pre-filled  │
+│  from account profile — editable                        │
+│                                                         │
+│  For Bitcoin: Your wallet address:                      │
+│  [bc1q_________________________________]               │
+│                                                         │
+│  Trade Terms from Merchant:                             │
+│  "Payment must be from verified US bank account..."    │
+│  [Read full terms ▼]                                   │
+│                                                         │
+│  ☐ I have read and agree to the trade terms            │
+│  ☐ I understand escrow will hold the asset             │
+│                                                         │
+│  [  🔐 Start Trade & Lock Escrow  ]  ← gold button    │
+│                                                         │
+│  ⚠️ Once started, merchant has 30 min to confirm       │
+└─────────────────────────────────────────────────────────┘
+
+STEP 3 — ESCROW LOCK CONFIRMATION:
+After clicking "Start Trade":
+- Generate Trade ID: P2P-2026-[random 6 digits]
+- Set trade status: ESCROW_PENDING
+- Show loading: "🔐 Locking escrow... contacting merchant..."
+- After 2 seconds (simulated): show ACTIVE TRADE screen
+
+══════════════════════════════════════════════════════════
+SECTION 5 — ACTIVE TRADE ROOM (/p2p/trade/[tradeId])
+══════════════════════════════════════════════════════════
+
+This is the most important screen. Real-time trade room.
+Full-page layout split into LEFT (trade info) + RIGHT (chat).
+
+LEFT PANEL — TRADE STATUS:
+
+┌─────────────────────────────────────────────────────────┐
+│  TRADE #P2P-2026-847291                                 │
+│  Status: 🔐 ESCROW ACTIVE — Waiting for your payment   │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │  ESCROW COUNTDOWN TIMER                         │   │
+│  │  You must pay within:  27:43  ⏰               │   │
+│  │  [████████████████████░░░░] 30 min window      │   │
+│  │  Timer expires: April 25, 2026 at 3:17 PM EDT  │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+│  TRADE DETAILS:                                         │
+│  Asset:        🥇 Gold — 5 oz                          │
+│  Unit Price:   $4,812.50 per oz                         │
+│  Total:        $24,062.50 USD                           │
+│  Payment:      Bank Wire                                │
+│  Seller:       GoldVault_Pro ⭐4.92                    │
+│  Trade ID:     P2P-2026-847291                          │
+│                                                         │
+│  🔐 ESCROW STATUS:                                      │
+│  ✅ 5 oz Gold locked in escrow                         │
+│  Asset will release ONLY when:                          │
+│  1. You mark payment as sent                            │
+│  2. Seller confirms receipt                             │
+│                                                         │
+│  PAYMENT INSTRUCTIONS:                                  │
+│  ┌───────────────────────────────────────────────┐     │
+│  │  🏦 WIRE TRANSFER TO SELLER                   │     │
+│  │  Account Name: [Seller provides in chat]       │     │
+│  │  Routing #:    [Seller provides in chat]       │     │
+│  │  Account #:    [Seller provides in chat]       │     │
+│  │  Amount:       $24,062.50 USD exactly          │     │
+│  │  Memo/Ref:     P2P-2026-847291                 │     │
+│  │                                                │     │
+│  │  ⚠️ Never pay outside this platform           │     │
+│  │  ⚠️ Only pay exact amount shown               │     │
+│  └───────────────────────────────────────────────┘     │
+│                                                         │
+│  BUYER ACTIONS:                                         │
+│  [  ✅ I've Sent Payment  ]  ← green — primary action  │
+│  [  ❌ Cancel Trade       ]  ← red — only before paying│
+│  [  🚨 Open Dispute       ]  ← gray — if issues arise  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+
+RIGHT PANEL — LIVE TRADE CHAT:
+
+┌─────────────────────────────────────────────────────────┐
+│  💬 TRADE CHAT — P2P-2026-847291                        │
+│  🔒 Encrypted | Messages deleted after trade closes     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  [SYSTEM] Trade started. Escrow locked 5oz Gold.       │
+│           Timer: 30 minutes. Payment required.          │
+│                                                         │
+│  GoldVault_Pro:  Hi! Ready to trade. Here are my       │
+│                  wire details:                          │
+│                  Bank: Chase                            │
+│                  Routing: 021000021                     │
+│                  Account: ****8472                      │
+│                  Name: Gold Vault LLC                   │
+│                  Ref: P2P-2026-847291                  │
+│                  Please send $24,062.50 exactly.        │
+│                                                    4:12PM│
+│                                                         │
+│  You:            Got it, sending wire now.         4:15PM│
+│                                                         │
+│  GoldVault_Pro:  Perfect. Will confirm as soon         │
+│                  as I receive notification.        4:16PM│
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│  [Type a message...                    ] [Send ↵]      │
+│                                                         │
+│  📎 Attach payment proof  |  ⚠️ Report issue           │
+└─────────────────────────────────────────────────────────┘
+
+TRADE STATUS FLOW:
+INITIATED → ESCROW_LOCKED → PAYMENT_SENT → 
+PAYMENT_CONFIRMED → ASSET_RELEASED → COMPLETED
+or: CANCELLED | DISPUTED | DISPUTE_RESOLVED
+
+Each status shows different UI state:
+
+ESCROW_LOCKED (buyer's turn):
+- Timer running
+- Payment instructions visible
+- "I've Sent Payment" button active
+- "Cancel Trade" button active
+
+PAYMENT_SENT (waiting seller):
+- Timer stops
+- Status: "⏳ Waiting for seller to confirm payment"
+- "Open Dispute" button appears
+- Chat still active
+
+PAYMENT_CONFIRMED (releasing):
+- Status: "🔓 Releasing escrow..."
+- For BTC: "₿ BTC being sent to your wallet"
+- For Physical: "📦 Shipment being arranged"
+
+COMPLETED:
+- Show completion screen with rating prompt
+- Download PDF trade receipt
+- "Trade Again with this Merchant" button
+
+══════════════════════════════════════════════════════════
+SECTION 6 — SELLER FLOW (POST A SELL OFFER)
+══════════════════════════════════════════════════════════
+
+/p2p/sell page — for KYC + Merchant verified sellers:
+
+ACCESS: Must be KYC approved + Merchant application approved
+
+SELL OFFER CREATION FORM:
+
+── WHAT ARE YOU SELLING? ──
+Asset selector (large tiles):
+[₿ BTC] [🥇 GOLD] [🥈 SILVER] [🪙 PLATINUM] [🟤 COPPER]
+
+── ASSET DETAILS ──
+For Gold/Silver/Platinum/Copper (physical):
+- Product type (coins/bars/rounds)
+- Specific product name (e.g., "2026 American Gold Eagle")
+- Purity (.9999 Fine Gold)
+- Total quantity available
+- Condition: New Sealed | Uncirculated | Secondary Market
+- Include assay certificate: Yes/No
+- Include original packaging: Yes/No
+- Shipping method: Insured FedEx | USPS Registered | UPS
+
+For Bitcoin:
+- BTC amount available (0.20–10 BTC)
+- Source of BTC (self-mined/purchased — for AML)
+- Delivery wallet type (on-chain only)
+
+── PRICING ──
+Pricing method (radio):
+◉ Spot + Premium % 
+  Spot reference: [auto-fetched, shown]
+  My premium: [+____%]  → Your price: $[calculated]
+  
+◉ Fixed price per unit
+  My price: $[_____] per oz/BTC
+
+Auto-price toggle: "Auto-update my price with spot" YES/NO
+If YES: price updates every 5 minutes with spot
+
+── ORDER LIMITS ──
+Minimum order: $[_____] USD  
+Maximum order: $[_____] USD
+Minimum quantity: [___] oz/BTC
+Maximum quantity: [___] oz/BTC
+
+── PAYMENT METHODS YOU ACCEPT ──
+☐ 🏦 Bank Wire (USA domestic)
+☐ 💸 Zelle
+☐ 🔄 ACH Transfer  
+☐ ◎ USDC (ERC-20)
+☐ ◎ USDT (ERC-20)
+☐ 💚 CashApp
+
+── TRADE TERMS (your rules) ──
+Textarea: Write your trade terms for buyers.
+Template provided:
+"Payment must be sent from a US bank account in 
+your verified legal name. Wire reference must include 
+trade ID. Gold ships within 48hrs of wire clearance 
+via insured FedEx. Tracking provided."
+
+── OFFER DURATION ──
+◉ Always active (until I pause or cancel)
+◉ Active for: [___] days
+
+[  🚀 Post Sell Offer  ] — gold button
+
+POST OFFER → shows live in /p2p/buy marketplace
+Seller can pause/edit/delete from /p2p/merchant dashboard
+
+══════════════════════════════════════════════════════════
+SECTION 7 — MERCHANT DASHBOARD (/p2p/merchant)
+══════════════════════════════════════════════════════════
+
+Available only to Merchant-approved users (extra verification).
+
+DASHBOARD LAYOUT:
+
+TOP METRICS ROW:
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│ Active   │ Total    │ Volume   │ Rating   │ Completion│
+│ Offers   │ Trades   │ (30 days)│          │ Rate     │
+│    3     │   312    │ $847K    │ ⭐4.92   │  98.7%  │
+└──────────┴──────────┴──────────┴──────────┴──────────┘
+
+MY ACTIVE OFFERS TABLE:
+Asset | Price | Available | Orders | Status | Actions
+Gold  | $4,812| 847oz     | 2 open | 🟢 Active | Edit/Pause/Delete
+BTC   | $95,020| 3.5 BTC  | 0 open | 🟢 Active | Edit/Pause/Delete
+Silver| $77.80 | 2,400oz  | 1 open | 🟡 Paused | Edit/Resume/Delete
+
+ACTIVE TRADE QUEUE:
+Trade ID    | Buyer      | Asset   | Amount  | Status      | Action
+P2P-847291  | user_***74 | 5oz Au  | $24,062 | Pmt Sent 🔵 | [Confirm Pmt]
+P2P-847155  | user_***21 | 0.5 BTC | $47,480 | Waiting ⏳  | [View Trade]
+
+"Confirm Payment" button triggers asset release from escrow.
+
+EARNINGS SUMMARY:
+- This week: $24,840 volume | $248 earned (1% platform fee credited)
+- This month: $184,200 volume | $1,842 earned
+- All time: $847,000 volume
+
+MERCHANT PROFILE PREVIEW:
+Shows how your profile looks to buyers.
+Editable: Bio, response time SLA, accepted payments.
+
+══════════════════════════════════════════════════════════
+SECTION 8 — ESCROW SYSTEM LOGIC
+══════════════════════════════════════════════════════════
+
+For PHYSICAL assets (Gold, Silver, Platinum, Copper):
+Escrow is document/commitment based (not actual custody):
+- Seller commits inventory by posting offer
+- On trade start: seller's offer is locked (can't sell to others)
+- Buyer pays seller directly
+- Seller confirms → triggers shipment obligation
+- Platform holds seller rating/standing as collateral
+- Dispute: admin reviews chat + payment proof
+
+For BITCOIN:
+True crypto escrow (simulated):
+- Seller's BTC is "locked" in escrow wallet (show address)
+- Buyer sends fiat payment
+- Seller confirms fiat received
+- Smart contract releases BTC to buyer wallet
+- If dispute: admin has timelock override after 48hrs
+
+ESCROW STATUS COMPONENT:
+const EscrowStatus = ({ trade }) => (
+  <div className="escrow-box">
+    <div className="escrow-icon">🔐</div>
+    <div className="escrow-info">
+      <h4>Escrow Active</h4>
+      <p>{trade.qty} {trade.asset} locked</p>
+      <p>Releases when payment confirmed</p>
+    </div>
+    <div className={`escrow-badge ${trade.status}`}>
+      {trade.status === 'locked' && '🔒 Locked'}
+      {trade.status === 'releasing' && '🔓 Releasing'}
+      {trade.status === 'released' && '✅ Released'}
+    </div>
+  </div>
+);
+
+ESCROW TIMER COMPONENT (30-minute countdown):
+const EscrowTimer = ({ expiresAt }) => {
+  const [remaining, setRemaining] = useState('');
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const diff = new Date(expiresAt) - new Date();
+      if (diff <= 0) {
+        setRemaining('EXPIRED');
+        // auto-cancel trade
+        clearInterval(interval);
+        return;
+      }
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      setRemaining(`${mins}:${secs.toString().padStart(2,'0')}`);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+  
+  return (
+    <div className={`escrow-timer ${remaining === 'EXPIRED' 
+      ? 'expired' : remaining < '05:00' ? 'urgent' : 'normal'}`}>
+      ⏰ {remaining}
+    </div>
+  );
+};
+
+══════════════════════════════════════════════════════════
+SECTION 9 — DISPUTE SYSTEM
+══════════════════════════════════════════════════════════
+
+/p2p/dispute/[tradeId] — triggered from trade room
+
+DISPUTE FORM:
+- Select reason:
+  ◉ Seller is not responding
+  ◉ Seller denied receiving payment
+  ◉ Wrong amount requested
+  ◉ Quality/condition not as described (physical)
+  ◉ BTC not released after confirmed payment
+  ◉ Other
+
+- Payment proof upload (required):
+  Upload screenshot of bank transfer / wire confirmation
+  Accepted: PNG, JPG, PDF — max 10MB
+
+- Additional details: textarea
+
+- Trade chat exported automatically as evidence
+
+[  Submit Dispute  ]
+
+DISPUTE STATUS PAGE:
+┌─────────────────────────────────────────────────────────┐
+│  🚨 DISPUTE #DSP-2026-4729                              │
+│  Trade: P2P-2026-847291 | Filed: April 25, 2026        │
+│                                                         │
+│  Status: 🟡 Under Review                               │
+│                                                         │
+│  Timeline:                                              │
+│  ✅ Dispute filed — April 25 at 3:45 PM                │
+│  🔄 Admin assigned — April 25 at 4:02 PM               │
+│  ⏳ Awaiting seller response (24hr window)              │
+│  ⬜ Admin decision                                      │
+│  ⬜ Resolution executed                                 │
+│                                                         │
+│  Admin note: "We have reviewed payment proof and        │
+│  have contacted the seller for response."               │
+│                                                         │
+│  💬 [Message Admin]                                    │
+└─────────────────────────────────────────────────────────┘
+
+Dispute outcomes:
+- BUYER_WIN: escrow released to buyer / refund issued
+- SELLER_WIN: trade cancelled, escrow returned to seller
+- PARTIAL: negotiated settlement
+- Auto-resolve after 72hrs if seller non-responsive → buyer wins
+
+══════════════════════════════════════════════════════════
+SECTION 10 — RATING & REVIEW SYSTEM
+══════════════════════════════════════════════════════════
+
+After every COMPLETED trade, both parties rate each other.
+
+Rating modal (appears 5 min after completion):
+
+┌─────────────────────────────────────────────────────────┐
+│  ⭐ RATE YOUR TRADE                                     │
+│  Trade #P2P-2026-847291 with GoldVault_Pro             │
+│                                                         │
+│  Overall: ★ ★ ★ ★ ★  (click to select 1-5)            │
+│                                                         │
+│  Speed:        ★ ★ ★ ★ ★                               │
+│  Communication:★ ★ ★ ★ ☆                               │
+│  As described: ★ ★ ★ ★ ★                               │
+│                                                         │
+│  Written review (optional):                             │
+│  [Fast transaction, gold arrived in perfect            ]│
+│  [condition. Highly recommend!                         ]│
+│                                                         │
+│  Would you trade with this merchant again?             │
+│  ◉ Yes  ◉ No                                          │
+│                                                         │
+│  [  Submit Rating  ]  [  Skip  ]                       │
+└─────────────────────────────────────────────────────────┘
+
+Merchant profile (/p2p/merchant/[merchantId]):
+- Avatar (initials) + online status
+- Rating breakdown: 5★/4★/3★/2★/1★ bar chart
+- Total trades | Completion rate | Avg release time
+- Joined date | Verified badge
+- All active offers listed
+- Last 10 public reviews with asset type
+
+══════════════════════════════════════════════════════════
+SECTION 11 — MY P2P ORDERS (/p2p/orders)
+══════════════════════════════════════════════════════════
+
+Tab view: [  As Buyer  ] [  As Seller  ]
+
+AS BUYER table:
+Trade ID | Asset | Qty | Total USD | Merchant | Status | Action
+P2P-847291 | 🥇5oz | $24,062 | GoldVault_Pro | ✅Done | Receipt
+P2P-847155 | ₿0.5  | $47,480 | CryptoWhale | 🔵PmtSent | View
+P2P-846923 | 🥈20oz| $1,544  | SilverKing | ❌Cancelled | -
+
+AS SELLER table (if merchant):
+Trade ID | Asset | Buyer | Amount | Status | Action
+P2P-847388 | 🥇3oz | user_***41 | $14,437 | ⏳Waiting | Confirm Pmt
+
+Status color system:
+🟡 Escrow Locked  — yellow
+🔵 Payment Sent   — blue
+🟠 Confirming     — orange
+🟢 Completed      — green
+🔴 Cancelled      — red
+🚨 Disputed       — red flashing
+
+══════════════════════════════════════════════════════════
+SECTION 12 — P2P PRICE INDEX (/p2p/prices)
+══════════════════════════════════════════════════════════
+
+Live comparison page showing:
+- Spot price vs P2P market price for all assets
+- Average P2P premium across all active offers
+- Price range: lowest offer to highest offer
+- 24hr volume by asset
+- Most competitive offers highlighted
+
+Table:
+Asset | Spot | Avg P2P | Premium | Lowest Offer | 24hr Vol
+Gold  |$4,735| $4,812  | +1.6%   | +1.1%        | $892K
+Silver|$76.42| $77.80  | +1.8%   | +1.3%        | $234K
+BTC   |$94,250|$94,960 | +0.75%  | +0.50%       | $1.2M
+Plat  |$2,029|$2,088   | +2.9%   | +2.2%        | $89K
+Copper|$4.58 |$4.96    | +8.3%   | +5.8%        | $12K
+
+══════════════════════════════════════════════════════════
+SECTION 13 — MERCHANT APPLICATION (/p2p/merchant/apply)
+══════════════════════════════════════════════════════════
+
+Additional verification beyond standard KYC:
+
+MERCHANT REQUIREMENTS:
+- Standard KYC must be approved first
+- Business or individual seller
+- Minimum trade history: 0 (new merchants allowed)
+- Must agree to Merchant Agreement
+
+MERCHANT APPLICATION FORM:
+
+Seller type:
+◉ Individual (personal assets)
+◉ Business / Dealer
+
+If Business:
+- Business name
+- Business type (LLC/Corp/Sole Prop)
+- EIN (Tax ID)
+- State of incorporation
+- Business license upload
+
+Assets you plan to sell (checkboxes):
+☐ Gold ☐ Silver ☐ Platinum ☐ Copper ☐ Bitcoin
+
+Source of assets (for AML):
+◉ Authorized dealer/wholesaler
+◉ Mint direct
+◉ Personal collection
+◉ Exchange/purchase
+◉ Mining (for BTC)
+
+Expected monthly volume:
+◉ Under $50,000
+◉ $50,001 – $250,000
+◉ $250,001 – $1,000,000
+◉ Over $1,000,000
+
+Bank account for receiving payments:
+- Bank name
+- Account type (Checking/Savings)
+- Confirm it matches KYC name
+
+Merchant Agreement checkboxes:
+☐ I agree to 1% platform fee on completed trades
+☐ I agree to release assets within agreed timeframes
+☐ I agree to maintain 95%+ completion rate
+☐ I accept dispute resolution decisions as final
+☐ I agree to Merchant Terms of Service
+
+[ Submit Merchant Application ]
+
+Approval: simulated 60 seconds for demo
+Real: admin review 1-3 business days
+
+══════════════════════════════════════════════════════════
+SECTION 14 — LIVE CHAT SYSTEM (TRADE ROOM)
+══════════════════════════════════════════════════════════
+
+Simulated real-time chat using localStorage + 
+polling setInterval (no backend WebSocket needed):
+
+const TradeChat = ({ tradeId, currentUser }) => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+
+  // Load messages from localStorage
+  const loadMessages = () => {
+    const stored = JSON.parse(
+      localStorage.getItem(`chat_${tradeId}`) || '[]'
+    );
+    setMessages(stored);
+  };
+
+  // Poll every 3 seconds for new messages
+  useEffect(() => {
+    loadMessages();
+    const poll = setInterval(loadMessages, 3000);
+    return () => clearInterval(poll);
+  }, [tradeId]);
+
+  const sendMessage = () => {
+    if (!input.trim()) return;
+    const newMsg = {
+      id: Date.now(),
+      sender: currentUser.name,
+      senderId: currentUser.id,
+      text: input.trim(),
+      timestamp: new Date().toISOString(),
+      type: 'user'
+    };
+    const stored = JSON.parse(
+      localStorage.getItem(`chat_${tradeId}`) || '[]'
+    );
+    stored.push(newMsg);
+    localStorage.setItem(`chat_${tradeId}`, 
+      JSON.stringify(stored));
+    setMessages(stored);
+    setInput('');
+    
+    // Simulate merchant reply after 8-15 seconds
+    if (currentUser.role === 'buyer') {
+      simulateMerchantReply(tradeId, stored);
+    }
+  };
+
+  // Auto system messages:
+  const systemMessages = {
+    TRADE_STARTED: "🔐 Trade started. Escrow locked. 
+                    30-minute payment window begins now.",
+    PAYMENT_SENT: "✅ Buyer marked payment as sent. 
+                   Seller please confirm receipt.",
+    PAYMENT_CONFIRMED: "🔓 Payment confirmed. 
+                        Releasing escrow...",
+    TRADE_COMPLETE: "✅ Trade completed successfully. 
+                     Please rate your experience.",
+    TRADE_CANCELLED: "❌ Trade cancelled. 
+                      Escrow returned.",
+    DISPUTE_OPENED: "🚨 Dispute opened. 
+                     Admin has been notified.",
+  };
+};
+
+PRE-LOADED MERCHANT AUTO-REPLIES (randomized):
+[
+  "Thanks for starting the trade! Here are my payment details...",
+  "I can see the escrow is locked. Ready when you are.",
+  "Please include the trade ID in your wire reference.",
+  "Payment received! Confirming now...",
+  "Great doing business with you!",
+]
+
+QUICK REPLY BUTTONS for buyer:
+[Payment sent ✅] [Can you confirm?] [Need help 🆘]
+
+══════════════════════════════════════════════════════════
+SECTION 15 — FULL DATA MODELS & STATE
+══════════════════════════════════════════════════════════
+
+// /lib/p2pTypes.ts
+
+type Asset = 'btc' | 'gold' | 'silver' | 'platinum' | 'copper';
+type PaymentMethod = 'bankwire' | 'zelle' | 'ach' | 
+                     'usdc' | 'usdt' | 'cashapp';
+type TradeStatus = 
+  'initiated' | 'escrow_locked' | 'payment_sent' |
+  'payment_confirmed' | 'releasing' | 'completed' | 
+  'cancelled' | 'disputed' | 'dispute_resolved';
+type MerchantStatus = 'pending' | 'approved' | 'suspended';
+type KYCStatus = 'not_started' | 'pending' | 
+                 'approved' | 'rejected';
+
+interface P2POffer {
+  id: string;
+  merchantId: string;
+  merchantName: string;
+  asset: Asset;
+  pricePerUnit: number;
+  premiumPct: number;
+  availableQty: number;
+  minOrderUSD: number;
+  maxOrderUSD: number;
+  paymentMethods: PaymentMethod[];
+  tradeTerms: string;
+  isActive: boolean;
+  autoPrice: boolean;
+  createdAt: string;
+}
+
+interface P2PTrade {
+  id: string;
+  offerId: string;
+  buyerId: string;
+  sellerId: string;
+  asset: Asset;
+  qty: number;
+  pricePerUnit: number;
+  totalUSD: number;
+  paymentMethod: PaymentMethod;
+  deliveryAddress?: string;
+  walletAddress?: string;
+  status: TradeStatus;
+  escrowExpiresAt: string;
+  chatMessages: ChatMessage[];
+  paymentProofUrl?: string;
+  txHash?: string;
+  rating?: Rating;
+  createdAt: string;
+  completedAt?: string;
+}
+
+interface Merchant {
+  id: string;
+  userId: string;
+  displayName: string;
+  rating: number;
+  totalTrades: number;
+  completionRate: number;
+  avgReleaseTime: string;
+  responseTime: string;
+  isOnline: boolean;
+  status: MerchantStatus;
+  joinedAt: string;
+  assets: Asset[];
+  paymentMethods: PaymentMethod[];
+  bio: string;
+  totalVolume: number;
+}
+
+// localStorage keys:
+// p2p_offers — all offers
+// p2p_trades — all trades
+// p2p_merchants — merchant profiles
+// chat_{tradeId} — trade chat messages
+// my_p2p_orders — current user's trades
+// merchant_profile — current user's merchant data
+
+══════════════════════════════════════════════════════════
+SECTION 16 — NEW FILES TO CREATE
+══════════════════════════════════════════════════════════
+
+/app/p2p/page.tsx — Landing
+/app/p2p/buy/page.tsx — Offer marketplace
+/app/p2p/sell/page.tsx — Post offer form
+/app/p2p/trade/[tradeId]/page.tsx — Active trade room
+/app/p2p/orders/page.tsx — My orders
+/app/p2p/merchant/page.tsx — Merchant dashboard
+/app/p2p/merchant/apply/page.tsx — Merchant application
+/app/p2p/merchants/page.tsx — Top merchants directory
+/app/p2p/prices/page.tsx — P2P price index
+/app/p2p/escrow/page.tsx — How escrow works
+/app/p2p/faq/page.tsx — P2P FAQ
+/app/p2p/dispute/[tradeId]/page.tsx — Dispute form
+
+/components/p2p/OfferCard.tsx
+/components/p2p/OfferList.tsx
+/components/p2p/FilterBar.tsx
+/components/p2p/AssetTabs.tsx
+/components/p2p/TradeModal.tsx
+/components/p2p/TradeRoom.tsx
+/components/p2p/EscrowTimer.tsx
+/components/p2p/EscrowStatus.tsx
+/components/p2p/TradeChat.tsx
+/components/p2p/MerchantCard.tsx
+/components/p2p/RatingModal.tsx
+/components/p2p/DisputeForm.tsx
+/components/p2p/SellOfferForm.tsx
+/components/p2p/MerchantDashboard.tsx
+
+/lib/p2pOffers.ts — seed offer data
+/lib/p2pTrades.ts — trade CRUD
+/lib/p2pMerchants.ts — merchant data
+/lib/p2pPrices.ts — live price fetching all assets
+/lib/p2pTypes.ts — TypeScript interfaces
+/lib/p2pContext.tsx — global P2P state
+
+══════════════════════════════════════════════════════════
+SECTION 17 — BUILD ORDER FOR REPLIT AGENT
+══════════════════════════════════════════════════════════
+
+Build in this exact order:
+
+1. /lib/p2pTypes.ts — all interfaces
+2. /lib/p2pOffers.ts — 15 seed offers across all assets
+3. /lib/p2pMerchants.ts — 8 seed merchant profiles
+4. /lib/p2pPrices.ts — price fetching (all 5 assets)
+5. /lib/p2pContext.tsx — global state provider
+6. FilterBar + AssetTabs + OfferCard components
+7. /p2p/buy — marketplace with working filters
+8. TradeModal — trade initiation with all asset types
+9. EscrowTimer + EscrowStatus components
+10. TradeChat — localStorage polling chat
+11. /p2p/trade/[id] — full trade room layout
+12. SellOfferForm — post offer page
+13. MerchantDashboard — seller view
+14. /p2p/orders — buyer + seller order history
+15. RatingModal — post-trade review
+16. DisputeForm + dispute status page
+17. /p2p landing page with stats + how it works
+18. Merchant application form
+19. P2P nav tab + mega-menu
+20. End-to-end flow test:
+    Register → KYC → Browse → Buy → Trade Room
+    → Payment → Complete → Rate
