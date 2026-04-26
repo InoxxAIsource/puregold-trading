@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trash2, ShieldCheck, ArrowRight } from "lucide-react";
+import { Trash2, ShieldCheck, ArrowRight, Lock } from "lucide-react";
 import { useCartContext } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useKYC } from "@/lib/kycContext";
 import { Button } from "@/components/ui/button";
 import { PriceLockTimer } from "@/components/PriceLockTimer";
 import { CoinPlaceholder } from "@/components/CoinPlaceholder";
@@ -10,21 +12,60 @@ function CartItemImage({ src, name, metal }: { src?: string; name: string; metal
   const [err, setErr] = useState(false);
   if (!src || err) return <CoinPlaceholder metal={metal || "gold"} name={name} size={68} />;
   return (
-    <img
-      src={src}
-      alt={name}
-      className="max-w-full max-h-full object-contain"
-      onError={() => setErr(true)}
-    />
+    <img src={src} alt={name} className="max-w-full max-h-full object-contain" onError={() => setErr(true)} />
+  );
+}
+
+function KYCGatePanel({ kycStatus }: { kycStatus: string }) {
+  return (
+    <div className="bg-amber-500/5 border border-amber-500/30 rounded-xl p-6 space-y-4">
+      <div className="flex items-center gap-2 mb-1">
+        <Lock className="h-5 w-5 text-amber-400" />
+        <h3 className="font-bold text-foreground">Identity Verification Required</h3>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        US regulations require identity verification before purchasing precious metals. This is a one-time process.
+      </p>
+
+      <div className="grid grid-cols-1 gap-3">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <span className="text-xl">🪪</span>
+          <span><strong className="text-foreground">Government-issued ID card</strong> — driver's license or passport</span>
+        </div>
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <span className="text-xl">📋</span>
+          <span><strong className="text-foreground">Utility bill or bank statement</strong> — dated within 90 days</span>
+        </div>
+      </div>
+
+      {kycStatus === "pending_review" ? (
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-center">
+          <p className="text-blue-400 font-semibold text-sm">🕐 KYC Under Review</p>
+          <p className="text-xs text-muted-foreground mt-1">Approval takes 1–2 business days. You'll receive an email confirmation.</p>
+        </div>
+      ) : (
+        <Link
+          href="/account/kyc"
+          className="flex items-center justify-center gap-2 w-full bg-amber-500 text-black py-3 rounded-lg font-bold hover:bg-amber-400 transition-colors text-sm"
+        >
+          <ShieldCheck className="h-4 w-4" />
+          Verify Identity to Purchase
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      )}
+      <p className="text-xs text-muted-foreground text-center">⏱ Takes ~5 minutes · One-time only · Unlocks all purchases</p>
+    </div>
   );
 }
 
 export default function CartPage() {
   const { items, removeItem, updateQty, subtotal, totalItems } = useCartContext();
+  const { user } = useAuth();
+  const { isApproved, kycStatus } = useKYC();
   const [, setLocation] = useLocation();
 
   const shipping = subtotal > 499 ? 0 : 9.95;
-  const insurance = subtotal * 0.005; // 0.5% insurance
+  const insurance = subtotal * 0.005;
   const total = subtotal + shipping + insurance;
 
   if (items.length === 0) {
@@ -49,15 +90,13 @@ export default function CartPage() {
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-card border border-border rounded-lg overflow-hidden">
-            {/* Header */}
             <div className="grid grid-cols-12 gap-4 p-4 border-b border-border text-sm font-semibold text-muted-foreground uppercase tracking-wider hidden md:grid">
               <div className="col-span-6">Product</div>
               <div className="col-span-2 text-center">Price</div>
               <div className="col-span-2 text-center">Qty</div>
               <div className="col-span-2 text-right">Total</div>
             </div>
-            
-            {/* Items */}
+
             <div className="divide-y divide-border">
               {items.map(item => (
                 <div key={item.productId} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center">
@@ -69,20 +108,15 @@ export default function CartPage() {
                       <Link href={`/product/${item.slug || item.productId}`} className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-2">
                         {item.name}
                       </Link>
-                      <button 
-                        onClick={() => removeItem(item.productId)}
-                        className="text-xs text-destructive hover:underline mt-2 flex items-center gap-1"
-                      >
+                      <button onClick={() => removeItem(item.productId)} className="text-xs text-destructive hover:underline mt-2 flex items-center gap-1">
                         <Trash2 className="h-3 w-3" /> Remove
                       </button>
                     </div>
                   </div>
-                  
                   <div className="col-span-1 md:col-span-2 text-left md:text-center font-mono text-sm">
                     <span className="md:hidden text-muted-foreground mr-2">Price:</span>
-                    ${item.price.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                    ${item.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </div>
-                  
                   <div className="col-span-1 md:col-span-2 flex justify-start md:justify-center">
                     <div className="flex items-center border border-border rounded bg-background h-8">
                       <button className="px-2 text-muted-foreground hover:text-foreground" onClick={() => updateQty(item.productId, Math.max(1, item.quantity - 1))}>-</button>
@@ -90,16 +124,15 @@ export default function CartPage() {
                       <button className="px-2 text-muted-foreground hover:text-foreground" onClick={() => updateQty(item.productId, item.quantity + 1)}>+</button>
                     </div>
                   </div>
-                  
                   <div className="col-span-1 md:col-span-2 text-left md:text-right font-mono font-bold text-primary">
                     <span className="md:hidden text-muted-foreground mr-2">Total:</span>
-                    ${(item.price * item.quantity).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                    ${(item.price * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          
+
           <div className="flex items-start gap-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
             <ShieldCheck className="h-6 w-6 text-primary shrink-0" />
             <p className="text-sm text-muted-foreground">
@@ -108,15 +141,15 @@ export default function CartPage() {
             </p>
           </div>
         </div>
-        
-        <div className="lg:col-span-1">
+
+        <div className="lg:col-span-1 space-y-4">
           <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
             <h2 className="text-xl font-serif font-bold text-foreground mb-6 pb-4 border-b border-border">Order Summary</h2>
-            
+
             <div className="space-y-4 mb-6 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Items ({totalItems}):</span>
-                <span className="font-mono">${subtotal.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                <span className="font-mono">${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Shipping:</span>
@@ -126,33 +159,44 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Insurance (0.5%):</span>
-                <span className="font-mono">${insurance.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                <span className="font-mono">${insurance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
-              
               <div className="pt-4 mt-4 border-t border-border flex justify-between items-center">
                 <span className="text-lg font-bold text-foreground">Total:</span>
-                <span className="text-2xl font-mono font-bold text-primary">${total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                <span className="text-2xl font-mono font-bold text-primary">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
-            
-            <Button 
-              className="w-full h-14 text-lg font-bold uppercase tracking-wider" 
-              onClick={() => setLocation('/checkout')}
-              data-testid="btn-checkout"
-            >
-              Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            
-            <div className="mt-6 text-center text-xs text-muted-foreground space-y-2">
-              <p>By proceeding, you agree to our Terms of Sale and Market Loss Policy.</p>
-              <div className="flex justify-center gap-2 pt-2">
-                <span className="opacity-50">VISA</span>
-                <span className="opacity-50">MC</span>
-                <span className="opacity-50">AMEX</span>
-                <span className="opacity-50">WIRE</span>
-                <span className="opacity-50">CRYPTO</span>
+
+            {!user ? (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground text-center">Sign in to proceed to checkout</p>
+                <Button className="w-full h-14 text-lg font-bold uppercase tracking-wider" asChild>
+                  <Link href="/account/login?redirect=/cart">Sign In to Checkout <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                </Button>
               </div>
-            </div>
+            ) : !isApproved ? (
+              <KYCGatePanel kycStatus={kycStatus} />
+            ) : (
+              <>
+                <Button
+                  className="w-full h-14 text-lg font-bold uppercase tracking-wider"
+                  onClick={() => setLocation("/checkout")}
+                  data-testid="btn-checkout"
+                >
+                  Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <div className="mt-6 text-center text-xs text-muted-foreground space-y-2">
+                  <p>By proceeding, you agree to our Terms of Sale and Market Loss Policy.</p>
+                  <div className="flex justify-center gap-2 pt-2">
+                    <span className="opacity-50">VISA</span>
+                    <span className="opacity-50">MC</span>
+                    <span className="opacity-50">AMEX</span>
+                    <span className="opacity-50">WIRE</span>
+                    <span className="opacity-50">CRYPTO</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

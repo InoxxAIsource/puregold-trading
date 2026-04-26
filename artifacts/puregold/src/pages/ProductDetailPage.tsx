@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useRoute } from "wouter";
-import { Heart, ShoppingCart, ShieldCheck, Truck, Clock } from "lucide-react";
+import { useRoute, Link } from "wouter";
+import { Heart, ShoppingCart, ShieldCheck, Truck, Clock, Lock } from "lucide-react";
 import { useGetProduct, useGetRelatedProducts } from "@workspace/api-client-react";
 import { useCartContext } from "@/contexts/CartContext";
 import { useWatchlist } from "@/contexts/WatchlistContext";
+import { useKYC } from "@/lib/kycContext";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PriceDisplay } from "@/components/PriceDisplay";
 import { PriceLockTimer } from "@/components/PriceLockTimer";
@@ -22,6 +23,7 @@ export default function ProductDetailPage() {
   
   const { addItem } = useCartContext();
   const { hasItem, addItem: addToWatchlist, removeItem: removeFromWatchlist } = useWatchlist();
+  const { isApproved, kycStatus } = useKYC();
   
   const [qty, setQty] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'wire' | 'crypto' | 'cc'>('wire');
@@ -203,16 +205,27 @@ export default function ProductDetailPage() {
               <button className="px-4 py-3 text-muted-foreground hover:text-foreground transition-colors" onClick={() => setQty(qty + 1)}>+</button>
             </div>
             
-            <Button 
-              size="lg" 
-              className="flex-1 h-auto text-lg font-bold tracking-wider uppercase rounded-md" 
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-              data-testid="btn-add-to-cart"
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
-            </Button>
+            {!isApproved ? (
+              <Link
+                href="/account/kyc"
+                className="flex-1 flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/40 text-amber-400 text-sm font-bold py-3 px-4 rounded-md hover:bg-amber-500/20 transition-colors"
+                data-testid="btn-add-to-cart-kyc-gate"
+              >
+                <Lock className="h-4 w-4" />
+                {kycStatus === "pending_review" ? "KYC Under Review" : "Verify Identity to Buy"}
+              </Link>
+            ) : (
+              <Button
+                size="lg"
+                className="flex-1 h-auto text-lg font-bold tracking-wider uppercase rounded-md"
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+                data-testid="btn-add-to-cart"
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                {product.inStock ? "Add to Cart" : "Out of Stock"}
+              </Button>
+            )}
             
             <Button 
               size="icon" 

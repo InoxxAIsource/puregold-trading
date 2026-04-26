@@ -165,7 +165,7 @@ function StepPersonal({ data, onChange, onNext }: {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Purpose of Bitcoin Purchase *</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Purpose of Purchase *</label>
           <select value={data.purpose} onChange={set("purpose")}
             className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
             <option value="">Select...</option>
@@ -175,7 +175,7 @@ function StepPersonal({ data, onChange, onNext }: {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-foreground mb-1">Expected Annual BTC Purchase Volume *</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Expected Annual Purchase Volume *</label>
         <select value={data.volume} onChange={set("volume")}
           className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
           <option value="">Select...</option>
@@ -434,10 +434,15 @@ function SubmittedState({ appId }: { appId: string }) {
       <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-8 text-center">
         <div className="text-5xl mb-4">✅</div>
         <h2 className="text-2xl font-bold text-green-400 mb-2">KYC Approved!</h2>
-        <p className="text-muted-foreground mb-6">Your identity has been verified. You can now purchase Bitcoin OTC.</p>
-        <Link href="/bitcoin-otc/apply" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">
-          ₿ Apply to Buy Bitcoin →
-        </Link>
+        <p className="text-muted-foreground mb-6">Your identity has been verified. You can now purchase Gold, Silver, Platinum, Copper, and Bitcoin OTC.</p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Link href="/" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">
+            🥇 Shop Metals →
+          </Link>
+          <Link href="/bitcoin-otc/apply" className="inline-flex items-center gap-2 border border-primary text-primary px-6 py-3 rounded-lg font-bold hover:bg-primary/10 transition-colors">
+            ₿ Buy Bitcoin OTC →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -462,7 +467,7 @@ function SubmittedState({ appId }: { appId: string }) {
           { done: false, label: "Compliance review (1-2 business days)" },
           { done: false, label: "Identity verification" },
           { done: false, label: "Approval email sent" },
-          { done: false, label: "Bitcoin OTC unlocked" },
+          { done: false, label: "All purchases unlocked (metals + Bitcoin OTC)" },
         ].map((item, i) => (
           <div key={i} className="flex items-center gap-3 text-sm">
             <div className={`h-5 w-5 rounded-full flex items-center justify-center ${item.done ? "bg-green-500" : "bg-secondary border border-border"}`}>
