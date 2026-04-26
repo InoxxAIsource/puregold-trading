@@ -38,7 +38,7 @@ interface PersonalInfo {
   usCitizen: string; pep: string;
 }
 interface IdentityInfo {
-  docType: string; frontFile: string | null; backFile: string | null; selfieFile: string | null;
+  docType: string; frontFile: string | null; backFile: string | null;
 }
 interface AddressInfo {
   docType: string; addressFile: string | null;
@@ -222,12 +222,12 @@ function StepPersonal({ data, onChange, onNext }: {
 function StepIdentity({ data, onChange, onNext, onBack }: {
   data: IdentityInfo; onChange: (d: IdentityInfo) => void; onNext: () => void; onBack: () => void;
 }) {
-  const isValid = data.docType && data.frontFile && data.selfieFile;
+  const isValid = data.docType && data.frontFile;
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-1">Identity Document</h2>
-        <p className="text-sm text-muted-foreground">Upload clear photos of your government-issued ID.</p>
+        <h2 className="text-xl font-semibold text-foreground mb-1">National ID Card</h2>
+        <p className="text-sm text-muted-foreground">Upload clear photos of your government-issued ID. No selfie required.</p>
       </div>
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">Document Type *</label>
@@ -243,16 +243,13 @@ function StepIdentity({ data, onChange, onNext, onBack }: {
           ))}
         </div>
       </div>
-      <FileUpload label="Front of Document *" icon="📄"
+      <FileUpload label="Front of ID Card *" icon="🪪"
         onChange={(_, preview) => onChange({ ...data, frontFile: preview })} />
-      <FileUpload label="Back of Document (if applicable)" icon="📄"
+      <FileUpload label="Back of ID Card (if applicable)" icon="🪪"
         onChange={(_, preview) => onChange({ ...data, backFile: preview })} />
-      <FileUpload label="Selfie with Document *" icon="🤳"
-        hint="Hold your ID next to your face — JPG, PNG — Max 10MB"
-        onChange={(_, preview) => onChange({ ...data, selfieFile: preview })} />
       <div className="bg-secondary/30 rounded-lg p-4 text-sm space-y-1">
-        <p className="font-medium text-foreground mb-2">Requirements checklist:</p>
-        {["Document is clearly readable","All four corners visible","No flash glare or blur","Not expired","Selfie shows face + document clearly"].map(r => (
+        <p className="font-medium text-foreground mb-2">ID requirements:</p>
+        {["Document is clearly readable","All four corners visible","No flash glare or blur","Must not be expired","Name must match your application"].map(r => (
           <p key={r} className="text-muted-foreground flex items-center gap-2">
             <Check className="h-3.5 w-3.5 text-green-400 shrink-0" /> {r}
           </p>
@@ -343,9 +340,9 @@ function StepAddress({ data, onChange, onNext, onBack }: {
   );
 }
 
-function StepReview({ personal, identity, address, onBack, onSubmit }: {
+function StepReview({ personal, identity, address, onBack, onSubmit, submitting, submitError }: {
   personal: PersonalInfo; identity: IdentityInfo; address: AddressInfo;
-  onBack: () => void; onSubmit: () => void;
+  onBack: () => void; onSubmit: () => void; submitting?: boolean; submitError?: string | null;
 }) {
   const [checks, setChecks] = useState<boolean[]>([false,false,false,false,false]);
   const allChecked = checks.every(Boolean);
@@ -374,7 +371,11 @@ function StepReview({ personal, identity, address, onBack, onSubmit }: {
           ["Source of Funds", personal.sourceOfFunds], ["Purpose", personal.purpose],
           ["Volume", personal.volume],
         ]},
-        { title: "Identity Document", rows: [["Document Type", identity.docType]] },
+        { title: "National ID Card", rows: [
+          ["Document Type", identity.docType],
+          ["Front of ID", identity.frontFile ? "✅ Uploaded" : "—"],
+          ["Back of ID", identity.backFile ? "✅ Uploaded" : "Not provided"],
+        ]},
         { title: "Proof of Address", rows: [
           ["Document Type", address.docType],
           ["Address", `${address.street}, ${address.city}, ${address.state} ${address.zip}, ${address.country}`],
@@ -402,13 +403,18 @@ function StepReview({ personal, identity, address, onBack, onSubmit }: {
         ))}
       </div>
 
+      {submitError && (
+        <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 text-sm text-destructive">
+          ⚠️ {submitError}
+        </div>
+      )}
       <div className="flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
+        <button onClick={onBack} disabled={submitting} className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
-        <button onClick={onSubmit} disabled={!allChecked}
+        <button onClick={onSubmit} disabled={!allChecked || submitting}
           className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-bold disabled:opacity-50 hover:bg-primary/90 transition-colors">
-          Submit KYC Application
+          {submitting ? "Submitting..." : "Submit KYC Application"}
         </button>
       </div>
     </div>
@@ -416,57 +422,26 @@ function StepReview({ personal, identity, address, onBack, onSubmit }: {
 }
 
 function SubmittedState({ appId }: { appId: string }) {
-  const [status, setStatus] = useState<"pending" | "approved">("pending");
-  const { setKYCStatus } = useKYC();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setKYCStatus(KYC_STATUS.APPROVED);
-      localStorage.setItem("kyc_status", "approved");
-      window.dispatchEvent(new Event("kycUpdated"));
-      setStatus("approved");
-    }, 30000);
-    return () => clearTimeout(timer);
-  }, [setKYCStatus]);
-
-  if (status === "approved") {
-    return (
-      <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-8 text-center">
-        <div className="text-5xl mb-4">✅</div>
-        <h2 className="text-2xl font-bold text-green-400 mb-2">KYC Approved!</h2>
-        <p className="text-muted-foreground mb-6">Your identity has been verified. You can now purchase Gold, Silver, Platinum, Copper, and Bitcoin OTC.</p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link href="/" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">
-            🥇 Shop Metals →
-          </Link>
-          <Link href="/bitcoin-otc/apply" className="inline-flex items-center gap-2 border border-primary text-primary px-6 py-3 rounded-lg font-bold hover:bg-primary/10 transition-colors">
-            ₿ Buy Bitcoin OTC →
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const now = new Date();
   return (
     <div className="bg-card border border-border rounded-xl p-8">
       <div className="flex items-center gap-3 mb-6">
         <div className="text-3xl">🕐</div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">KYC Under Review</h2>
-          <p className="text-sm text-muted-foreground">Application #{appId} submitted</p>
+          <h2 className="text-xl font-bold text-foreground">Application Under Review</h2>
+          <p className="text-sm text-muted-foreground">Application #{appId} · Documents sent to compliance team</p>
         </div>
       </div>
       <div className="space-y-2 text-sm text-muted-foreground mb-6">
         <p>Submitted: {now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} at {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} EDT</p>
-        <p>Our compliance team reviews applications within <strong className="text-foreground">1–2 business days</strong>. You'll receive an email when your account is approved.</p>
+        <p>Our compliance team manually reviews all applications. You'll receive an email when your account is approved or if additional information is needed.</p>
       </div>
       <div className="space-y-3 mb-8">
         {[
-          { done: true, label: "Application received" },
-          { done: false, label: "Compliance review (1-2 business days)" },
-          { done: false, label: "Identity verification" },
-          { done: false, label: "Approval email sent" },
+          { done: true, label: "Documents submitted to compliance team" },
+          { done: false, label: "Manual review (1–2 business days)" },
+          { done: false, label: "Admin approval or request for more info" },
+          { done: false, label: "Approval email sent to you" },
           { done: false, label: "All purchases unlocked (metals + Bitcoin OTC)" },
         ].map((item, i) => (
           <div key={i} className="flex items-center gap-3 text-sm">
@@ -478,9 +453,7 @@ function SubmittedState({ appId }: { appId: string }) {
         ))}
       </div>
       <div className="border-t border-border pt-4 text-sm text-muted-foreground">
-        <p className="font-medium text-foreground mb-1">For demo purposes:</p>
-        <p>KYC will auto-approve in 30 seconds. In production, this would take 1-2 business days.</p>
-        <p className="mt-2">Questions? Call <strong>1-800-GOLD-NOW</strong> or email <strong>otc@puregoldtrading.com</strong></p>
+        <p className="mt-2">Questions? Call <strong className="text-foreground">1-800-GOLD-NOW</strong> or email <strong className="text-foreground">compliance@puregoldtrading.com</strong></p>
       </div>
     </div>
   );
@@ -499,7 +472,9 @@ export default function KYCPage() {
     phone: "", ssn4: "", occupation: "", sourceOfFunds: "", purpose: "",
     volume: "", usCitizen: "", pep: ""
   });
-  const [identity, setIdentity] = useState<IdentityInfo>({ docType: "", frontFile: null, backFile: null, selfieFile: null });
+  const [identity, setIdentity] = useState<IdentityInfo>({ docType: "", frontFile: null, backFile: null });
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [address, setAddress] = useState<AddressInfo>({ docType: "", addressFile: null, street: "", city: "", state: "", zip: "", country: "" });
 
   useEffect(() => {
@@ -511,22 +486,42 @@ export default function KYCPage() {
       <div className="container mx-auto px-4 py-12 max-w-xl">
         <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-8 text-center">
           <div className="text-5xl mb-4">✅</div>
-          <h1 className="text-2xl font-bold text-green-400 mb-2">KYC Already Verified</h1>
-          <p className="text-muted-foreground mb-6">Your identity has been verified. You can purchase Bitcoin OTC.</p>
-          <Link href="/bitcoin-otc/apply" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">
-            ₿ Apply to Buy Bitcoin →
-          </Link>
+          <h1 className="text-2xl font-bold text-green-400 mb-2">Already Verified</h1>
+          <p className="text-muted-foreground mb-6">Your identity has been verified. You can purchase Gold, Silver, Platinum, Copper, and Bitcoin OTC.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link href="/" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">
+              🥇 Shop Metals →
+            </Link>
+            <Link href="/bitcoin-otc/apply" className="inline-flex items-center gap-2 border border-primary text-primary px-6 py-3 rounded-lg font-bold hover:bg-primary/10 transition-colors">
+              ₿ Buy Bitcoin OTC →
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const id = `KYC-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 89999)}`;
-    setAppId(id);
-    setKYCApplicationId(id);
-    setKYCStatus(KYC_STATUS.PENDING_REVIEW);
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/kyc/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ personal, identity, address, applicationId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || "Submission failed");
+      setAppId(id);
+      setKYCApplicationId(id);
+      setKYCStatus(KYC_STATUS.PENDING_REVIEW);
+      setSubmitted(true);
+    } catch (err: any) {
+      setSubmitError(err.message || "Failed to submit. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -541,10 +536,10 @@ export default function KYCPage() {
     <div className="container mx-auto px-4 py-12 max-w-xl">
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-2xl font-bold text-orange-400">₿</span>
-          <h1 className="text-2xl font-serif font-bold text-foreground">KYC Verification</h1>
+          <span className="text-2xl">🏅</span>
+          <h1 className="text-2xl font-serif font-bold text-foreground">Identity Verification (KYC)</h1>
         </div>
-        <p className="text-sm text-muted-foreground">Required to unlock Bitcoin OTC purchases. Takes approximately 5 minutes.</p>
+        <p className="text-sm text-muted-foreground">Required to purchase metals and Bitcoin OTC. Takes approximately 5 minutes. Documents are reviewed manually by our compliance team.</p>
       </div>
 
       <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 flex items-start gap-2 mb-8 text-sm text-amber-300">
@@ -557,7 +552,7 @@ export default function KYCPage() {
       {step === 0 && <StepPersonal data={personal} onChange={setPersonal} onNext={() => setStep(1)} />}
       {step === 1 && <StepIdentity data={identity} onChange={setIdentity} onNext={() => setStep(2)} onBack={() => setStep(0)} />}
       {step === 2 && <StepAddress data={address} onChange={setAddress} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-      {step === 3 && <StepReview personal={personal} identity={identity} address={address} onBack={() => setStep(2)} onSubmit={handleSubmit} />}
+      {step === 3 && <StepReview personal={personal} identity={identity} address={address} onBack={() => setStep(2)} onSubmit={handleSubmit} submitting={submitting} submitError={submitError} />}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import ordersRouter from "./orders";
 import categoriesRouter from "./categories";
 import blogRouter from "./blog";
 import statsRouter from "./stats";
+import kycRouter from "./kyc";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use("/orders", ordersRouter);
 router.use("/categories", categoriesRouter);
 router.use("/blog", blogRouter);
 router.use("/stats", statsRouter);
+router.use(kycRouter);
 
 export default router;
