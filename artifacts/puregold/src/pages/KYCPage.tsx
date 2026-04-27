@@ -511,7 +511,9 @@ export default function KYCPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personal, identity, address, applicationId: id }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try { data = JSON.parse(text); } catch { throw new Error(`Server error (${res.status}). Please try again.`); }
       if (!res.ok || !data.success) throw new Error(data.error || "Submission failed");
       setAppId(id);
       setKYCApplicationId(id);
