@@ -1,8 +1,9 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import type { IncomingMessage, ServerResponse } from "http";
 
 const rawPort = process.env.PORT;
 
@@ -26,12 +27,51 @@ if (!basePath) {
   );
 }
 
+// Vite plugin: sets Cache-Control per response type (NOT globally).
+// • Hashed JS/CSS chunks  → immutable (1 year)
+// • Public images/fonts   → 1 day
+// • HTML / SPA routes     → no-cache (must revalidate every visit)
+function assetCachePlugin(): Plugin {
+  function setHeaders(req: IncomingMessage, res: ServerResponse, next: () => void) {
+    const url = req.url ?? "";
+    // Strip query string for extension check
+    const pathname = url.split("?")[0];
+
+    if (pathname.endsWith(".html") || pathname === "/" || !pathname.includes(".")) {
+      // HTML document or SPA route — never cache
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    } else if (/\.[a-f0-9]{8,}\.(js|mjs|css)$/.test(pathname)) {
+      // Content-hashed bundles from Rollup — safe to cache indefinitely
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    } else if (/\.(png|jpg|jpeg|gif|webp|avif|svg|ico|woff2?|ttf|eot)(\?.*)?$/.test(pathname)) {
+      // Static images / fonts — cache for 1 day with revalidation
+      res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    } else if (/\.(js|mjs|css)(\?.*)?$/.test(pathname)) {
+      // Non-hashed scripts / styles (dev HMR chunks etc.) — short cache
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    }
+
+    next();
+  }
+
+  return {
+    name: "asset-cache-control",
+    configureServer(server) {
+      server.middlewares.use(setHeaders);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(setHeaders);
+    },
+  };
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
+    assetCachePlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
@@ -87,17 +127,10 @@ export default defineConfig({
     fs: {
       strict: true,
     },
-    headers: {
-      // Hashed JS/CSS assets can be cached forever (content-addressed)
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
   },
   preview: {
     port,
     host: "0.0.0.0",
     allowedHosts: true,
-    headers: {
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
   },
 });
