@@ -87,10 +87,17 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    headers: {
+      // Hashed JS/CSS assets can be cached forever (content-addressed)
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
   },
   preview: {
     port,
     host: "0.0.0.0",
     allowedHosts: true,
+    headers: {
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
   },
 });

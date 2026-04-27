@@ -5,10 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>PureGold Trading</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Preconnect to third-party origins used above the fold -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+
+    <!-- Preload the LCP hero image so browser fetches it as early as possible -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=2000&q=75&fm=webp"
+      imagesrcset="https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=800&q=70&fm=webp 800w, https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=2000&q=75&fm=webp 2000w"
+      imagesizes="100vw"
+    >
+
+    <!-- Fonts: async (non-render-blocking) -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    </noscript>
   </head>
   <body>
     <div id="root"></div>
