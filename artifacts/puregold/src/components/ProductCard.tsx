@@ -90,11 +90,13 @@ export function ProductCard({ product }: ProductCardProps) {
             onClick={toggleWatchlist}
             className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/60 hover:bg-background backdrop-blur-sm transition-colors text-muted-foreground hover:text-red-500"
             data-testid={`btn-watchlist-${product.id}`}
+            aria-label={isWatched ? `Remove ${product.name} from watchlist` : `Add ${product.name} to watchlist`}
           >
             <Heart
               className="h-4 w-4"
               fill={isWatched ? "currentColor" : "none"}
               color={isWatched ? "#ef4444" : "currentColor"}
+              aria-hidden="true"
             />
           </button>
 
@@ -104,6 +106,10 @@ export function ProductCard({ product }: ProductCardProps) {
               <img
                 src={product.images[0]}
                 alt={`${product.name} - Physical Bullion`}
+                width={180}
+                height={180}
+                loading="lazy"
+                decoding="async"
                 className="max-h-[180px] max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
                 style={{ filter: "drop-shadow(0 4px 16px rgba(201,168,76,0.25))" }}
                 onError={() => setImgError(true)}

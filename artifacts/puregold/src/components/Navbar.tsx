@@ -52,7 +52,7 @@ export function Navbar() {
           <div className="w-full text-center sm:hidden">
             ₿ Bitcoin OTC — 0.20–10 BTC | FREE Shipping $499+
           </div>
-          <button onClick={() => setShowAnnouncement(false)} className="absolute right-2" data-testid="button-close-announcement">
+          <button onClick={() => setShowAnnouncement(false)} className="absolute right-2" data-testid="button-close-announcement" aria-label="Close announcement">
             <X className="h-3 w-3" />
           </button>
         </div>
@@ -63,7 +63,7 @@ export function Navbar() {
         {/* Top Row */}
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} data-testid="button-mobile-menu">
+            <button className="lg:hidden text-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} data-testid="button-mobile-menu" aria-label="Open navigation menu">
               <Menu className="h-6 w-6" />
             </button>
             <Link href="/" className="text-2xl font-serif font-bold text-primary tracking-tight" data-testid="link-home-logo">
@@ -111,12 +111,12 @@ export function Navbar() {
               <Search className="h-4 w-4 text-muted-foreground absolute right-3" />
             </div>
             
-            <Link href="/account/login" className="text-foreground hover:text-primary transition-colors" data-testid="link-login">
-              <User className="h-5 w-5" />
+            <Link href="/account/login" className="text-foreground hover:text-primary transition-colors" data-testid="link-login" aria-label="Account login">
+              <User className="h-5 w-5" aria-hidden="true" />
             </Link>
             
-            <Link href="/cart" className="text-foreground hover:text-primary transition-colors relative" data-testid="link-cart">
-              <ShoppingCart className="h-5 w-5" />
+            <Link href="/cart" className="text-foreground hover:text-primary transition-colors relative" data-testid="link-cart" aria-label={`Shopping cart${totalItems > 0 ? `, ${totalItems} items` : ""}`}>
+              <ShoppingCart className="h-5 w-5" aria-hidden="true" />
               {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
                   {totalItems}
