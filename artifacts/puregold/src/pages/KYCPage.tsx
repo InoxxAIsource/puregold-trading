@@ -422,7 +422,15 @@ function StepReview({ personal, identity, address, onBack, onSubmit, submitting,
 }
 
 function SubmittedState({ appId }: { appId: string }) {
+  const { refreshStatus } = useKYC();
+  const [checking, setChecking] = useState(false);
   const now = new Date();
+
+  const handleCheck = async () => {
+    setChecking(true);
+    await refreshStatus();
+    setChecking(false);
+  };
   return (
     <div className="bg-card border border-border rounded-xl p-8">
       <div className="flex items-center gap-3 mb-6">
@@ -452,8 +460,16 @@ function SubmittedState({ appId }: { appId: string }) {
           </div>
         ))}
       </div>
-      <div className="border-t border-border pt-4 text-sm text-muted-foreground">
-        <p className="mt-2">Questions? Call <strong className="text-foreground">1-800-GOLD-NOW</strong> or email <strong className="text-foreground">compliance@puregoldtrading.com</strong></p>
+      <div className="border-t border-border pt-4 space-y-3">
+        <button
+          onClick={handleCheck}
+          disabled={checking}
+          className="w-full border border-primary text-primary py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/10 transition-colors disabled:opacity-50"
+        >
+          {checking ? "Checking…" : "🔄 Check Approval Status"}
+        </button>
+        <p className="text-xs text-muted-foreground text-center">Status is also checked automatically every 45 seconds.</p>
+        <p className="text-xs text-muted-foreground text-center">Questions? Email <strong className="text-foreground">compliance@puregoldtrading.com</strong></p>
       </div>
     </div>
   );
@@ -481,7 +497,7 @@ export default function KYCPage() {
     if (!user) setLocation("/account/login?redirect=/account/kyc");
   }, [user, setLocation]);
 
-  if (kycStatus === KYC_STATUS.APPROVED && !submitted) {
+  if (kycStatus === KYC_STATUS.APPROVED) {
     return (
       <div className="container mx-auto px-4 py-12 max-w-xl">
         <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-8 text-center">
@@ -509,7 +525,7 @@ export default function KYCPage() {
       const res = await fetch("/api/kyc/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ personal, identity, address, applicationId: id }),
+        body: JSON.stringify({ personal, identity, address, applicationId: id, userEmail: user?.email || "" }),
       });
       const text = await res.text();
       let data: any = {};

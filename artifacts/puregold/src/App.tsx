@@ -60,6 +60,7 @@ import BitcoinOTCVsExchangePage from "@/pages/BitcoinOTCVsExchangePage";
 import BitcoinIRAPage from "@/pages/BitcoinIRAPage";
 import BitcoinOTCFAQPage from "@/pages/BitcoinOTCFAQPage";
 import KYCPage from "@/pages/KYCPage";
+import KYCReviewPage from "@/pages/KYCReviewPage";
 import OTCOrdersPage from "@/pages/OTCOrdersPage";
 import BTCChartPage from "@/pages/BTCChartPage";
 
@@ -121,6 +122,7 @@ function Router() {
       <Route path="/account/watchlist" component={AccountWatchlistPage} />
       <Route path="/account/price-alerts" component={AccountPriceAlertsPage} />
       <Route path="/account/kyc" component={KYCPage} />
+      <Route path="/kyc/review" component={KYCReviewPage} />
       <Route path="/account/otc-orders/:id" component={OTCOrdersPage} />
       <Route path="/account/otc-orders" component={OTCOrdersPage} />
       
