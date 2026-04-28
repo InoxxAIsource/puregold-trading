@@ -65,6 +65,10 @@ const KYCPage = lazy(() => import("@/pages/KYCPage"));
 const KYCReviewPage = lazy(() => import("@/pages/KYCReviewPage"));
 const OTCOrdersPage = lazy(() => import("@/pages/OTCOrdersPage"));
 const BTCChartPage = lazy(() => import("@/pages/BTCChartPage"));
+const GlossaryIndexPage = lazy(() => import("@/pages/GlossaryIndexPage"));
+const GlossaryTermPage = lazy(() => import("@/pages/GlossaryTermPage"));
+const GuidesIndexPage = lazy(() => import("@/pages/GuidesIndexPage"));
+const GuideDetailPage = lazy(() => import("@/pages/GuideDetailPage"));
 
 function PageFallback() {
   return (
@@ -116,6 +120,12 @@ function Router() {
         <Route path="/blog" component={BlogPage} />
         <Route path="/blog/:slug" component={BlogPostPage} />
         <Route path="/investing-guide" component={InvestingGuidePage} />
+
+        {/* SEO — Glossary & Guides */}
+        <Route path="/learn" component={GlossaryIndexPage} />
+        <Route path="/learn/:slug" component={GlossaryTermPage} />
+        <Route path="/guides" component={GuidesIndexPage} />
+        <Route path="/guides/:slug" component={GuideDetailPage} />
 
         {/* Bitcoin OTC */}
         <Route path="/bitcoin-otc" component={BitcoinOTCPage} />
