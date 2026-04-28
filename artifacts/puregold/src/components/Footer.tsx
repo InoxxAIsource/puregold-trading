@@ -55,12 +55,15 @@ export function Footer() {
 
           {/* Col 5 */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
+            <h3 className="font-semibold text-foreground mb-4">Learn & Guides</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><a href="/learn" className="hover:text-primary transition-colors">Glossary</a></li>
+              <li><a href="/guides" className="hover:text-primary transition-colors">Buying Guides</a></li>
+              <li><a href="/guides/how-to-buy-gold-bullion" className="hover:text-primary transition-colors">How to Buy Gold</a></li>
+              <li><a href="/guides/gold-vs-silver-which-to-buy" className="hover:text-primary transition-colors">Gold vs Silver</a></li>
+              <li><a href="/guides/precious-metals-ira-guide" className="hover:text-primary transition-colors">Gold IRA Guide</a></li>
               <li><Link href="/charts" className="hover:text-primary transition-colors">Live Charts</Link></li>
-              <li><Link href="/ira" className="hover:text-primary transition-colors">Gold IRA</Link></li>
               <li><Link href="/blog" className="hover:text-primary transition-colors">Market News</Link></li>
-              <li><Link href="/tax" className="hover:text-primary transition-colors">Local Taxes</Link></li>
               <li><Link href="/sell-to-us" className="hover:text-primary transition-colors">Sell To Us</Link></li>
             </ul>
           </div>

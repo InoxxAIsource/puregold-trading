@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import type { IncomingMessage, ServerResponse } from "http";
+import { seoPlugin } from "./seo/seoPlugin.js";
 
 const rawPort = process.env.PORT;
 
@@ -68,6 +69,7 @@ export default defineConfig({
     tailwindcss(),
     runtimeErrorOverlay(),
     assetCachePlugin(),
+    seoPlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [

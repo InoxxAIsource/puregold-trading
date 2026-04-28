@@ -166,6 +166,8 @@ export function Navbar() {
           <Link href="/rare-coins" className="text-foreground hover:text-primary transition-colors">Rare Coins</Link>
           <Link href="/on-sale" className="text-red-500 hover:text-red-400 transition-colors">On Sale</Link>
           <Link href="/featured" className="text-foreground hover:text-primary transition-colors">Featured</Link>
+          <a href="/guides" className="text-foreground hover:text-primary transition-colors">Guides</a>
+          <a href="/learn" className="text-foreground hover:text-primary transition-colors">Learn</a>
           <Link href="/new-arrivals" className="text-foreground hover:text-primary transition-colors">New Arrivals</Link>
           <Link href="/sell-to-us" className="text-foreground hover:text-primary transition-colors">Sell to Us</Link>
           <Link href="/charts" className="text-foreground hover:text-primary transition-colors">Charts</Link>
