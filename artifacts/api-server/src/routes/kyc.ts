@@ -200,9 +200,110 @@ router.get("/kyc/review", async (req, res) => {
       .set({ status: newStatus, reviewedAt: new Date() })
       .where(eq(kycApplications.applicationId, id));
 
+    // Send confirmation email to the user
+    const apiKey = process.env["RESEND_API_KEY"];
+    if (apiKey && app.userEmail && app.userEmail !== "unknown") {
+      try {
+        const resend = new Resend(apiKey);
+        const siteUrl = getSiteUrl();
+        const isApproved = action === "approve";
+
+        const btnStyle = (bg: string, color: string) =>
+          `display:inline-block;padding:14px 32px;background:${bg};color:${color};font-size:15px;font-weight:bold;text-decoration:none;border-radius:8px;letter-spacing:0.5px;`;
+
+        const userHtml = isApproved
+          ? `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0f0f0f;color:#e5e5e5;padding:32px;border-radius:12px">
+            <div style="background:#b8860b;padding:16px 24px;border-radius:8px;margin-bottom:28px">
+              <h1 style="margin:0;color:#000;font-size:20px;font-weight:bold">🏅 GoldBuller — KYC Approved</h1>
+              <p style="margin:6px 0 0;color:#000;opacity:0.65;font-size:13px">Application #${id}</p>
+            </div>
+
+            <p style="font-size:16px;line-height:1.6;margin-bottom:20px">
+              Congratulations! Your identity has been verified and your GoldBuller account is now fully activated.
+            </p>
+
+            <div style="background:#14532d;border:1px solid #166534;border-radius:10px;padding:20px;margin-bottom:28px">
+              <p style="margin:0;font-size:15px;font-weight:bold;color:#86efac">✅ You are now approved for:</p>
+              <ul style="margin:12px 0 0;padding-left:20px;color:#d1fae5;line-height:2">
+                <li>Physical gold, silver, platinum &amp; copper purchases</li>
+                <li>Bitcoin OTC desk — 0.20 to 10 BTC per transaction</li>
+                <li>IRA-eligible bullion orders</li>
+                <li>Wire transfer settlement</li>
+              </ul>
+            </div>
+
+            <div style="text-align:center;margin-bottom:28px">
+              <a href="${siteUrl}/bitcoin-otc/apply" style="${btnStyle("#b8860b", "#000")}">Start a Bitcoin OTC Order →</a>
+            </div>
+
+            <p style="font-size:13px;color:#888;line-height:1.6">
+              If you have any questions, reply to this email or contact us at
+              <a href="mailto:support@goldbuller.com" style="color:#b8860b">support@goldbuller.com</a>.
+            </p>
+
+            <p style="font-size:11px;color:#555;margin-top:24px;border-top:1px solid #1f1f1f;padding-top:16px">
+              GoldBuller LLC · 1400 Precious Metals Way, Suite 400 · Dallas, TX 75201<br/>
+              Bitcoin OTC services are subject to AML/KYC regulations. Transactions over $10,000 are reported as required by the Bank Secrecy Act.
+            </p>
+          </div>`
+          : `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0f0f0f;color:#e5e5e5;padding:32px;border-radius:12px">
+            <div style="background:#7f1d1d;padding:16px 24px;border-radius:8px;margin-bottom:28px">
+              <h1 style="margin:0;color:#fff;font-size:20px;font-weight:bold">GoldBuller — KYC Application Update</h1>
+              <p style="margin:6px 0 0;color:#fca5a5;font-size:13px">Application #${id}</p>
+            </div>
+
+            <p style="font-size:16px;line-height:1.6;margin-bottom:20px">
+              We were unable to verify your identity at this time. Your application has not been approved.
+            </p>
+
+            <div style="background:#1c1917;border:1px solid #292524;border-radius:10px;padding:20px;margin-bottom:28px">
+              <p style="margin:0 0 10px;font-size:14px;color:#d6d3d1;font-weight:600">Common reasons for decline:</p>
+              <ul style="margin:0;padding-left:20px;color:#a8a29e;line-height:2;font-size:13px">
+                <li>Documents were blurry or incomplete</li>
+                <li>Name or address did not match across documents</li>
+                <li>Expired government-issued ID</li>
+                <li>Unable to verify proof of address</li>
+              </ul>
+            </div>
+
+            <p style="font-size:14px;color:#a8a29e;line-height:1.6;margin-bottom:24px">
+              You are welcome to reapply with updated documents. If you believe this decision was made in error,
+              please contact our compliance team.
+            </p>
+
+            <div style="text-align:center;margin-bottom:28px">
+              <a href="${siteUrl}/account/kyc" style="${btnStyle("#b8860b", "#000")}">Reapply Now →</a>
+            </div>
+
+            <p style="font-size:13px;color:#888;line-height:1.6">
+              Questions? Contact us at
+              <a href="mailto:compliance@goldbuller.com" style="color:#b8860b">compliance@goldbuller.com</a>.
+            </p>
+
+            <p style="font-size:11px;color:#555;margin-top:24px;border-top:1px solid #1f1f1f;padding-top:16px">
+              GoldBuller LLC · 1400 Precious Metals Way, Suite 400 · Dallas, TX 75201
+            </p>
+          </div>`;
+
+        await resend.emails.send({
+          from: "GoldBuller KYC <support@goldbuller.com>",
+          to: [app.userEmail],
+          subject: isApproved
+            ? "✅ Your GoldBuller account is approved — you're ready to trade"
+            : "GoldBuller KYC Application Update",
+          html: userHtml,
+        });
+      } catch (emailErr) {
+        console.error("Failed to send user KYC result email:", emailErr);
+        // Don't fail the whole request if email fails
+      }
+    }
+
     const msg = action === "approve"
-      ? `Application #${id} approved. The user can now purchase metals and Bitcoin OTC.`
-      : `Application #${id} declined. The user will not be able to purchase until they reapply.`;
+      ? `Application #${id} approved. The user has been notified by email.`
+      : `Application #${id} declined. The user has been notified by email.`;
 
     res.json({ success: true, message: msg });
   } catch (err: any) {
