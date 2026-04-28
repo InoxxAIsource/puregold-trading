@@ -158,7 +158,7 @@ router.post("/kyc/submit", async (req, res) => {
 
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: "GoldBuller KYC <onboarding@resend.dev>",
+      from: "GoldBuller KYC <support@goldbuller.com>",
       to: [adminEmail],
       subject: `[KYC] New Application — ${personal.firstName} ${personal.lastName} (#${applicationId})`,
       html,
