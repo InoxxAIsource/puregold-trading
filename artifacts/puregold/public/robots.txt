@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Block faceted/filter URLs from crawlers to preserve crawl budget
+Disallow: /gold?*
+Disallow: /silver?*
+Disallow: /platinum?*
+Disallow: /account/
+Disallow: /api/
+
+Sitemap: https://goldbuller.com/sitemap.xml
