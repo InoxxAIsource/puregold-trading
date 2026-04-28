@@ -70,6 +70,13 @@ const GlossaryTermPage = lazy(() => import("@/pages/GlossaryTermPage"));
 const GuidesIndexPage = lazy(() => import("@/pages/GuidesIndexPage"));
 const GuideDetailPage = lazy(() => import("@/pages/GuideDetailPage"));
 
+// SEO Funnel — Buy Pages, Location Pages, Insights Blog
+const BuyLandingPage = lazy(() => import("@/pages/BuyLandingPage"));
+const LocationHubPage = lazy(() => import("@/pages/LocationHubPage"));
+const StateLocationPage = lazy(() => import("@/pages/StateLocationPage"));
+const InsightsIndexPage = lazy(() => import("@/pages/InsightsIndexPage"));
+const InsightPostPage = lazy(() => import("@/pages/InsightPostPage"));
+
 function PageFallback() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -127,6 +134,17 @@ function Router() {
         <Route path="/guides" component={GuidesIndexPage} />
         <Route path="/guides/:slug" component={GuideDetailPage} />
 
+        {/* SEO Funnel — Buy keyword landing pages */}
+        <Route path="/buy/:slug" component={BuyLandingPage} />
+
+        {/* SEO Funnel — Location (state) pages */}
+        <Route path="/location" component={LocationHubPage} />
+        <Route path="/location/:state" component={StateLocationPage} />
+
+        {/* SEO Funnel — Insights blog */}
+        <Route path="/insights" component={InsightsIndexPage} />
+        <Route path="/insights/:slug" component={InsightPostPage} />
+
         {/* Bitcoin OTC */}
         <Route path="/bitcoin-otc" component={BitcoinOTCPage} />
         <Route path="/bitcoin-otc/apply" component={BitcoinOTCApplyPage} />
@@ -143,6 +161,7 @@ function Router() {
         <Route path="/account/watchlist" component={AccountWatchlistPage} />
         <Route path="/account/price-alerts" component={AccountPriceAlertsPage} />
         <Route path="/account/kyc" component={KYCPage} />
+        <Route path="/kyc" component={KYCPage} />
         <Route path="/kyc/review" component={KYCReviewPage} />
         <Route path="/account/otc-orders/:id" component={OTCOrdersPage} />
         <Route path="/account/otc-orders" component={OTCOrdersPage} />
