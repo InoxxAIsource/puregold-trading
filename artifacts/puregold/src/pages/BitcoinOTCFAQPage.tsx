@@ -29,7 +29,7 @@ const FAQS = [
   },
   {
     q: "Is there a maximum purchase per transaction?",
-    a: "Yes, 10 BTC per single OTC transaction (approximately $943,000 at current prices). For purchases exceeding 10 BTC, please contact our desk directly at otc@puregoldtrading.com or call 1-800-GOLD-NOW. We offer custom pricing and arrangements for institutional-sized purchases."
+    a: "Yes, 10 BTC per single OTC transaction (approximately $943,000 at current prices). For purchases exceeding 10 BTC, please contact our desk directly at otc@goldbuller.com or call 1-800-GOLD-NOW. We offer custom pricing and arrangements for institutional-sized purchases."
   },
   {
     q: "What are the spread fees?",

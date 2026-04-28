@@ -108,7 +108,7 @@ function OrderDetail({ orderId }: { orderId: string }) {
         <div className="bg-secondary/20 rounded-lg p-4 text-xs font-mono space-y-2 text-muted-foreground">
           {[
             ["Bank Name", "JPMorgan Chase Bank, N.A."],
-            ["Account Name", "PureGold Trading LLC"],
+            ["Account Name", "GoldBuller LLC"],
             ["ABA Routing", "021000021"],
             ["Account Number", "847293018475"],
             ["Reference/Memo", order.id],

@@ -68,7 +68,7 @@ export default function AccountLoginPage() {
             Sign In
           </h1>
           <p className="text-center text-muted-foreground text-sm mb-8">
-            Access your PureGold account
+            Access your GoldBuller account
           </p>
 
           {error && (

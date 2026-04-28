@@ -88,7 +88,7 @@ export function createTrade(offer: P2POffer, qty: number, paymentMethod: string,
       id: "merchant_01",
       sender: "seller",
       senderName: offer.merchantName,
-      text: `Hi! Ready to trade. Here are my ${paymentMethod === "bankwire" ? "wire" : paymentMethod} details:\n${paymentMethod === "bankwire" ? `Bank: Chase\nRouting: 021000021\nAccount: ****${Math.floor(1000 + Math.random() * 9000)}\nName: ${offer.merchantName.replace("_", " ")} LLC\nRef: ${tradeId}\nPlease send $${(qty * offer.pricePerUnit).toLocaleString(undefined, { minimumFractionDigits: 2 })} exactly.` : `Send to: ${offer.merchantName}@puregold.trade\nAmount: $${(qty * offer.pricePerUnit).toLocaleString(undefined, { minimumFractionDigits: 2 })}\nNote: ${tradeId}`}`,
+      text: `Hi! Ready to trade. Here are my ${paymentMethod === "bankwire" ? "wire" : paymentMethod} details:\n${paymentMethod === "bankwire" ? `Bank: Chase\nRouting: 021000021\nAccount: ****${Math.floor(1000 + Math.random() * 9000)}\nName: ${offer.merchantName.replace("_", " ")} LLC\nRef: ${tradeId}\nPlease send $${(qty * offer.pricePerUnit).toLocaleString(undefined, { minimumFractionDigits: 2 })} exactly.` : `Send to: ${offer.merchantName}@goldbuller.com\nAmount: $${(qty * offer.pricePerUnit).toLocaleString(undefined, { minimumFractionDigits: 2 })}\nNote: ${tradeId}`}`,
       timestamp: new Date(now.getTime() + 45000).toISOString(),
     },
   ];

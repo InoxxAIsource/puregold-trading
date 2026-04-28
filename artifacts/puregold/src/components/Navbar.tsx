@@ -67,7 +67,7 @@ export function Navbar() {
               <Menu className="h-6 w-6" />
             </button>
             <Link href="/" className="text-2xl font-serif font-bold text-primary tracking-tight" data-testid="link-home-logo">
-              PureGold.
+              GoldBuller.
             </Link>
           </div>
 

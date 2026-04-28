@@ -13,7 +13,7 @@ function mapPost(p: typeof blogPostsTable.$inferSelect) {
     title: p.title,
     excerpt: p.excerpt,
     content: p.content ?? undefined,
-    author: p.author ?? "PureGold Editorial Team",
+    author: p.author ?? "GoldBuller Editorial Team",
     category: p.category ?? "Market Insights",
     tags: (p.tags as string[]) ?? [],
     publishedAt: p.publishedAt?.toISOString() ?? new Date().toISOString(),

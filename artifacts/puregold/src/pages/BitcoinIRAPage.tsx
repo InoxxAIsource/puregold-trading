@@ -18,7 +18,7 @@ const CUSTODIANS = [
 const FAQ = [
   { q: "Can I buy Bitcoin in my IRA?", a: "Yes. A self-directed IRA (SDIRA) can hold Bitcoin. You cannot hold BTC in a standard brokerage IRA — you need a custodian that specifically supports alternative assets." },
   { q: "What type of IRA should I use?", a: "A Traditional SDIRA gives you a tax deduction now, and you pay taxes on withdrawal. A Roth SDIRA uses after-tax money, but growth and qualified withdrawals are tax-free." },
-  { q: "How does the BTC get into my IRA?", a: "You fund your SDIRA, then direct the custodian to purchase BTC through an approved OTC desk like PureGold Trading. The BTC is held in a wallet controlled by the custodian on your behalf." },
+  { q: "How does the BTC get into my IRA?", a: "You fund your SDIRA, then direct the custodian to purchase BTC through an approved OTC desk like GoldBuller. The BTC is held in a wallet controlled by the custodian on your behalf." },
   { q: "Can I take physical custody?", a: "No. IRA rules prohibit self-custody of IRA assets. The custodian must hold the Bitcoin. Early withdrawal triggers taxes and a 10% penalty." },
   { q: "What are the IRS rules?", a: "IRS Notice 2014-21 treats Bitcoin as property. It can be held in SDIRAs. You cannot use IRA Bitcoin for personal benefit before age 59½ without penalty." },
   { q: "What is the minimum purchase through your OTC desk?", a: "For IRA-directed purchases, our minimum is 0.20 BTC, the same as regular OTC purchases. Work with your custodian to initiate the purchase." },

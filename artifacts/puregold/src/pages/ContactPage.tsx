@@ -44,7 +44,7 @@ export default function ContactPage() {
               <h3 className="font-bold text-xl mb-4 text-primary">Get in Touch</h3>
               <div className="space-y-4 text-muted-foreground">
                 <p><strong>Phone:</strong> <br/>1-800-GOLD-NOW (Toll Free)<br/>1-214-555-0192 (Local)</p>
-                <p><strong>Email:</strong> <br/>support@puregoldtrading.com</p>
+                <p><strong>Email:</strong> <br/>support@goldbuller.com</p>
               </div>
             </div>
 
@@ -60,7 +60,7 @@ export default function ContactPage() {
             <div>
               <h3 className="font-bold text-xl mb-4 text-primary">Mailing Address</h3>
               <p className="text-muted-foreground">
-                PureGold Trading LLC<br/>
+                GoldBuller LLC<br/>
                 1400 Precious Metals Way, Suite 400<br/>
                 Dallas, TX 75201
               </p>

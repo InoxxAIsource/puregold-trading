@@ -79,7 +79,7 @@ router.post("/kyc/submit", async (req, res) => {
     const html = `
       <div style="font-family:sans-serif;max-width:640px;margin:0 auto;background:#0f0f0f;color:#e5e5e5;padding:32px;border-radius:12px">
         <div style="background:#b8860b;padding:16px 24px;border-radius:8px;margin-bottom:28px">
-          <h1 style="margin:0;color:#000;font-size:20px;font-weight:bold">🏅 PureGold Trading — New KYC Application</h1>
+          <h1 style="margin:0;color:#000;font-size:20px;font-weight:bold">🏅 GoldBuller — New KYC Application</h1>
           <p style="margin:6px 0 0;color:#000;opacity:0.65;font-size:13px">
             Application #${applicationId} &nbsp;·&nbsp; ${new Date().toLocaleString("en-US", { timeZone: "America/New_York" })} EDT
           </p>
@@ -158,7 +158,7 @@ router.post("/kyc/submit", async (req, res) => {
 
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: "PureGold KYC <onboarding@resend.dev>",
+      from: "GoldBuller KYC <onboarding@resend.dev>",
       to: [adminEmail],
       subject: `[KYC] New Application — ${personal.firstName} ${personal.lastName} (#${applicationId})`,
       html,

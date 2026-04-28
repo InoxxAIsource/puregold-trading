@@ -1,11 +1,11 @@
 export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl text-center">
-      <h1 className="text-4xl font-serif font-bold text-foreground mb-6">About PureGold</h1>
+      <h1 className="text-4xl font-serif font-bold text-foreground mb-6">About GoldBuller</h1>
       <p className="text-xl text-muted-foreground mb-12">Building trust through transparency and competitive pricing since 2018.</p>
       
       <div className="prose prose-invert mx-auto text-left">
-        <p>PureGold Trading was founded in Dallas, Texas with a simple mission: to provide investors with a secure, transparent, and highly competitive way to acquire physical precious metals.</p>
+        <p>GoldBuller was founded in Dallas, Texas with a simple mission: to provide investors with a secure, transparent, and highly competitive way to acquire physical precious metals.</p>
         <p>Over the years, we have grown from a small local dealer to one of the nation's premier precious metals firms, facilitating over $8 Billion in transactions for more than 200,000 satisfied customers.</p>
         <p>Our direct relationships with sovereign and private mints around the globe allow us to source high-quality bullion at the lowest possible premiums, passing those savings directly to you.</p>
         

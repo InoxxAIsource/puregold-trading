@@ -12,7 +12,7 @@ export default function BlogPostPage() {
           How Global Inflation Impacts Precious Metal Demand in 2026
         </h1>
         <div className="flex items-center gap-4 text-sm text-muted-foreground border-b border-border pb-8">
-          <span>By PureGold Research Team</span>
+          <span>By GoldBuller Research Team</span>
           <span>•</span>
           <span>March 15, 2026</span>
           <span>•</span>

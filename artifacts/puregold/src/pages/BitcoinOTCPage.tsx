@@ -176,7 +176,7 @@ export default function BitcoinOTCPage() {
       <div className="bg-secondary/30 border-t border-border py-8 px-4">
         <div className="container mx-auto max-w-4xl text-xs text-muted-foreground space-y-2">
           <p>
-            Bitcoin OTC services provided by PureGold Trading LLC, a registered Money Services Business (MSB) with FinCEN.
+            Bitcoin OTC services provided by GoldBuller LLC, a registered Money Services Business (MSB) with FinCEN.
             Registration #: 31000XXXXXXX. Bitcoin is not a legal tender and is subject to significant price volatility.
             Past performance does not guarantee future results. All transactions are subject to AML/KYC verification.
             Transactions over $10,000 are reported to the IRS as required by the Bank Secrecy Act.

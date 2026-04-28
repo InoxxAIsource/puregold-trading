@@ -3,7 +3,7 @@ import { Link } from "wouter";
 const STEPS = [
   {
     icon: "📝", step: 1, title: "Create Your Account",
-    desc: `Register at PureGold Trading by providing your name, email address, and a secure password. You'll receive a confirmation email to verify your address.
+    desc: `Register at GoldBuller by providing your name, email address, and a secure password. You'll receive a confirmation email to verify your address.
 
 Once verified, you'll have access to our customer portal where you can track your orders, manage your profile, and initiate the KYC process required for Bitcoin OTC purchases.`
   },

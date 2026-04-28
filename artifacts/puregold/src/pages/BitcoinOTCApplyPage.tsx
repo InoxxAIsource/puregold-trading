@@ -104,7 +104,7 @@ function ConfirmationModal({ order, onClose }: { order: OTCOrder; onClose: () =>
           <p>2. Send wire within 3 business days</p>
           <p>3. Include reference <strong className="text-foreground">{order.id}</strong> in wire memo</p>
           <p>4. BTC delivered within 24hrs of wire clearance</p>
-          <p className="mt-2 text-xs">Questions? <strong>otc@puregoldtrading.com</strong> | 1-800-GOLD-NOW</p>
+          <p className="mt-2 text-xs">Questions? <strong>otc@goldbuller.com</strong> | 1-800-GOLD-NOW</p>
         </div>
 
         <div className="flex gap-3">
@@ -335,7 +335,7 @@ export default function BitcoinOTCApplyPage() {
               <div className="space-y-1.5">
                 {[
                   ["Bank Name", "JPMorgan Chase Bank, N.A."],
-                  ["Account Name", "PureGold Trading LLC"],
+                  ["Account Name", "GoldBuller LLC"],
                   ["ABA Routing", "021000021"],
                   ["Account Number", "847293018475"],
                   ["Reference/Memo", "[YOUR ORDER # — auto-assigned]"],
@@ -418,7 +418,7 @@ export default function BitcoinOTCApplyPage() {
 
         {/* Compliance footer */}
         <div className="mt-10 text-xs text-muted-foreground space-y-1.5 border-t border-border pt-6">
-          <p>Bitcoin OTC services provided by PureGold Trading LLC, a registered Money Services Business (MSB) with FinCEN. Registration #: 31000XXXXXXX.</p>
+          <p>Bitcoin OTC services provided by GoldBuller LLC, a registered Money Services Business (MSB) with FinCEN. Registration #: 31000XXXXXXX.</p>
           <p>We do not service residents of sanctioned countries including Cuba, Iran, North Korea, Syria, and the Crimea region.</p>
         </div>
       </div>

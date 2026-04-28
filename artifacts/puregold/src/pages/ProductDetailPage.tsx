@@ -324,7 +324,7 @@ export default function ProductDetailPage() {
                 <li>Most orders ship within 1-3 business days of cleared payment.</li>
                 <li>Wire transfers and cryptocurrencies clear immediately. Checks may take up to 5 business days to clear.</li>
               </ul>
-              <p className="mt-4"><strong>Returns:</strong> PureGold offers a 3-day return policy on all products. If you are not satisfied, contact us within 3 days of receipt for an RMA number. All returns are subject to market loss policy and a 5% restocking fee.</p>
+              <p className="mt-4"><strong>Returns:</strong> GoldBuller offers a 3-day return policy on all products. If you are not satisfied, contact us within 3 days of receipt for an RMA number. All returns are subject to market loss policy and a 5% restocking fee.</p>
             </div>
           )}
         </div>

@@ -12,7 +12,7 @@ import {
 const TESTIMONIALS = [
   { id: 1, name: "Robert M.", state: "TX", rating: 5, date: "Oct 12, 2023", text: "Exceptional service and the lowest premiums I've found on Gold Eagles. Packaging was discreet and secure." },
   { id: 2, name: "Sarah J.", state: "FL", rating: 5, date: "Sep 28, 2023", text: "My first time buying physical silver. The process was incredibly smooth and the bars arrived in perfect condition." },
-  { id: 3, name: "David L.", state: "CA", rating: 5, date: "Nov 05, 2023", text: "Moved part of my IRA here. Their team handled everything professionally. Highly recommend PureGold." },
+  { id: 3, name: "David L.", state: "CA", rating: 5, date: "Nov 05, 2023", text: "Moved part of my IRA here. Their team handled everything professionally. Highly recommend GoldBuller." },
   { id: 4, name: "Michael P.", state: "NY", rating: 5, date: "Aug 14, 2023", text: "Fast shipping, competitive prices, and their customer service answers the phone quickly. Will buy again." },
   { id: 5, name: "Jennifer W.", state: "OH", rating: 5, date: "Dec 02, 2023", text: "The quality of the cast gold bars is stunning. Arrived exactly as described with assay certificates." },
 ];

@@ -5,7 +5,7 @@ export default function TermsOfServicePage() {
       <div className="prose prose-invert max-w-none text-muted-foreground">
         <p>Last updated: January 1, 2026</p>
         <h2>Market Loss Policy</h2>
-        <p>When purchasing from PureGold Trading, you enter into a binding contract. If you cancel your order or fail to provide payment, you are responsible for any market loss we incur.</p>
+        <p>When purchasing from GoldBuller, you enter into a binding contract. If you cancel your order or fail to provide payment, you are responsible for any market loss we incur.</p>
       </div>
     </div>
   );

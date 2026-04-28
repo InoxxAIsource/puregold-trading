@@ -8,7 +8,7 @@ export function Footer() {
           {/* Col 1 */}
           <div className="lg:col-span-1">
             <Link href="/" className="text-2xl font-serif font-bold text-primary tracking-tight mb-4 inline-block">
-              PureGold.
+              GoldBuller.
             </Link>
             <p className="text-muted-foreground text-sm mb-4">
               Premium precious metals dealer since 2018. Fully insured, discreet shipping on all orders.
@@ -73,7 +73,7 @@ export function Footer() {
           </div>
           
           <div className="text-xs text-muted-foreground text-center">
-            &copy; 2018-{new Date().getFullYear()} PureGold Trading LLC. All rights reserved.
+            &copy; 2018-{new Date().getFullYear()} GoldBuller LLC. All rights reserved.
           </div>
 
           <div className="flex gap-2 items-center text-muted-foreground text-sm font-semibold">

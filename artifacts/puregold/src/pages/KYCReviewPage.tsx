@@ -74,7 +74,7 @@ export default function KYCReviewPage() {
         )}
 
         <div className="mt-8">
-          <Link href="/" className="text-sm text-primary hover:underline">← Back to PureGold Trading</Link>
+          <Link href="/" className="text-sm text-primary hover:underline">← Back to GoldBuller</Link>
         </div>
       </div>
     </div>
