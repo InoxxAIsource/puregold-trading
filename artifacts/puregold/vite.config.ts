@@ -34,21 +34,17 @@ if (!basePath) {
 function assetCachePlugin(): Plugin {
   function setHeaders(req: IncomingMessage, res: ServerResponse, next: () => void) {
     const url = req.url ?? "";
-    // Strip query string for extension check
     const pathname = url.split("?")[0];
 
     if (pathname.endsWith(".html") || pathname === "/" || !pathname.includes(".")) {
-      // HTML document or SPA route — never cache
+      // HTML and SPA routes — never cache
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    } else if (/\.[a-f0-9]{8,}\.(js|mjs|css)$/.test(pathname)) {
-      // Content-hashed bundles from Rollup — safe to cache indefinitely
-      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     } else if (/\.(png|jpg|jpeg|gif|webp|avif|svg|ico|woff2?|ttf|eot)(\?.*)?$/.test(pathname)) {
-      // Static images / fonts — cache for 1 day with revalidation
+      // Static images and fonts — safe to cache for 1 day
       res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
-    } else if (/\.(js|mjs|css)(\?.*)?$/.test(pathname)) {
-      // Non-hashed scripts / styles (dev HMR chunks etc.) — short cache
-      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    } else {
+      // JS, CSS, and everything else — no-cache so HMR and React instances stay consistent
+      res.setHeader("Cache-Control", "no-cache");
     }
 
     next();
