@@ -43,6 +43,8 @@ const BlogPostPage = lazy(() => import("@/pages/BlogPostPage"));
 const InvestingGuidePage = lazy(() => import("@/pages/InvestingGuidePage"));
 const AccountLoginPage = lazy(() => import("@/pages/AccountLoginPage"));
 const AccountRegisterPage = lazy(() => import("@/pages/AccountRegisterPage"));
+const ForgotPasswordPage = lazy(() => import("@/pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
 const AccountDashboardPage = lazy(() => import("@/pages/AccountDashboardPage"));
 const AccountProfilePage = lazy(() => import("@/pages/AccountProfilePage"));
 const AccountOrdersPage = lazy(() => import("@/pages/AccountOrdersPage"));
@@ -158,6 +160,8 @@ function Router() {
         {/* Account */}
         <Route path="/account/login" component={AccountLoginPage} />
         <Route path="/account/register" component={AccountRegisterPage} />
+        <Route path="/account/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/account/reset-password" component={ResetPasswordPage} />
         <Route path="/account/dashboard" component={AccountDashboardPage} />
         <Route path="/account/profile" component={AccountProfilePage} />
         <Route path="/account/orders" component={AccountOrdersPage} />

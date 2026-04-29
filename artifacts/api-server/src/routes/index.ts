@@ -8,6 +8,7 @@ import categoriesRouter from "./categories";
 import blogRouter from "./blog";
 import statsRouter from "./stats";
 import kycRouter from "./kyc";
+import authRouter from "./auth";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use("/categories", categoriesRouter);
 router.use("/blog", blogRouter);
 router.use("/stats", statsRouter);
 router.use(kycRouter);
+router.use(authRouter);
 
 export default router;
