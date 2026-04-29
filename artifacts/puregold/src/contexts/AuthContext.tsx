@@ -28,11 +28,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (data: any) => {
     setUser(data);
     localStorage.setItem("pg_auth", JSON.stringify(data));
+    window.dispatchEvent(new Event("authLogin"));
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("pg_auth");
+    window.dispatchEvent(new Event("authLogout"));
   };
 
   return (

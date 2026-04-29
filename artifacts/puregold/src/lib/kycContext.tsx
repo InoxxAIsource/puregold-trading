@@ -71,13 +71,30 @@ export function KYCProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, [kycStatus, setKYCStatus, setKYCApplicationId]);
 
-  // On mount: always sync with server if user is logged in
+  // On mount: sync with server if user is already logged in
   useEffect(() => {
     const email = getUserEmail();
     if (email) {
       refreshStatus();
     }
   }, []);
+
+  // Re-sync whenever the user logs in
+  useEffect(() => {
+    const handleLogin = () => refreshStatus();
+    const handleLogout = () => {
+      localStorage.removeItem("kyc_status");
+      localStorage.removeItem("kyc_application_id");
+      setKYCStatusState(KYC_STATUS.NOT_STARTED);
+      setKYCApplicationIdState(null);
+    };
+    window.addEventListener("authLogin", handleLogin);
+    window.addEventListener("authLogout", handleLogout);
+    return () => {
+      window.removeEventListener("authLogin", handleLogin);
+      window.removeEventListener("authLogout", handleLogout);
+    };
+  }, [refreshStatus]);
 
   // Poll every 45 seconds while pending
   useEffect(() => {
