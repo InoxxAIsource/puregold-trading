@@ -20,7 +20,8 @@ function base64ToBuffer(dataUrl: string): { buffer: Buffer; ext: string } {
 }
 
 function getSiteUrl() {
-  const domain = process.env["REPLIT_DOMAINS"] || "localhost:3000";
+  const domains = process.env["REPLIT_DOMAINS"] || "localhost:3000";
+  const domain = domains.split(",")[0].trim();
   return `https://${domain}`;
 }
 
