@@ -392,6 +392,11 @@ export default function AccountDashboardPage() {
     o.status === "pending_wire_instructions" || o.status === "wire_pending"
   );
 
+  const completedOrders = apiOrders.filter(o => o.status === "completed");
+  const totalSpent = completedOrders.reduce((sum, o) => sum + Number(o.total), 0);
+  const ordersPlaced = apiOrders.length;
+  const ordersCompleted = completedOrders.length;
+
   return (
     <DashboardLayout>
       <h1 className="text-3xl font-serif font-bold text-foreground mb-8">Portfolio Dashboard</h1>
@@ -409,17 +414,25 @@ export default function AccountDashboardPage() {
       {/* Metrics row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Est. Portfolio Value</h3>
-          <div className="text-2xl font-mono font-bold text-foreground">$14,250.00</div>
-          <div className="text-sm text-green-500 mt-1 font-mono">+$845.50 (6.3%)</div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Spent</h3>
+          <div className="text-2xl font-mono font-bold text-foreground">
+            {ordersLoading ? "—" : `$${totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">across completed orders</div>
         </div>
         <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Gold (oz)</h3>
-          <div className="text-2xl font-mono font-bold text-primary">2.50</div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Orders Placed</h3>
+          <div className="text-2xl font-mono font-bold text-primary">
+            {ordersLoading ? "—" : ordersPlaced}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">total</div>
         </div>
         <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Silver (oz)</h3>
-          <div className="text-2xl font-mono font-bold text-slate-300">105.00</div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Orders Completed</h3>
+          <div className="text-2xl font-mono font-bold text-green-400">
+            {ordersLoading ? "—" : ordersCompleted}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">fulfilled</div>
         </div>
         <div className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Active OTC Orders</h3>
