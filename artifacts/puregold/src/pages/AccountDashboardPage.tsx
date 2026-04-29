@@ -1,11 +1,260 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useKYC, KYC_STATUS } from "@/lib/kycContext";
 import { getOTCOrders } from "@/lib/otcOrders";
-import { LogOut, Package, Heart, Bell, Bitcoin } from "lucide-react";
+import { LogOut, Package, Heart, Bell, Bitcoin, Upload, CheckCircle, X, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { KYCStatusBadge } from "@/components/kyc/KYCStatusBadge";
+
+function useCountdown(deadline: string | null) {
+  const [timeLeft, setTimeLeft] = useState<{ h: number; m: number; s: number; expired: boolean } | null>(null);
+
+  useEffect(() => {
+    if (!deadline) { setTimeLeft(null); return; }
+    const tick = () => {
+      const diff = new Date(deadline).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft({ h: 0, m: 0, s: 0, expired: true }); return; }
+      setTimeLeft({
+        h: Math.floor(diff / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000),
+        expired: false,
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [deadline]);
+
+  return timeLeft;
+}
+
+function ReceiptUploadModal({
+  applicationId,
+  userEmail,
+  onClose,
+}: {
+  applicationId: string | null;
+  userEmail: string;
+  onClose: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (f: File) => {
+    if (f.size > 10 * 1024 * 1024) { setError("File must be under 10MB."); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      setPreview(e.target?.result as string);
+      setFile(f);
+    };
+    reader.readAsDataURL(f);
+  };
+
+  const handleSubmit = async () => {
+    if (!preview) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/kyc/receipt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId, userEmail, receiptFile: preview }),
+      });
+      const data = await res.json();
+      if (data.success) setDone(true);
+      else setError(data.error || "Failed to send. Please try again.");
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+      <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-foreground">Upload Payment Receipt</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {done ? (
+          <div className="text-center py-6">
+            <CheckCircle className="h-14 w-14 text-green-400 mx-auto mb-3" />
+            <h4 className="text-lg font-bold text-green-400 mb-2">Receipt Submitted</h4>
+            <p className="text-sm text-muted-foreground mb-4">Our team has been notified and will confirm your wire within a few hours.</p>
+            <button onClick={onClose} className="bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors">
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground mb-4">
+              Upload a screenshot or PDF of your bank wire confirmation. Our compliance team will verify it and confirm your transaction.
+            </p>
+
+            {preview ? (
+              <div className="relative mb-4 rounded-xl overflow-hidden border border-border">
+                {file?.type === "application/pdf" ? (
+                  <div className="h-32 flex items-center justify-center bg-secondary/30 text-sm text-foreground">
+                    📄 {file.name}
+                  </div>
+                ) : (
+                  <img src={preview} alt="Receipt" className="w-full max-h-48 object-contain bg-black/30" />
+                )}
+                <button
+                  onClick={() => { setFile(null); setPreview(null); }}
+                  className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black transition-colors"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => inputRef.current?.click()}
+                className="w-full border-2 border-dashed border-border hover:border-primary/50 rounded-xl py-8 flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+              >
+                <Upload className="h-8 w-8" />
+                <span className="text-sm font-medium">Click to upload receipt</span>
+                <span className="text-xs">JPG, PNG or PDF — max 10MB</span>
+              </button>
+            )}
+
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*,application/pdf"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+            />
+
+            {error && (
+              <div className="bg-destructive/10 border border-destructive/30 rounded-lg px-3 py-2 text-sm text-destructive mb-3">
+                {error}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button onClick={onClose} className="flex-1 border border-border text-foreground py-2.5 rounded-lg text-sm font-semibold hover:bg-secondary/50 transition-colors">
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!preview || submitting}
+                className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-green-500 transition-colors disabled:opacity-50"
+              >
+                {submitting ? "Sending…" : "Submit Receipt"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function WireDeadlineCard({
+  wireInfo,
+  applicationId,
+  userEmail,
+}: {
+  wireInfo: NonNullable<ReturnType<typeof useKYC>["wireInfo"]>;
+  applicationId: string | null;
+  userEmail: string;
+}) {
+  const countdown = useCountdown(wireInfo.wireDeadline);
+  const [showReceipt, setShowReceipt] = useState(false);
+
+  const hasBankDetails = wireInfo.bankName || wireInfo.accountNumber;
+  const isExpired = countdown?.expired ?? false;
+
+  return (
+    <>
+      {showReceipt && (
+        <ReceiptUploadModal
+          applicationId={applicationId}
+          userEmail={userEmail}
+          onClose={() => setShowReceipt(false)}
+        />
+      )}
+
+      <div className={`rounded-xl border p-5 mb-6 ${isExpired ? "bg-red-500/10 border-red-500/30" : "bg-amber-500/10 border-amber-500/30"}`}>
+        <div className="flex items-center gap-2 mb-3">
+          <Clock className={`h-5 w-5 ${isExpired ? "text-red-400" : "text-amber-400"}`} />
+          <h3 className={`font-bold text-base ${isExpired ? "text-red-400" : "text-amber-300"}`}>
+            {isExpired ? "Wire Deadline Expired" : "⚡ Wire Transfer Required — Time Sensitive"}
+          </h3>
+        </div>
+
+        {countdown && !isExpired && (
+          <div className="flex gap-2 mb-4">
+            {[
+              { label: "HRS", val: countdown.h },
+              { label: "MIN", val: countdown.m },
+              { label: "SEC", val: countdown.s },
+            ].map(({ label, val }) => (
+              <div key={label} className="flex-1 bg-black/40 rounded-lg py-2 text-center">
+                <div className="text-2xl font-mono font-bold text-amber-300">{String(val).padStart(2, "0")}</div>
+                <div className="text-[10px] text-amber-400/70 font-medium mt-0.5">{label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {isExpired && (
+          <p className="text-sm text-red-300 mb-4">
+            Your 4-hour wire window has closed. Please contact <strong>support@goldbuller.com</strong> to get a fresh quote and updated wire instructions.
+          </p>
+        )}
+
+        {hasBankDetails && !isExpired && (
+          <div className="bg-black/30 rounded-xl p-4 mb-4">
+            <p className="text-xs font-bold text-primary uppercase tracking-wider mb-3">🏦 Wire Instructions</p>
+            <div className="space-y-1.5 text-sm">
+              {(
+                [
+                  ["Bank Name", wireInfo.bankName],
+                  ["Account Name", wireInfo.accountName],
+                  ["Account Number", wireInfo.accountNumber],
+                  ["Routing (ABA)", wireInfo.routingNumber],
+                  wireInfo.swiftCode ? ["SWIFT / BIC", wireInfo.swiftCode] : null,
+                  wireInfo.bankAddress ? ["Bank Address", wireInfo.bankAddress] : null,
+                  ["Reference / Memo", applicationId || "—"],
+                ] as (string[] | null)[]
+              ).filter((x): x is string[] => x !== null).map(([k, v]) => (
+                <div key={k as string} className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">{k}:</span>
+                  <span className="text-foreground font-mono font-semibold text-right text-xs sm:text-sm break-all">{v}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-amber-400/80 mt-3">
+              ⚠️ Always include the reference number in the wire memo field.
+            </p>
+          </div>
+        )}
+
+        {!isExpired && (
+          <button
+            onClick={() => setShowReceipt(true)}
+            className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-sm transition-colors"
+          >
+            <CheckCircle className="h-4 w-4" />
+            I Have Paid — Upload Wire Receipt
+          </button>
+        )}
+      </div>
+    </>
+  );
+}
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -66,14 +315,31 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function AccountDashboardPage() {
-  const { kycStatus, isApproved } = useKYC();
+  const { kycStatus, isApproved, kycApplicationId, wireInfo, refreshStatus } = useKYC();
+  const { user } = useAuth();
   const otcOrders = getOTCOrders();
   const pendingOTC = otcOrders.filter(o => o.status === "wire_awaited" || o.status === "submitted" || o.status === "wire_received").length;
+
+  // Refresh to pick up wire details on mount when approved
+  useEffect(() => {
+    if (isApproved) refreshStatus();
+  }, [isApproved]);
+
+  const hasActiveWire = isApproved && wireInfo?.wireDeadline && wireInfo?.bankName;
 
   return (
     <DashboardLayout>
       <h1 className="text-3xl font-serif font-bold text-foreground mb-8">Portfolio Dashboard</h1>
-      
+
+      {/* Wire deadline countdown — shown when approved and deadline is set */}
+      {hasActiveWire && (
+        <WireDeadlineCard
+          wireInfo={wireInfo!}
+          applicationId={kycApplicationId}
+          userEmail={user?.email || ""}
+        />
+      )}
+
       {/* Metrics row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-card border border-border rounded-lg p-5">
@@ -163,7 +429,7 @@ export default function AccountDashboardPage() {
           </div>
         </div>
       )}
-      
+
       <h2 className="text-xl font-bold mb-4">Recent Orders</h2>
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="p-8 text-center text-muted-foreground">

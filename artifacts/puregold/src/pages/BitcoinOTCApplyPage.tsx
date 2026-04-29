@@ -124,7 +124,7 @@ function ConfirmationModal({ order, onClose }: { order: OTCOrder; onClose: () =>
 
 export default function BitcoinOTCApplyPage() {
   const { user } = useAuth();
-  const { kycStatus } = useKYC();
+  const { kycStatus, wireInfo, kycApplicationId } = useKYC();
   const [, setLocation] = useLocation();
   const search = useSearch();
   const params = new URLSearchParams(search);
@@ -331,24 +331,29 @@ export default function BitcoinOTCApplyPage() {
             <p className="text-sm text-muted-foreground">After submission, you'll receive personalized wire instructions. Here's what to expect:</p>
 
             <div className="bg-secondary/20 rounded-xl p-5 text-sm font-mono space-y-2 text-muted-foreground">
-              <p className="font-semibold text-foreground mb-2 not-italic">Wire Instructions (sent after submission)</p>
+              <p className="font-semibold text-foreground mb-2 not-italic">
+                {wireInfo?.bankName ? "🏦 Your Wire Instructions" : "Wire Instructions (confirmed after KYC approval)"}
+              </p>
               <div className="space-y-1.5">
-                {[
-                  ["Bank Name", "JPMorgan Chase Bank, N.A."],
-                  ["Account Name", "GoldBuller LLC"],
-                  ["ABA Routing", "021000021"],
-                  ["Account Number", "847293018475"],
-                  ["Reference/Memo", "[YOUR ORDER # — auto-assigned]"],
-                  ["Amount", `$${fmt(finalTotal)} USD`],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex gap-2 text-xs sm:text-sm">
+                {(
+                  [
+                    ["Bank Name", wireInfo?.bankName || "Confirmed after KYC approval"],
+                    ["Account Name", wireInfo?.accountName || "GoldBuller LLC"],
+                    ["ABA Routing", wireInfo?.routingNumber || "Confirmed after KYC approval"],
+                    ["Account Number", wireInfo?.accountNumber || "Confirmed after KYC approval"],
+                    wireInfo?.swiftCode ? ["SWIFT / BIC", wireInfo.swiftCode] : null,
+                    ["Reference/Memo", kycApplicationId || "[YOUR KYC APPLICATION ID]"],
+                    ["Amount", `$${fmt(finalTotal)} USD`],
+                  ] as (string[] | null)[]
+                ).filter((x): x is string[] => x !== null).map(([k, v]) => (
+                  <div key={k as string} className="flex gap-2 text-xs sm:text-sm">
                     <span className="w-36 shrink-0 text-muted-foreground">{k}:</span>
-                    <span className="text-foreground">{v}</span>
+                    <span className={`${!(wireInfo?.bankName) && (v as string).includes("Confirmed") ? "text-amber-400/70 italic" : "text-foreground"}`}>{v as string}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t border-border/40 pt-3 mt-2 text-xs space-y-1">
-                <p>⚠️ Wire must be received within 3 business days</p>
+                <p>⚠️ Wire must be received within 4 hours of approval</p>
                 <p>⚠️ Reference number MUST appear in wire memo field</p>
                 <p>⚠️ Wire must come from account in your verified name</p>
               </div>

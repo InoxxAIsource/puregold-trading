@@ -441,6 +441,55 @@ router.post("/admin/kyc/decline", async (req, res) => {
   }
 });
 
+// POST /api/kyc/receipt — user submits wire payment receipt
+router.post("/kyc/receipt", async (req, res) => {
+  const { applicationId, userEmail, receiptFile } = req.body as {
+    applicationId: string | null;
+    userEmail: string;
+    receiptFile: string;
+  };
+
+  try {
+    const apiKey = process.env["RESEND_API_KEY"];
+    if (!apiKey) return res.json({ success: true }); // Silently succeed if email not configured
+
+    const adminEmail = process.env["KYC_ADMIN_EMAIL"] || "chainlayer650@gmail.com";
+    const attachments: { filename: string; content: Buffer }[] = [];
+
+    if (receiptFile) {
+      try {
+        const { buffer, ext } = base64ToBuffer(receiptFile);
+        attachments.push({ filename: `wire_receipt_${applicationId || userEmail}.${ext}`, content: buffer });
+      } catch {}
+    }
+
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from: "GoldBuller KYC <support@goldbuller.com>",
+      to: [adminEmail],
+      subject: `[KYC] Wire Receipt Submitted — ${userEmail}${applicationId ? ` (#${applicationId})` : ""}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0f0f0f;color:#e5e5e5;padding:32px;border-radius:12px">
+          <div style="background:#166534;padding:16px 24px;border-radius:8px;margin-bottom:24px">
+            <h1 style="margin:0;color:#fff;font-size:18px;font-weight:bold">💸 Wire Receipt Submitted</h1>
+            <p style="margin:6px 0 0;color:#86efac;font-size:13px">User has confirmed payment and uploaded receipt</p>
+          </div>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr><td style="padding:6px 0;color:#888;width:40%">User Email:</td><td style="color:#e5e5e5;font-weight:600">${userEmail}</td></tr>
+            ${applicationId ? `<tr><td style="padding:6px 0;color:#888">Application ID:</td><td style="color:#e5e5e5;font-weight:600">#${applicationId}</td></tr>` : ""}
+            <tr><td style="padding:6px 0;color:#888">Submitted At:</td><td style="color:#e5e5e5;font-weight:600">${new Date().toLocaleString("en-US", { timeZone: "America/New_York" })} EDT</td></tr>
+          </table>
+          <p style="margin-top:20px;font-size:13px;color:#a3a3a3">Receipt image is attached. Please verify and confirm the wire on your end.</p>
+        </div>`,
+      attachments,
+    });
+
+    return res.json({ success: true });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Legacy GET review — still works for old email links (no bank wire, direct approve)
 router.get("/kyc/review", async (req, res) => {
   const { id, token, action } = req.query as { id: string; token: string; action: string };
