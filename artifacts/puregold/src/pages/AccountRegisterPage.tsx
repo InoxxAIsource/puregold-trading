@@ -35,7 +35,6 @@ export default function AccountRegisterPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
-  const [btcInterest, setBtcInterest] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -52,8 +51,6 @@ export default function AccountRegisterPage() {
     setSubmitting(true);
 
     saveUser({ firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim().toLowerCase(), password });
-    if (btcInterest) localStorage.setItem("btc_otc_interest", "true");
-
     const name = `${firstName.trim()} ${lastName.trim()}`;
     login({ email: email.trim().toLowerCase(), name });
     setLocation(redirectUrl);
@@ -63,7 +60,7 @@ export default function AccountRegisterPage() {
     <div className="container mx-auto px-4 py-12 flex justify-center">
       <div className="w-full max-w-lg bg-card border border-border rounded-lg p-8">
         <h1 className="text-3xl font-serif font-bold text-center mb-2">Create Account</h1>
-        <p className="text-center text-muted-foreground text-sm mb-8">Join GoldBuller — buy gold, silver, and Bitcoin OTC</p>
+        <p className="text-center text-muted-foreground text-sm mb-8">Join GoldBuller — buy gold, silver, and precious metals</p>
 
         {error && (
           <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm text-destructive mb-5">
@@ -139,26 +136,6 @@ export default function AccountRegisterPage() {
               required
               className="bg-background border-border"
             />
-          </div>
-
-          <div className="bg-orange-400/5 border border-orange-400/20 rounded-lg p-4">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={btcInterest}
-                onChange={e => setBtcInterest(e.target.checked)}
-                className="mt-0.5 accent-orange-400"
-              />
-              <div>
-                <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                  <span className="text-orange-400 font-bold">₿</span>
-                  I'm interested in Bitcoin OTC purchases
-                </span>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Complete KYC after sign-up to unlock purchasing 0.20–10 BTC via wire transfer.
-                </p>
-              </div>
-            </label>
           </div>
 
           <Button type="submit" className="w-full h-12 uppercase font-bold tracking-wider" disabled={submitting}>
