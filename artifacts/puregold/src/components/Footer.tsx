@@ -7,7 +7,7 @@ const COLS = [
     links: [
       { label: "Contact Us", href: "/contact" },
       { label: "Order Status", href: "/account/orders" },
-      { label: "Shipping & Returns", href: "/about/shipping" },
+      { label: "Shipping & Returns", href: "/shipping" },
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms & Conditions", href: "/terms-of-service" },
       { label: "Client Agreement", href: "/terms-of-service" },
@@ -23,7 +23,7 @@ const COLS = [
       { label: "Shipping / FAQ", href: "/faq" },
       { label: "Sell To Us", href: "/sell-to-us" },
       { label: "Buy Back Guarantee", href: "/sell-to-us" },
-      { label: "Returns Policy", href: "/about/shipping" },
+      { label: "Returns Policy", href: "/shipping" },
       { label: "Bitcoin OTC Desk", href: "/bitcoin-otc" },
       { label: "Bulk & Wholesale", href: "/contact" },
     ],

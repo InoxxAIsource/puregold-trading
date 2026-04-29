@@ -178,6 +178,7 @@ function Router() {
         {/* About & Policies */}
         <Route path="/about" component={AboutPage} />
         <Route path="/about/shipping" component={ShippingPage} />
+        <Route path="/shipping" component={ShippingPage} />
         <Route path="/faq" component={FAQPage} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/privacy-policy" component={PrivacyPolicyPage} />
