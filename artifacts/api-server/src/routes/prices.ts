@@ -135,7 +135,7 @@ router.get("/history/:metal", async (req: Request, res: Response) => {
   const timeframe = (req.query.timeframe as string) || "1m";
 
   const prices = await fetchLivePrices();
-  const metalKey = metal.toLowerCase() as keyof typeof prices;
+  const metalKey = String(metal).toLowerCase() as keyof typeof prices;
   const currentPrice = prices[metalKey]?.price ?? 4735.48;
 
   const days = METAL_DAYS[timeframe] ?? 30;

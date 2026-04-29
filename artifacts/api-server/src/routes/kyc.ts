@@ -308,10 +308,10 @@ router.get("/kyc/review", async (req, res) => {
       ? `Application #${id} approved. The user has been notified by email.`
       : `Application #${id} declined. The user has been notified by email.`;
 
-    res.json({ success: true, message: msg });
+    return res.json({ success: true, message: msg });
   } catch (err: any) {
     console.error("KYC review error:", err);
-    res.status(500).json({ success: false, error: "Database error" });
+    return res.status(500).json({ success: false, error: "Database error" });
   }
 });
 
@@ -333,10 +333,10 @@ router.get("/kyc/status", async (req, res) => {
       new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
     )[0];
 
-    res.json({ success: true, status: latest.status, applicationId: latest.applicationId });
+    return res.json({ success: true, status: latest.status, applicationId: latest.applicationId });
   } catch (err: any) {
     console.error("KYC status error:", err);
-    res.status(500).json({ success: false, error: "Database error" });
+    return res.status(500).json({ success: false, error: "Database error" });
   }
 });
 

@@ -26,6 +26,7 @@ export const usePrice = () => useContext(PriceContext);
 export function PriceProvider({ children }: { children: ReactNode }) {
   const { data, isLoading } = useGetSpotPrices({
     query: {
+      queryKey: ["spot-prices"],
       refetchInterval: 60000,
     }
   });

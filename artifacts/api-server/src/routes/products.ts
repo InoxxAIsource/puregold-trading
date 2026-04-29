@@ -165,7 +165,7 @@ router.get("/:slug/related", async (req: Request, res: Response) => {
   const product = await db
     .select()
     .from(productsTable)
-    .where(eq(productsTable.slug, req.params.slug))
+    .where(eq(productsTable.slug, String(req.params.slug)))
     .limit(1);
 
   if (!product[0]) {
@@ -202,7 +202,7 @@ router.get("/:slug", async (req: Request, res: Response) => {
   const product = await db
     .select()
     .from(productsTable)
-    .where(eq(productsTable.slug, req.params.slug))
+    .where(eq(productsTable.slug, String(req.params.slug)))
     .limit(1);
 
   if (!product[0]) {

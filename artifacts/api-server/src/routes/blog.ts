@@ -38,7 +38,7 @@ router.get("/posts/:slug", async (req: Request, res: Response) => {
   const post = await db
     .select()
     .from(blogPostsTable)
-    .where(eq(blogPostsTable.slug, req.params.slug))
+    .where(eq(blogPostsTable.slug, String(req.params.slug)))
     .limit(1);
 
   if (!post[0]) {
