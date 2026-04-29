@@ -13,6 +13,7 @@ import { KYCProvider } from "@/lib/kycContext";
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ChatWidget } from "@/components/ChatWidget";
 
 // Eagerly load the most-visited pages
 import HomePage from "@/pages/HomePage";
@@ -205,6 +206,7 @@ function AppLayout() {
       </main>
       <Footer />
       <Toaster />
+      <ChatWidget />
     </div>
   );
 }

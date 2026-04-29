@@ -9,6 +9,7 @@ import blogRouter from "./blog";
 import statsRouter from "./stats";
 import kycRouter from "./kyc";
 import authRouter from "./auth";
+import chatRouter from "./chat";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use("/blog", blogRouter);
 router.use("/stats", statsRouter);
 router.use(kycRouter);
 router.use(authRouter);
+router.use(chatRouter);
 
 export default router;
