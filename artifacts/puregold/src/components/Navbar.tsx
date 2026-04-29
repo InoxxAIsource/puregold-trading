@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { Link } from "wouter";
-import { Search, ShoppingCart, User, Menu, X, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "wouter";
+import { Search, ShoppingCart, User, Menu, X, ChevronDown, LayoutDashboard, LogOut, ShieldCheck, Package, Bitcoin, UserCircle } from "lucide-react";
 import { useCartContext } from "@/contexts/CartContext";
 import { usePrice } from "@/contexts/PriceContext";
 import { useBTCPrice } from "@/lib/btcPrice";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BTC_MENU = [
   { label: "Buy Bitcoin OTC", href: "/bitcoin-otc", desc: "Purchase 0.20–10 BTC privately" },
@@ -19,10 +20,15 @@ export function Navbar() {
   const { totalItems } = useCartContext();
   const { spotPrices } = usePrice();
   const { price: btcPrice, change: btcChange, direction: btcDir } = useBTCPrice();
+  const { user, logout } = useAuth();
+  const [, setLocation] = useLocation();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [btcMenuOpen, setBtcMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -30,7 +36,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close BTC menu when clicking outside
+  // Close BTC menu on outside click
   useEffect(() => {
     if (!btcMenuOpen) return;
     const handler = () => setBtcMenuOpen(false);
@@ -38,8 +44,29 @@ export function Navbar() {
     return () => document.removeEventListener("click", handler);
   }, [btcMenuOpen]);
 
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    if (!profileOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    setTimeout(() => document.addEventListener("click", handler), 0);
+    return () => document.removeEventListener("click", handler);
+  }, [profileOpen]);
+
   const goldPrice = spotPrices.find(p => p.metal === "gold");
   const silverPrice = spotPrices.find(p => p.metal === "silver");
+
+  const handleLogout = () => {
+    setProfileOpen(false);
+    logout();
+    setLocation("/");
+  };
+
+  const displayName = user?.name || user?.email?.split("@")[0] || "Account";
+  const initials = displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
     <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-black/80 backdrop-blur-xl border-b border-border' : 'bg-background'}`}>
@@ -102,19 +129,108 @@ export function Navbar() {
 
           <div className="flex items-center gap-5">
             <div className="hidden lg:flex items-center relative group">
-              <input 
-                type="text" 
-                placeholder="Search products..." 
+              <input
+                type="text"
+                placeholder="Search products..."
                 className="w-48 xl:w-64 bg-card border border-border rounded-full py-1.5 pl-4 pr-10 text-sm focus:outline-none focus:border-primary transition-colors"
                 data-testid="input-search"
               />
               <Search className="h-4 w-4 text-muted-foreground absolute right-3" />
             </div>
-            
-            <Link href="/account/login" className="text-foreground hover:text-primary transition-colors" data-testid="link-login" aria-label="Account login">
-              <User className="h-5 w-5" aria-hidden="true" />
-            </Link>
-            
+
+            {/* Profile icon / dropdown */}
+            <div className="relative" ref={profileRef}>
+              {user ? (
+                <button
+                  onClick={() => setProfileOpen(v => !v)}
+                  className="flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
+                  data-testid="btn-profile-menu"
+                  aria-label="Account menu"
+                >
+                  <div className="h-8 w-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-xs font-bold text-primary">
+                    {initials}
+                  </div>
+                  <ChevronDown className={`h-3 w-3 transition-transform ${profileOpen ? "rotate-180" : ""}`} />
+                </button>
+              ) : (
+                <Link href="/account/login" className="text-foreground hover:text-primary transition-colors" data-testid="link-login" aria-label="Account login">
+                  <User className="h-5 w-5" aria-hidden="true" />
+                </Link>
+              )}
+
+              {/* Profile dropdown */}
+              {profileOpen && user && (
+                <div className="absolute right-0 top-full mt-2 w-60 bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50">
+                  {/* User info header */}
+                  <div className="px-4 py-3 border-b border-border bg-secondary/20">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-sm font-bold text-primary shrink-0">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground text-sm truncate">{displayName}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nav items */}
+                  <div className="py-1">
+                    <Link
+                      href="/account/dashboard"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                    >
+                      <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/account/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                    >
+                      <UserCircle className="h-4 w-4 text-muted-foreground" />
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/account/orders"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                    >
+                      <Package className="h-4 w-4 text-muted-foreground" />
+                      My Orders
+                    </Link>
+                    <Link
+                      href="/account/kyc"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                    >
+                      <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                      KYC Status
+                    </Link>
+                    <Link
+                      href="/account/otc-orders"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-orange-400 hover:bg-secondary/50 transition-colors"
+                    >
+                      <Bitcoin className="h-4 w-4" />
+                      Bitcoin OTC Orders
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-border py-1">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors w-full text-left"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Link href="/cart" className="text-foreground hover:text-primary transition-colors relative" data-testid="link-cart" aria-label={`Shopping cart${totalItems > 0 ? `, ${totalItems} items` : ""}`}>
               <ShoppingCart className="h-5 w-5" aria-hidden="true" />
               {totalItems > 0 && (
@@ -181,17 +297,27 @@ export function Navbar() {
         <div className="lg:hidden absolute top-full left-0 w-full bg-card border-b border-border shadow-xl py-4 px-4 flex flex-col gap-4 z-50">
           <input type="text" placeholder="Search..." className="w-full bg-background border border-border rounded-md py-2 px-3 text-sm" />
           <div className="grid grid-cols-2 gap-4">
-            <Link href="/gold" className="font-medium text-foreground py-1">Gold</Link>
-            <Link href="/silver" className="font-medium text-foreground py-1">Silver</Link>
-            <Link href="/platinum" className="font-medium text-foreground py-1">Platinum</Link>
-            <Link href="/copper" className="font-medium text-foreground py-1">Copper</Link>
-            <Link href="/bitcoin-otc" className="font-medium text-orange-400 py-1">₿ Bitcoin OTC</Link>
-            <Link href="/on-sale" className="font-medium text-red-500 py-1">On Sale</Link>
-            <Link href="/new-arrivals" className="font-medium text-foreground py-1">New Arrivals</Link>
-            <Link href="/charts" className="font-medium text-foreground py-1">Charts</Link>
-            <Link href="/sell-to-us" className="font-medium text-foreground py-1">Sell to Us</Link>
-            <Link href="/account/kyc" className="font-medium text-foreground py-1">KYC</Link>
+            <Link href="/gold" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Gold</Link>
+            <Link href="/silver" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Silver</Link>
+            <Link href="/platinum" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Platinum</Link>
+            <Link href="/copper" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Copper</Link>
+            <Link href="/bitcoin-otc" className="font-medium text-orange-400 py-1" onClick={() => setMobileMenuOpen(false)}>₿ Bitcoin OTC</Link>
+            <Link href="/on-sale" className="font-medium text-red-500 py-1" onClick={() => setMobileMenuOpen(false)}>On Sale</Link>
+            <Link href="/new-arrivals" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>New Arrivals</Link>
+            <Link href="/charts" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Charts</Link>
+            <Link href="/sell-to-us" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Sell to Us</Link>
+            <Link href="/account/kyc" className="font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>KYC</Link>
           </div>
+          {user ? (
+            <div className="border-t border-border pt-3 flex flex-col gap-2">
+              <Link href="/account/dashboard" className="text-sm font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+              <Link href="/account/profile" className="text-sm font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>My Profile</Link>
+              <Link href="/account/orders" className="text-sm font-medium text-foreground py-1" onClick={() => setMobileMenuOpen(false)}>My Orders</Link>
+              <button onClick={handleLogout} className="text-sm font-medium text-destructive text-left py-1">Sign Out</button>
+            </div>
+          ) : (
+            <Link href="/account/login" className="text-sm font-medium text-primary py-1" onClick={() => setMobileMenuOpen(false)}>Sign In / Create Account</Link>
+          )}
         </div>
       )}
     </header>

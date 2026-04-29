@@ -44,6 +44,7 @@ const InvestingGuidePage = lazy(() => import("@/pages/InvestingGuidePage"));
 const AccountLoginPage = lazy(() => import("@/pages/AccountLoginPage"));
 const AccountRegisterPage = lazy(() => import("@/pages/AccountRegisterPage"));
 const AccountDashboardPage = lazy(() => import("@/pages/AccountDashboardPage"));
+const AccountProfilePage = lazy(() => import("@/pages/AccountProfilePage"));
 const AccountOrdersPage = lazy(() => import("@/pages/AccountOrdersPage"));
 const AccountWatchlistPage = lazy(() => import("@/pages/AccountWatchlistPage"));
 const AccountPriceAlertsPage = lazy(() => import("@/pages/AccountPriceAlertsPage"));
@@ -158,6 +159,7 @@ function Router() {
         <Route path="/account/login" component={AccountLoginPage} />
         <Route path="/account/register" component={AccountRegisterPage} />
         <Route path="/account/dashboard" component={AccountDashboardPage} />
+        <Route path="/account/profile" component={AccountProfilePage} />
         <Route path="/account/orders" component={AccountOrdersPage} />
         <Route path="/account/watchlist" component={AccountWatchlistPage} />
         <Route path="/account/price-alerts" component={AccountPriceAlertsPage} />
