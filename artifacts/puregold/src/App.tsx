@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useRoute } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
@@ -63,6 +63,7 @@ const BitcoinIRAPage = lazy(() => import("@/pages/BitcoinIRAPage"));
 const BitcoinOTCFAQPage = lazy(() => import("@/pages/BitcoinOTCFAQPage"));
 const KYCPage = lazy(() => import("@/pages/KYCPage"));
 const KYCReviewPage = lazy(() => import("@/pages/KYCReviewPage"));
+const AdminKYCPage = lazy(() => import("@/pages/AdminKYCPage"));
 const OTCOrdersPage = lazy(() => import("@/pages/OTCOrdersPage"));
 const BTCChartPage = lazy(() => import("@/pages/BTCChartPage"));
 const GlossaryIndexPage = lazy(() => import("@/pages/GlossaryIndexPage"));
@@ -180,6 +181,28 @@ function Router() {
   );
 }
 
+function AppLayout() {
+  const [isAdmin] = useRoute("/admin");
+  if (isAdmin) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <AdminKYCPage />
+        <Toaster />
+      </Suspense>
+    );
+  }
+  return (
+    <div className="flex flex-col min-h-[100dvh]">
+      <Navbar />
+      <main className="flex-1">
+        <Router />
+      </main>
+      <Footer />
+      <Toaster />
+    </div>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -190,14 +213,7 @@ function App() {
               <WatchlistProvider>
                 <TooltipProvider>
                   <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                    <div className="flex flex-col min-h-[100dvh]">
-                      <Navbar />
-                      <main className="flex-1">
-                        <Router />
-                      </main>
-                      <Footer />
-                    </div>
-                    <Toaster />
+                    <AppLayout />
                   </WouterRouter>
                 </TooltipProvider>
               </WatchlistProvider>

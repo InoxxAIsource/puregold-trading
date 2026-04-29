@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { ChevronRight, ChevronLeft, Check, AlertCircle, Info } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, AlertCircle, Camera, Upload, X } from "lucide-react";
 import { FileUpload } from "@/components/kyc/FileUpload";
 import { useKYC, KYC_STATUS } from "@/lib/kycContext";
 import { useAuth } from "@/contexts/AuthContext";
 
-const STEPS = ["Personal Info", "Identity", "Address", "Review"];
+const STEPS = ["Personal Info", "Identity", "Address", "Selfie", "Review"];
 
 const COUNTRIES = [
   "United States", "Canada", "United Kingdom", "Australia", "Germany",
@@ -44,18 +44,20 @@ interface AddressInfo {
   docType: string; addressFile: string | null;
   street: string; city: string; state: string; zip: string; country: string;
 }
+interface SelfieInfo {
+  selfieFile: string | null;
+}
 
 function ProgressBar({ step }: { step: number }) {
   return (
-    <div className="flex items-center gap-0 mb-10">
+    <div className="flex items-center mb-8">
       {STEPS.map((label, i) => (
-        <div key={i} className="flex items-center flex-1">
+        <div key={i} className="flex items-center flex-1 last:flex-none">
           <div className="flex flex-col items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors ${
-              i < step ? "bg-primary border-primary text-primary-foreground"
+            <div className={`h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-colors
+              ${i < step ? "bg-primary border-primary text-primary-foreground"
               : i === step ? "border-primary text-primary bg-primary/10"
-              : "border-border text-muted-foreground"
-            }`}>
+              : "border-border text-muted-foreground"}`}>
               {i < step ? <Check className="h-4 w-4" /> : i + 1}
             </div>
             <span className={`text-[10px] mt-1 font-medium hidden sm:block ${i === step ? "text-primary" : "text-muted-foreground"}`}>
@@ -72,148 +74,87 @@ function ProgressBar({ step }: { step: number }) {
 }
 
 function StepPersonal({ data, onChange, onNext }: {
-  data: PersonalInfo;
-  onChange: (d: PersonalInfo) => void;
-  onNext: () => void;
+  data: PersonalInfo; onChange: (d: PersonalInfo) => void; onNext: () => void;
 }) {
-  const set = (key: keyof PersonalInfo) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    onChange({ ...data, [key]: e.target.value });
+  const set = (k: keyof PersonalInfo) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    onChange({ ...data, [k]: e.target.value });
 
-  const validate18 = () => {
-    if (!data.dob) return false;
-    const dob = new Date(data.dob);
-    const now = new Date();
-    now.setFullYear(now.getFullYear() - 18);
-    return dob <= now;
-  };
+  const valid = data.firstName && data.lastName && data.dob && data.nationality &&
+    data.country && data.phone && data.occupation && data.sourceOfFunds &&
+    data.purpose && data.volume && data.usCitizen && data.pep;
 
-  const isValid = data.firstName && data.lastName && data.dob && validate18() &&
-    data.nationality && data.country && data.phone && data.occupation &&
-    data.sourceOfFunds && data.purpose && data.volume && data.usCitizen && data.pep;
+  const inp = "w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50";
+  const lbl = "block text-sm font-medium text-foreground mb-1.5";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h2 className="text-xl font-semibold text-foreground mb-1">Personal Information</h2>
-        <p className="text-sm text-muted-foreground">All fields are required. This information must match your government ID.</p>
+        <p className="text-sm text-muted-foreground">As it appears on your government-issued ID.</p>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {[["firstName","Legal First Name"],["lastName","Legal Last Name"]].map(([k,l]) => (
-          <div key={k}>
-            <label className="block text-sm font-medium text-foreground mb-1">{l} *</label>
-            <input value={(data as any)[k]} onChange={set(k as any)}
-              className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
-          </div>
-        ))}
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>First Name *</label><input className={inp} value={data.firstName} onChange={set("firstName")} /></div>
+        <div><label className={lbl}>Last Name *</label><input className={inp} value={data.lastName} onChange={set("lastName")} /></div>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Date of Birth * (must be 18+)</label>
-          <input type="date" value={data.dob} onChange={set("dob")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
-          {data.dob && !validate18() && <p className="text-xs text-destructive mt-1">Must be 18 or older</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Phone Number *</label>
-          <input type="tel" value={data.phone} onChange={set("phone")} placeholder="+1 555 000 0000"
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Nationality *</label>
-          <select value={data.nationality} onChange={set("nationality")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
-            <option value="">Select...</option>
-            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Country of Residence *</label>
-          <select value={data.country} onChange={set("country")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
-            <option value="">Select...</option>
-            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>Date of Birth *</label><input type="date" className={inp} value={data.dob} onChange={set("dob")} /></div>
+        <div><label className={lbl}>Nationality *</label>
+          <select className={inp} value={data.nationality} onChange={set("nationality")}>
+            <option value="">Select…</option>
+            {COUNTRIES.map(c => <option key={c}>{c}</option>)}
           </select>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Occupation *</label>
-          <input value={data.occupation} onChange={set("occupation")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">SSN (last 4 digits) — US residents</label>
-          <input value={data.ssn4} onChange={set("ssn4")} maxLength={4} placeholder="XXXX"
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary" />
-          <p className="text-xs text-muted-foreground mt-1">Used for identity verification only. Never stored in full.</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Source of Funds *</label>
-          <select value={data.sourceOfFunds} onChange={set("sourceOfFunds")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
-            <option value="">Select...</option>
-            {SOURCE_OF_FUNDS.map(s => <option key={s} value={s}>{s}</option>)}
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>Country of Residence *</label>
+          <select className={inp} value={data.country} onChange={set("country")}>
+            <option value="">Select…</option>
+            {COUNTRIES.map(c => <option key={c}>{c}</option>)}
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Purpose of Purchase *</label>
-          <select value={data.purpose} onChange={set("purpose")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
-            <option value="">Select...</option>
-            {PURPOSE_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
+        <div><label className={lbl}>Phone Number *</label><input className={inp} placeholder="+1 555 000 0000" value={data.phone} onChange={set("phone")} /></div>
+      </div>
+      <div><label className={lbl}>SSN Last 4 Digits (US only)</label>
+        <input className={inp} maxLength={4} placeholder="e.g. 1234" value={data.ssn4} onChange={set("ssn4")} />
+      </div>
+      <div><label className={lbl}>Occupation *</label><input className={inp} value={data.occupation} onChange={set("occupation")} /></div>
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>Source of Funds *</label>
+          <select className={inp} value={data.sourceOfFunds} onChange={set("sourceOfFunds")}>
+            <option value="">Select…</option>
+            {SOURCE_OF_FUNDS.map(s => <option key={s}>{s}</option>)}
+          </select>
+        </div>
+        <div><label className={lbl}>Purpose of Purchase *</label>
+          <select className={inp} value={data.purpose} onChange={set("purpose")}>
+            <option value="">Select…</option>
+            {PURPOSE_OPTIONS.map(p => <option key={p}>{p}</option>)}
           </select>
         </div>
       </div>
-
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-1">Expected Annual Purchase Volume *</label>
-        <select value={data.volume} onChange={set("volume")}
-          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary">
-          <option value="">Select...</option>
-          {VOLUME_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+      <div><label className={lbl}>Expected Annual Volume *</label>
+        <select className={inp} value={data.volume} onChange={set("volume")}>
+          <option value="">Select…</option>
+          {VOLUME_OPTIONS.map(v => <option key={v}>{v}</option>)}
         </select>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Are you a US citizen or resident? *</label>
-          <div className="flex gap-4 mt-2">
-            {["Yes","No"].map(v => (
-              <label key={v} className="flex items-center gap-2 cursor-pointer text-sm">
-                <input type="radio" name="usCitizen" value={v} checked={data.usCitizen === v} onChange={set("usCitizen")} className="accent-primary" />
-                {v}
-              </label>
-            ))}
-          </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>US Citizen or Resident? *</label>
+          <select className={inp} value={data.usCitizen} onChange={set("usCitizen")}>
+            <option value="">Select…</option>
+            <option>Yes</option><option>No</option>
+          </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1 flex items-center gap-1">
-            Are you a politically exposed person (PEP)? *
-            <span title="A PEP is a person with a prominent public function"><Info className="h-3 w-3 text-muted-foreground" /></span>
-          </label>
-          <div className="flex gap-4 mt-2">
-            {["Yes","No"].map(v => (
-              <label key={v} className="flex items-center gap-2 cursor-pointer text-sm">
-                <input type="radio" name="pep" value={v} checked={data.pep === v} onChange={set("pep")} className="accent-primary" />
-                {v}
-              </label>
-            ))}
-          </div>
+        <div><label className={lbl}>Politically Exposed Person? *</label>
+          <select className={inp} value={data.pep} onChange={set("pep")}>
+            <option value="">Select…</option>
+            <option>No</option><option>Yes</option>
+          </select>
         </div>
       </div>
-
-      <button onClick={onNext} disabled={!isValid}
-        className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-        Next: Identity Document <ChevronRight className="h-4 w-4" />
+      <button onClick={onNext} disabled={!valid}
+        className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-bold disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+        Continue <ChevronRight className="h-4 w-4" />
       </button>
     </div>
   );
@@ -222,46 +163,35 @@ function StepPersonal({ data, onChange, onNext }: {
 function StepIdentity({ data, onChange, onNext, onBack }: {
   data: IdentityInfo; onChange: (d: IdentityInfo) => void; onNext: () => void; onBack: () => void;
 }) {
-  const isValid = data.docType && data.frontFile;
+  const inp = "w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50";
+  const lbl = "block text-sm font-medium text-foreground mb-1.5";
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-1">National ID Card</h2>
-        <p className="text-sm text-muted-foreground">Upload clear photos of your government-issued ID. No selfie required.</p>
+        <h2 className="text-xl font-semibold text-foreground mb-1">Identity Document</h2>
+        <p className="text-sm text-muted-foreground">Upload clear photos of your government-issued ID. A selfie will be required in a later step.</p>
       </div>
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">Document Type *</label>
-        <div className="grid grid-cols-2 gap-2">
-          {DOC_TYPES.map(t => (
-            <label key={t} className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-colors text-sm ${
-              data.docType === t ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/40"
-            }`}>
-              <input type="radio" name="docType" value={t} checked={data.docType === t}
-                onChange={e => onChange({ ...data, docType: e.target.value })} className="accent-primary" />
-              {t}
-            </label>
-          ))}
-        </div>
+        <label className={lbl}>Document Type *</label>
+        <select className={inp} value={data.docType} onChange={e => onChange({ ...data, docType: e.target.value })}>
+          <option value="">Select document type…</option>
+          {DOC_TYPES.map(t => <option key={t}>{t}</option>)}
+        </select>
       </div>
-      <FileUpload label="Front of ID Card *" icon="🪪"
+      <FileUpload label="Front of ID *" icon="🪪"
+        hint="Clear photo of the front — all corners visible, JPG/PNG/PDF"
         onChange={(_, preview) => onChange({ ...data, frontFile: preview })} />
-      <FileUpload label="Back of ID Card (if applicable)" icon="🪪"
+      <FileUpload label="Back of ID (if applicable)" icon="🔄"
+        hint="Only needed for driver's license / state ID"
         onChange={(_, preview) => onChange({ ...data, backFile: preview })} />
-      <div className="bg-secondary/30 rounded-lg p-4 text-sm space-y-1">
-        <p className="font-medium text-foreground mb-2">ID requirements:</p>
-        {["Document is clearly readable","All four corners visible","No flash glare or blur","Must not be expired","Name must match your application"].map(r => (
-          <p key={r} className="text-muted-foreground flex items-center gap-2">
-            <Check className="h-3.5 w-3.5 text-green-400 shrink-0" /> {r}
-          </p>
-        ))}
-      </div>
       <div className="flex gap-3">
         <button onClick={onBack} className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
-        <button onClick={onNext} disabled={!isValid}
-          className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-semibold disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-          Next: Proof of Address <ChevronRight className="h-4 w-4" />
+        <button onClick={onNext} disabled={!data.docType || !data.frontFile}
+          className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-bold disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+          Continue <ChevronRight className="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -271,59 +201,38 @@ function StepIdentity({ data, onChange, onNext, onBack }: {
 function StepAddress({ data, onChange, onNext, onBack }: {
   data: AddressInfo; onChange: (d: AddressInfo) => void; onNext: () => void; onBack: () => void;
 }) {
-  const set = (key: keyof AddressInfo) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    onChange({ ...data, [key]: e.target.value });
-  const isValid = data.docType && data.addressFile && data.street && data.city && data.state && data.zip && data.country;
+  const set = (k: keyof AddressInfo) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    onChange({ ...data, [k]: e.target.value });
+  const inp = "w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50";
+  const lbl = "block text-sm font-medium text-foreground mb-1.5";
+  const valid = data.docType && data.street && data.city && data.state && data.zip && data.country;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h2 className="text-xl font-semibold text-foreground mb-1">Proof of Address</h2>
-        <p className="text-sm text-muted-foreground">Upload a recent document confirming your residential address.</p>
+        <p className="text-sm text-muted-foreground">Upload a utility bill or bank statement from the last 90 days.</p>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">Document Type *</label>
-        <div className="grid grid-cols-2 gap-2">
-          {ADDR_DOC_TYPES.map(t => (
-            <label key={t} className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-colors text-sm ${
-              data.docType === t ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/40"
-            }`}>
-              <input type="radio" name="addrDocType" value={t} checked={data.docType === t}
-                onChange={e => onChange({ ...data, docType: e.target.value })} className="accent-primary" />
-              {t}
-            </label>
-          ))}
-        </div>
+      <div><label className={lbl}>Document Type *</label>
+        <select className={inp} value={data.docType} onChange={set("docType")}>
+          <option value="">Select document type…</option>
+          {ADDR_DOC_TYPES.map(t => <option key={t}>{t}</option>)}
+        </select>
       </div>
-      <FileUpload label="Address Document *" icon="📋"
+      <FileUpload label="Address Document" icon="📄"
+        hint="JPG, PNG, or PDF — must show your name and address"
         onChange={(_, preview) => onChange({ ...data, addressFile: preview })} />
-      <p className="text-xs text-muted-foreground -mt-2">Must match the address on your uploaded document.</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-foreground mb-1">Street Address *</label>
-          <input value={data.street} onChange={set("street")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary text-foreground" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">City *</label>
-          <input value={data.city} onChange={set("city")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary text-foreground" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">State *</label>
-          <input value={data.state} onChange={set("state")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary text-foreground" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">ZIP Code *</label>
-          <input value={data.zip} onChange={set("zip")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary text-foreground" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Country *</label>
-          <select value={data.country} onChange={set("country")}
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary text-foreground">
-            <option value="">Select...</option>
-            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+      <div><label className={lbl}>Street Address *</label><input className={inp} placeholder="123 Main St" value={data.street} onChange={set("street")} /></div>
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>City *</label><input className={inp} value={data.city} onChange={set("city")} /></div>
+        <div><label className={lbl}>State *</label><input className={inp} placeholder="TX" value={data.state} onChange={set("state")} /></div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className={lbl}>ZIP Code *</label><input className={inp} value={data.zip} onChange={set("zip")} /></div>
+        <div><label className={lbl}>Country *</label>
+          <select className={inp} value={data.country} onChange={set("country")}>
+            <option value="">Select…</option>
+            {COUNTRIES.map(c => <option key={c}>{c}</option>)}
           </select>
         </div>
       </div>
@@ -331,17 +240,188 @@ function StepAddress({ data, onChange, onNext, onBack }: {
         <button onClick={onBack} className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
-        <button onClick={onNext} disabled={!isValid}
-          className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-semibold disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-          Next: Review <ChevronRight className="h-4 w-4" />
+        <button onClick={onNext} disabled={!valid}
+          className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-bold disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+          Continue <ChevronRight className="h-4 w-4" />
         </button>
       </div>
     </div>
   );
 }
 
-function StepReview({ personal, identity, address, onBack, onSubmit, submitting, submitError }: {
-  personal: PersonalInfo; identity: IdentityInfo; address: AddressInfo;
+function StepSelfie({ data, onChange, onNext, onBack }: {
+  data: SelfieInfo; onChange: (d: SelfieInfo) => void; onNext: () => void; onBack: () => void;
+}) {
+  const [mode, setMode] = useState<"choose" | "camera" | "upload">("choose");
+  const [cameraActive, setCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const startCamera = async () => {
+    setCameraError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+      setCameraActive(true);
+    } catch {
+      setCameraError("Could not access camera. Please use file upload instead.");
+    }
+  };
+
+  const stopCamera = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+    setCameraActive(false);
+  };
+
+  const capture = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const v = videoRef.current;
+    const c = canvasRef.current;
+    c.width = v.videoWidth;
+    c.height = v.videoHeight;
+    c.getContext("2d")?.drawImage(v, 0, 0);
+    const dataUrl = c.toDataURL("image/jpeg", 0.85);
+    onChange({ selfieFile: dataUrl });
+    stopCamera();
+    setMode("upload");
+  };
+
+  useEffect(() => {
+    return () => { stopCamera(); };
+  }, []);
+
+  if (mode === "choose") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground mb-1">Selfie Verification</h2>
+          <p className="text-sm text-muted-foreground">
+            Take a selfie or upload a recent photo of yourself. Your face must be clearly visible, matching your ID document.
+          </p>
+        </div>
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 flex items-start gap-2 text-sm text-amber-300">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>Hold your ID next to your face for a clearer verification photo (optional but recommended).</span>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => { setMode("camera"); startCamera(); }}
+            className="flex flex-col items-center gap-3 border-2 border-dashed border-primary/50 rounded-xl p-6 hover:border-primary hover:bg-primary/5 transition-colors"
+          >
+            <Camera className="h-10 w-10 text-primary" />
+            <div className="text-center">
+              <p className="font-semibold text-foreground">Take a Photo</p>
+              <p className="text-xs text-muted-foreground mt-1">Use your camera</p>
+            </div>
+          </button>
+          <button
+            onClick={() => setMode("upload")}
+            className="flex flex-col items-center gap-3 border-2 border-dashed border-border rounded-xl p-6 hover:border-primary/50 hover:bg-secondary/30 transition-colors"
+          >
+            <Upload className="h-10 w-10 text-muted-foreground" />
+            <div className="text-center">
+              <p className="font-semibold text-foreground">Upload Photo</p>
+              <p className="text-xs text-muted-foreground mt-1">From your device</p>
+            </div>
+          </button>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={onBack} className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
+            <ChevronLeft className="h-4 w-4" /> Back
+          </button>
+          <button onClick={onNext}
+            className="flex-1 border border-primary/40 text-primary py-3 rounded-lg font-semibold hover:bg-primary/5 transition-colors text-sm">
+            Skip for now
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === "camera") {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground mb-1">Take Your Selfie</h2>
+          <p className="text-sm text-muted-foreground">Position your face clearly in the frame, then click Capture.</p>
+        </div>
+        {cameraError && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 text-sm text-destructive">{cameraError}</div>
+        )}
+        <div className="relative rounded-xl overflow-hidden bg-black border border-border">
+          <video ref={videoRef} autoPlay playsInline muted className="w-full max-h-72 object-cover" />
+          {!cameraActive && !cameraError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+        </div>
+        <canvas ref={canvasRef} className="hidden" />
+        <div className="flex gap-3">
+          <button onClick={() => { stopCamera(); setMode("choose"); }}
+            className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
+            <X className="h-4 w-4" /> Cancel
+          </button>
+          <button onClick={capture} disabled={!cameraActive}
+            className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-bold disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+            <Camera className="h-4 w-4" /> Capture
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground mb-1">Selfie Verification</h2>
+        <p className="text-sm text-muted-foreground">Upload or retake your selfie photo.</p>
+      </div>
+
+      {data.selfieFile ? (
+        <div className="relative rounded-xl overflow-hidden border border-border">
+          <img src={data.selfieFile} alt="Selfie preview" className="w-full max-h-64 object-cover" />
+          <button
+            onClick={() => { onChange({ selfieFile: null }); setMode("choose"); }}
+            className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1.5 hover:bg-black transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="absolute bottom-2 left-2 bg-green-500/90 text-white text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1">
+            <Check className="h-3 w-3" /> Photo captured
+          </div>
+        </div>
+      ) : (
+        <FileUpload
+          label="Selfie Photo *"
+          icon="🤳"
+          hint="JPG or PNG — face clearly visible, well-lit, no sunglasses"
+          onChange={(_, preview) => onChange({ selfieFile: preview })}
+        />
+      )}
+
+      <div className="flex gap-3">
+        <button onClick={onBack} className="flex-1 border border-border text-foreground py-3 rounded-lg font-semibold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
+          <ChevronLeft className="h-4 w-4" /> Back
+        </button>
+        <button onClick={onNext}
+          className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+          {data.selfieFile ? <><Check className="h-4 w-4" /> Continue</> : <>Continue without selfie <ChevronRight className="h-4 w-4" /></>}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StepReview({ personal, identity, address, selfie, onBack, onSubmit, submitting, submitError }: {
+  personal: PersonalInfo; identity: IdentityInfo; address: AddressInfo; selfie: SelfieInfo;
   onBack: () => void; onSubmit: () => void; submitting?: boolean; submitError?: string | null;
 }) {
   const [checks, setChecks] = useState<boolean[]>([false,false,false,false,false]);
@@ -379,6 +459,9 @@ function StepReview({ personal, identity, address, onBack, onSubmit, submitting,
         { title: "Proof of Address", rows: [
           ["Document Type", address.docType],
           ["Address", `${address.street}, ${address.city}, ${address.state} ${address.zip}, ${address.country}`],
+        ]},
+        { title: "Selfie", rows: [
+          ["Selfie Photo", selfie.selfieFile ? "✅ Uploaded" : "⚠️ Not provided (optional)"],
         ]},
       ].map(section => (
         <div key={section.title} className="bg-secondary/20 border border-border rounded-lg p-4">
@@ -448,8 +531,8 @@ function SubmittedState({ appId }: { appId: string }) {
         {[
           { done: true, label: "Documents submitted to compliance team" },
           { done: false, label: "Manual review (1–2 business days)" },
-          { done: false, label: "Admin approval or request for more info" },
-          { done: false, label: "Approval email sent to you" },
+          { done: false, label: "Admin approval with bank wire instructions" },
+          { done: false, label: "Approval email sent with wire details (4-hour window)" },
           { done: false, label: "All purchases unlocked (metals + Bitcoin OTC)" },
         ].map((item, i) => (
           <div key={i} className="flex items-center gap-3 text-sm">
@@ -489,9 +572,10 @@ export default function KYCPage() {
     volume: "", usCitizen: "", pep: ""
   });
   const [identity, setIdentity] = useState<IdentityInfo>({ docType: "", frontFile: null, backFile: null });
+  const [address, setAddress] = useState<AddressInfo>({ docType: "", addressFile: null, street: "", city: "", state: "", zip: "", country: "" });
+  const [selfie, setSelfie] = useState<SelfieInfo>({ selfieFile: null });
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [address, setAddress] = useState<AddressInfo>({ docType: "", addressFile: null, street: "", city: "", state: "", zip: "", country: "" });
 
   useEffect(() => {
     if (!user) setLocation("/account/login?redirect=/account/kyc");
@@ -525,7 +609,7 @@ export default function KYCPage() {
       const res = await fetch("/api/kyc/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ personal, identity, address, applicationId: id, userEmail: user?.email || "" }),
+        body: JSON.stringify({ personal, identity, address, selfie, applicationId: id, userEmail: user?.email || "" }),
       });
       const text = await res.text();
       let data: any = {};
@@ -570,7 +654,8 @@ export default function KYCPage() {
       {step === 0 && <StepPersonal data={personal} onChange={setPersonal} onNext={() => setStep(1)} />}
       {step === 1 && <StepIdentity data={identity} onChange={setIdentity} onNext={() => setStep(2)} onBack={() => setStep(0)} />}
       {step === 2 && <StepAddress data={address} onChange={setAddress} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-      {step === 3 && <StepReview personal={personal} identity={identity} address={address} onBack={() => setStep(2)} onSubmit={handleSubmit} submitting={submitting} submitError={submitError} />}
+      {step === 3 && <StepSelfie data={selfie} onChange={setSelfie} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
+      {step === 4 && <StepReview personal={personal} identity={identity} address={address} selfie={selfie} onBack={() => setStep(3)} onSubmit={handleSubmit} submitting={submitting} submitError={submitError} />}
     </div>
   );
 }
