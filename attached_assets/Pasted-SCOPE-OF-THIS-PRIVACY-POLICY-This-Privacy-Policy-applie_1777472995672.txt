@@ -1,0 +1,71 @@
+SCOPE OF THIS PRIVACY POLICY
+
+This Privacy Policy applies to our interactions with you across various platforms, including:
+
+Websites and Mobile Applications: This includes any interaction you have with our main website and any associated mobile applications (collectively, the “Website”). We collect data through forms, account registration, and browsing activities.
+
+Events: When you attend events such as coin shows where we participate, we may collect personal information from you, including your name, contact details, and transaction history.
+
+Phone, Text, and Email Communications: Personal information may be collected when you communicate with us via phone, text, or email, such as call logs, email addresses, and the content of the communications.
+
+In-Person Visits: If you visit one of our facilities, we collect CCTV footage for security and fraud prevention purposes.
+
+Social Media: We collect likes, comments, and direct messages through interactions on our social media pages and other third-party social media sites such as Facebook, YouTube, LinkedIn, Instagram, and Twitter.
+
+Online Advertisements and Emails: If you view our online ads or emails, we may collect information about your interaction with these communications, such as click-through rates and preferences.
+
+Authorized Service Providers: We may also collect information through third-party service providers who are authorized to act on our behalf, including marketing firms and payment processors.
+
+COLLECTION OF PERSONAL INFORMATION
+
+As further described below, we collect personal information directly from you, automatically through your use of the Website, and from other, third-party sources. To the extent permitted by applicable law, we may combine the information we collect from publicly available or third-party sources.
+
+Personal information We Collect Directly From You. While the personal information we collect varies depending upon your use of the Website and our interactions with you, in general, we may collect the following personal information directly from you:
+
+Contact Information. When you contact us, we collect your name, email address, phone number, the nature of your inquiry, and any other information you choose to provide.
+Account Information. When you register for an account with us, we collect your name, date of birth, email address, password, and any other information used in connection with accessing your account.
+Purchases and Payments. If you make a purchase, we collect payment information such as name, payment information, including ACH, routing and account numbers, and credit card information, and billing and shipping address. 
+You may be required to provide financial and banking information before making a purchase. 
+Communications and Interactions. When you send email, text message, call, or otherwise communicate with us and with members of our team, we collect and maintain a record of your contact details, communications, and our responses.
+
+Responses and Feedback. If you participate in our surveys or questionnaires, we collect your responses and feedback, such as user satisfaction or other information related to your use of the Website, and any other information you so choose to provide.
+
+Marketing and Promotions. If you agree to receive marketing communications from us, we collect your email, name, phone number, preferences. If you participate in promotions we offer, we collect your name and other information related to the activities available through the Website.
+
+Inferences. We may generate inferences about you based on other personal information we collect such as your preferences, behaviors, contact information, and demographics information.
+
+Preferences. We also may collect information about your preferences, including communications preferences.
+
+Audio, Electronic, Video, or other similar Information. If you call us or visit one of our facilities, we collect information such as call recordings, CCTV footage, and photographs.
+
+Personal information we Collect via our Identity Verification Process. When you elect to make a purchase of certain high-value products or services, we may collect and process your personal information for identity verification and fraud prevention purposes. These processes help ensure the viability, liquidity, and security of transactions and compliance with applicable laws and may include:
+
+Identity Verification Information. As part of our identity verification process, we process personal information including, as applicable, name, postal address, email address, social security number, telephone number, signature, bank account number or credit card number, education, employment history, race, religion, gender, age, and disability status.
+Some of the information described above may be considered Sensitive Personal Information under applicable privacy laws. This may include data such as government identifiers, financial account information, or information revealing racial or ethnic origin, religious beliefs, or union membership.
+
+We only collect and process Sensitive Personal Information for the specific purposes disclosed at the time of collection or as otherwise permitted by law.
+
+Personal information We Collect Automatically. We and our third-party providers automatically collect personal information related to your use of the Website, including using cookies and other similar technologies. The personal information we may automatically collect includes the below categories of information (collectively, “Usage Data”):
+
+Device and Browsing Information. When you visit the Website, we may collect IP address, browser type, domain names, access times, date/time stamps, operating system, language, device type, unique ID, Internet service provider, referring and exiting URLs, clickstream data, and similar device and browsing information.
+Activities and Usage. We also collect activity information related to your use of the Website, such as information about the links clicked, searches, features used, items viewed, time spent within the Website, your interactions with us within the Website, and other activity and usage information.
+Location Information. We may also collect or derive location information about you, such as through your IP address. If you choose to enable location-based sharing with us through your device settings, we may collect precise location information to provide content that is more relevant to your location and to otherwise improve your interactions with the Website. You may turn off location data sharing through your device settings.
+For more information about our use of cookies and other similar technologies, please see the “USE OF COOKIES AND OTHER TECHNOLOGIES” section below.
+
+Personal information We Collect from Other Sources. In addition, we may collect and receive personal information from third parties, such as business partners, clients and customers, data analytics providers, Internet service providers, operating systems and platforms, public databases, and service providers. We may combine this information with personal information we collect directly from you, and use it to generate inferences about your preferences, behavior, or other characteristics.
+
+USE OF PERSONAL INFORMATION
+
+We use your personal information for various purposes, including:
+
+Providing Information, Products, or Services. To fulfill your requests for information, products, or services, such as processing orders and providing customer support.
+Transaction Management. To manage transactions, such as processing payments, shipping products, and managing returns.
+Website and Support. To allow you to maintain your account with us, provide and operate the Website, communicate with you about your use of the Website, respond to your inquiries, and to otherwise run our day-to-day operations.
+Analytics and Improvement. To better understand how users access and use the Website, and for other research and analytical purposes, to develop the Website and its features, and for internal quality control and training purposes.
+Communicate With You. To respond to your inquiries, send you requested materials and newsletters, as well as information and materials regarding the Website and offerings, and to communicate with you through text regarding your shipment and the Website. We also use this information to send administrative information to you, for example, information regarding the Website and changes to our terms, conditions, and policies.
+Marketing and Promotions. For marketing and promotional purposes. For example, to send you information about the Website, such as newsletters and other marketing content that you sign up to receive.
+Research, Development, and Surveys. To administer surveys and questionnaires, such as for market research or user satisfaction purposes and to develop new products and services, including market analysis and product testing.
+Security and Protection of Rights. To protect the Website and our business operations, and to protect our rights or those of our stakeholders; to prevent and detect fraud, unauthorized activities and access, and other misuse; where we believe necessary to investigate, prevent or act regarding illegal activities, suspected fraud, situations involving potential threats to the safety or legal rights of any person or third party, or violations of our Terms and Conditions.
+Compliance and Legal Process. To comply with applicable legal or regulatory obligations, including as part of a judicial proceeding; to respond to a subpoena, warrant, court order, or other legal process; or as part of an investigation or request, whether formal or informal, from law enforcement or a governmental authority.
+Auditing, Reporting, and Other Internal Operations. To conduct financial, tax, and accounting audits; audits and assessments of our operations, privacy, security and financial controls, risk, and compliance with legal obligations; our general business, accounting, record keeping and legal functions, and to maintain appropriate business records and enforce company policies and procedures.
+General Business and Operational Support. To assess and implement mergers, acquisitions, reorganizations, bankruptcies, and other business transactions such as financings, and to administer our business, accounting, auditing, compliance, recordkeeping, and legal functions
