@@ -3,17 +3,13 @@ import { Link, useLocation } from "wouter";
 import { useKYC } from "@/lib/kycContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartContext } from "@/contexts/CartContext";
-import { ShieldCheck, ArrowRight, ChevronLeft, Package, CreditCard } from "lucide-react";
+import { ShieldCheck, ArrowRight, ChevronLeft, Package, CreditCard, AlertTriangle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function generateOrderId() {
-  return "PG-" + Math.random().toString(36).substring(2, 7).toUpperCase() + Date.now().toString(36).slice(-4).toUpperCase();
-}
-
 export default function CheckoutPage() {
-  const { isApproved, kycStatus, wireInfo, refreshStatus } = useKYC();
+  const { isApproved, kycStatus, refreshStatus } = useKYC();
   const { user } = useAuth();
   const { items, subtotal, clearCart } = useCartContext();
   const [, setLocation] = useLocation();
@@ -29,10 +25,15 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [stateVal, setStateVal] = useState("");
   const [zip, setZip] = useState("");
   const [shippingError, setShippingError] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [placeError, setPlaceError] = useState("");
+
+  // Pending order gate
+  const [pendingCheck, setPendingCheck] = useState<"loading" | "clear" | "blocked">("loading");
+  const [pendingOrderNumber, setPendingOrderNumber] = useState<string | null>(null);
 
   const shipping = subtotal > 499 ? 0 : 9.95;
   const insurance = subtotal * 0.005;
@@ -42,10 +43,24 @@ export default function CheckoutPage() {
     if (!user) setLocation("/account/login?redirect=/checkout");
   }, [user, setLocation]);
 
-  // Always refresh KYC status on checkout page mount
   useEffect(() => {
     refreshStatus();
   }, []);
+
+  useEffect(() => {
+    if (!user?.email) return;
+    fetch(`/api/orders/pending-check?email=${encodeURIComponent(user.email)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.hasPending) {
+          setPendingCheck("blocked");
+          setPendingOrderNumber(data.order?.orderNumber || null);
+        } else {
+          setPendingCheck("clear");
+        }
+      })
+      .catch(() => setPendingCheck("clear"));
+  }, [user?.email]);
 
   if (!user) return null;
 
@@ -91,6 +106,55 @@ export default function CheckoutPage() {
     );
   }
 
+  // Pending order block
+  if (pendingCheck === "loading") {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <Clock className="h-10 w-10 text-primary mx-auto mb-4 animate-pulse" />
+        <p className="text-muted-foreground text-sm">Checking order status…</p>
+      </div>
+    );
+  }
+
+  if (pendingCheck === "blocked") {
+    return (
+      <div className="container mx-auto px-4 py-16 max-w-2xl">
+        <div className="bg-card border border-amber-500/30 rounded-2xl overflow-hidden">
+          <div className="bg-amber-500/10 border-b border-amber-500/20 px-8 py-6">
+            <div className="flex items-center gap-3 mb-1">
+              <AlertTriangle className="h-6 w-6 text-amber-400" />
+              <h1 className="text-xl font-bold text-foreground">Pending Order Exists</h1>
+            </div>
+            <p className="text-sm text-muted-foreground">You already have an open order that must be resolved before placing a new one.</p>
+          </div>
+          <div className="px-8 py-8 space-y-5">
+            {pendingOrderNumber && (
+              <div className="bg-secondary/30 rounded-xl p-4 text-sm font-mono text-center">
+                <span className="text-muted-foreground">Order: </span>
+                <span className="text-foreground font-bold">{pendingOrderNumber}</span>
+              </div>
+            )}
+            <div className="bg-secondary/20 rounded-xl p-4 text-sm text-muted-foreground space-y-2">
+              <p className="font-semibold text-foreground">To place a new order you must first:</p>
+              <p>• Complete payment on your pending order, <strong>or</strong></p>
+              <p>• Wait for the order to be cancelled or declined by our team</p>
+            </div>
+            <Link
+              href="/account/dashboard"
+              className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-colors"
+            >
+              View My Dashboard & Wire Instructions
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+            <div className="text-center">
+              <Link href="/cart" className="text-sm text-muted-foreground hover:text-primary transition-colors">← Back to Cart</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (items.length === 0 && step !== "review") {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
@@ -103,7 +167,7 @@ export default function CheckoutPage() {
   const handleShippingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShippingError("");
-    if (!address.trim() || !city.trim() || !state.trim() || !zip.trim()) {
+    if (!address.trim() || !city.trim() || !stateVal.trim() || !zip.trim()) {
       setShippingError("Please fill in all address fields.");
       return;
     }
@@ -112,26 +176,66 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setPlacing(true);
-    const orderId = generateOrderId();
-    const order = {
-      id: orderId,
-      items,
-      subtotal,
-      shipping,
-      insurance,
-      total,
-      shippingAddress: { firstName, lastName, email, phone, address, city, state, zip },
-      paymentMethod: "Wire Transfer",
-      status: "wire_pending",
-      createdAt: new Date().toISOString(),
-    };
+    setPlaceError("");
     try {
-      const existing = JSON.parse(localStorage.getItem("pg_orders") || "[]");
-      localStorage.setItem("pg_orders", JSON.stringify([order, ...existing]));
-      localStorage.setItem("pg_last_order", JSON.stringify(order));
-    } catch {}
-    clearCart?.();
-    setLocation("/order-confirmation");
+      const orderNumber = "PG-" + Math.random().toString(36).substring(2, 7).toUpperCase() + Date.now().toString(36).slice(-4).toUpperCase();
+      const orderPayload = {
+        userEmail: user.email,
+        items: items.map(i => ({ productId: i.productId, name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+        subtotal,
+        shipping,
+        insurance,
+        total,
+        orderNumber,
+        shippingAddress: { firstName, lastName, email, phone, address, city, state: stateVal, zip },
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        if (data.error === "pending_order_exists") {
+          setPendingCheck("blocked");
+          setPendingOrderNumber(data.orderNumber || null);
+          setPlacing(false);
+          return;
+        }
+        setPlaceError(data.error || "Failed to place order. Please try again.");
+        setPlacing(false);
+        return;
+      }
+
+      // Save to localStorage for the confirmation page
+      const orderForStorage = {
+        id: data.order.orderNumber,
+        orderNumber: data.order.orderNumber,
+        dbId: data.order.id,
+        items,
+        subtotal,
+        shipping,
+        insurance,
+        total,
+        shippingAddress: { firstName, lastName, email, phone, address, city, state: stateVal, zip },
+        paymentMethod: "Wire Transfer",
+        status: "pending_wire_instructions",
+        createdAt: new Date().toISOString(),
+      };
+      try {
+        const existing = JSON.parse(localStorage.getItem("pg_orders") || "[]");
+        localStorage.setItem("pg_orders", JSON.stringify([orderForStorage, ...existing]));
+        localStorage.setItem("pg_last_order", JSON.stringify(orderForStorage));
+      } catch {}
+
+      clearCart?.();
+      setLocation("/order-confirmation");
+    } catch {
+      setPlaceError("Network error. Please try again.");
+      setPlacing(false);
+    }
   };
 
   return (
@@ -156,7 +260,6 @@ export default function CheckoutPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-10">
-        {/* Main form area */}
         <div className="lg:col-span-2">
           {step === "shipping" && (
             <form onSubmit={handleShippingSubmit} className="bg-card border border-border rounded-xl p-6 space-y-5">
@@ -202,7 +305,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="space-y-2 col-span-1">
                   <Label>State</Label>
-                  <Input value={state} onChange={e => setState(e.target.value)} placeholder="CA" maxLength={2} required className="bg-background border-border uppercase" />
+                  <Input value={stateVal} onChange={e => setStateVal(e.target.value)} placeholder="CA" maxLength={2} required className="bg-background border-border uppercase" />
                 </div>
                 <div className="space-y-2 col-span-1">
                   <Label>ZIP Code</Label>
@@ -218,60 +321,31 @@ export default function CheckoutPage() {
 
           {step === "review" && (
             <div className="space-y-5">
-              {/* Shipping summary */}
               <div className="bg-card border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-bold flex items-center gap-2"><Package className="h-4 w-4 text-primary" /> Ship to</h2>
                   <button onClick={() => setStep("shipping")} className="text-xs text-primary hover:underline">Edit</button>
                 </div>
                 <p className="text-sm text-foreground">{firstName} {lastName}</p>
-                <p className="text-sm text-muted-foreground">{address}, {city}, {state} {zip}</p>
+                <p className="text-sm text-muted-foreground">{address}, {city}, {stateVal} {zip}</p>
                 <p className="text-sm text-muted-foreground">{email}{phone ? ` · ${phone}` : ""}</p>
               </div>
 
-              {/* Payment method */}
               <div className="bg-card border border-border rounded-xl p-5">
                 <h2 className="font-bold flex items-center gap-2 mb-4"><CreditCard className="h-4 w-4 text-primary" /> Payment — Bank Wire Transfer</h2>
-
-                <div className="bg-secondary/20 rounded-xl p-4 text-sm font-mono space-y-2">
-                  <p className="font-semibold text-foreground not-italic mb-3">🏦 Wire Instructions</p>
-                  {wireInfo?.bankName ? (
-                    <div className="space-y-1.5">
-                      {[
-                        ["Bank Name", wireInfo.bankName],
-                        ["Account Name", wireInfo.accountName],
-                        ["ABA Routing", wireInfo.routingNumber],
-                        ["Account Number", wireInfo.accountNumber],
-                        wireInfo.swiftCode ? ["SWIFT / BIC", wireInfo.swiftCode] : null,
-                        ["Reference / Memo", `ORDER-${firstName.toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-4)}`],
-                        ["Amount", `$${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD`],
-                      ].filter((x): x is string[] => x !== null).map(([k, v]) => (
-                        <div key={k} className="flex gap-2 text-xs sm:text-sm">
-                          <span className="w-36 shrink-0 text-muted-foreground">{k}:</span>
-                          <span className="text-foreground font-semibold break-all">{v}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-1.5">
-                      <p className="text-amber-400/80 text-xs italic">
-                        Personalized wire instructions were emailed to you upon KYC approval. Please check your inbox or contact <strong>support@goldbuller.com</strong>.
-                      </p>
-                      <div className="flex gap-2 text-xs sm:text-sm">
-                        <span className="w-36 shrink-0 text-muted-foreground">Amount:</span>
-                        <span className="text-foreground font-semibold">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD</span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="border-t border-border/40 pt-3 mt-2 text-xs space-y-1 text-muted-foreground">
-                    <p>⚠️ Wire must be received within 4 hours of order placement</p>
-                    <p>⚠️ Reference/memo must match exactly to avoid delays</p>
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm space-y-2">
+                  <p className="font-semibold text-amber-300">🏦 How Wire Transfer Works</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Once your order is placed, our team will review it and email you personalized wire transfer instructions within a few hours. You will also see them on your account dashboard.
+                  </p>
+                  <div className="border-t border-amber-500/20 pt-3 mt-2 text-xs space-y-1 text-muted-foreground">
+                    <p>⚠️ Wire must be received within 4 hours of instructions being sent</p>
                     <p>⚠️ Wire must originate from your verified bank account</p>
+                    <p>⚠️ Include the order number in the wire reference/memo field</p>
                   </div>
                 </div>
               </div>
 
-              {/* Order items */}
               <div className="bg-card border border-border rounded-xl p-5">
                 <h2 className="font-bold mb-4">Order Items ({items.length})</h2>
                 <div className="space-y-3">
@@ -291,22 +365,28 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {placeError && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-sm text-destructive flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  {placeError}
+                </div>
+              )}
+
               <Button
                 onClick={handlePlaceOrder}
                 disabled={placing}
                 className="w-full h-14 text-lg font-bold uppercase tracking-wider"
               >
-                {placing ? "Placing Order…" : "Place Order & Send Wire"}
+                {placing ? "Placing Order…" : "Place Order"}
                 {!placing && <ArrowRight className="ml-2 h-5 w-5" />}
               </Button>
               <p className="text-xs text-muted-foreground text-center">
-                By placing this order you agree to our Terms of Sale and Market Loss Policy. Your order is reserved for 4 hours pending wire receipt.
+                By placing this order you agree to our Terms of Sale. Wire instructions will be emailed to you shortly after order confirmation.
               </p>
             </div>
           )}
         </div>
 
-        {/* Order summary sidebar */}
         <div className="lg:col-span-1">
           <div className="bg-card border border-border rounded-xl p-5 sticky top-24 space-y-4">
             <h2 className="font-bold text-foreground border-b border-border pb-3">Order Summary</h2>
