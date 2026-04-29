@@ -1,74 +1,63 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
-import { MessageCircle, X, Send, CheckCircle, ChevronDown } from "lucide-react";
+import { MessageCircle, X, Send, ChevronDown } from "lucide-react";
 
 interface Message {
   id: string;
-  from: "user" | "bot";
+  from: "user" | "support";
   text: string;
 }
 
-const BOT_INTROS: Message[] = [
-  {
-    id: "intro",
-    from: "bot",
-    text: "👋 Hi! Welcome to GoldBuller. How can we help you today? Ask about pricing, shipping, KYC, Bitcoin OTC, or anything else.",
-  },
-];
-
-const AUTO_REPLIES: { pattern: RegExp; reply: string }[] = [
-  {
-    pattern: /price|spot|gold|silver|platinum|oz/i,
-    reply: "Our prices update in real-time from live spot markets. Check the ticker at the top of any page, or visit our Charts section for historical data. A team member will follow up shortly!",
-  },
-  {
-    pattern: /ship|deliver|how long|when|arrival/i,
-    reply: "We offer insured shipping on all orders. Standard delivery is 3–5 business days, expedited is 1–2 days. A specialist will confirm your order details soon.",
-  },
-  {
-    pattern: /kyc|verify|verification|identity|id/i,
-    reply: "KYC verification takes ~5 minutes online and is approved within 1–2 business days. Head to Account → KYC Status to get started. We'll be in touch shortly!",
-  },
-  {
-    pattern: /bitcoin|btc|otc|crypto/i,
-    reply: "Our Bitcoin OTC desk handles 0.20–10 BTC purchases via insured bank wire. All buyers must complete KYC first. A specialist will reach out to walk you through the process.",
-  },
-  {
-    pattern: /wire|bank|payment|pay/i,
-    reply: "We accept bank wire transfers. Once your order is placed, our team sends personalized wire instructions with a 4-hour settlement window. We'll follow up with full details.",
-  },
-];
-
-function getBotReply(message: string): string {
-  const match = AUTO_REPLIES.find((r) => r.pattern.test(message));
-  return (
-    match?.reply ||
-    "Thanks for your message! Our team has been notified and will get back to you shortly. We typically respond within a few hours during business hours (Mon–Fri, 9am–6pm ET)."
-  );
+// ─── Session ID ──────────────────────────────────────────────────────────────
+// 8-char uppercase hex, persisted for the browser session
+function getOrCreateSessionId(): string {
+  const KEY = "gb_chat_sid";
+  const existing = sessionStorage.getItem(KEY);
+  if (existing) return existing;
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(4)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+  sessionStorage.setItem(KEY, id);
+  return id;
 }
+
+const SESSION_ID = getOrCreateSessionId();
+
+const INTRO: Message = {
+  id: "intro",
+  from: "support",
+  text: "👋 Hi! Welcome to GoldBuller. How can we help you today? Ask about pricing, shipping, KYC, Bitcoin OTC, or anything else.",
+};
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(BOT_INTROS);
+  const [messages, setMessages] = useState<Message[]>([INTRO]);
   const [input, setInput] = useState("");
   const [name, setName] = useState("");
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [unread, setUnread] = useState(1);
   const [showNamePrompt, setShowNamePrompt] = useState(true);
+  const [hasSentMessage, setHasSentMessage] = useState(false);
+  const [lastPollTs, setLastPollTs] = useState(Date.now());
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const openRef = useRef(open);
+  openRef.current = open;
+
   const [location] = useLocation();
   const { user } = useAuth();
 
+  // Auto-fill name if logged in
   useEffect(() => {
     if (user?.name && showNamePrompt) {
       setName(user.name);
       setShowNamePrompt(false);
     }
-  }, [user]);
+  }, [user, showNamePrompt]);
 
   useEffect(() => {
     if (open) {
@@ -81,10 +70,39 @@ export function ChatWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const addMessage = (msg: Omit<Message, "id">) => {
+  const addMessage = useCallback((msg: Omit<Message, "id">) => {
     setMessages((prev) => [...prev, { ...msg, id: crypto.randomUUID() }]);
-  };
+  }, []);
 
+  // ─── Poll for replies from Telegram ───────────────────────────────────────
+  useEffect(() => {
+    if (!hasSentMessage) return;
+
+    const poll = async () => {
+      try {
+        const res = await fetch(
+          `/api/chat/replies?sessionId=${SESSION_ID}&after=${lastPollTs}`
+        );
+        const data = await res.json();
+        if (data.success && data.replies?.length) {
+          for (const r of data.replies) {
+            addMessage({ from: "support", text: r.text });
+            if (!openRef.current) {
+              setUnread((n) => n + 1);
+            }
+          }
+          setLastPollTs(data.replies[data.replies.length - 1].ts);
+        }
+      } catch {
+        // silently ignore network errors
+      }
+    };
+
+    const interval = setInterval(poll, 3000);
+    return () => clearInterval(interval);
+  }, [hasSentMessage, lastPollTs, addMessage]);
+
+  // ─── Send message ──────────────────────────────────────────────────────────
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed || sending) return;
@@ -103,13 +121,23 @@ export function ChatWidget() {
           name: name.trim() || (user?.name ?? ""),
           email: user?.email ?? "",
           page: location,
+          sessionId: SESSION_ID,
         }),
       });
       const data = await res.json();
+
       if (data.success) {
-        const reply = getBotReply(trimmed);
-        setTimeout(() => addMessage({ from: "bot", text: reply }), 800);
-        setSent(true);
+        if (!hasSentMessage) {
+          // Show "we'll reply shortly" only on first message
+          setTimeout(() => {
+            addMessage({
+              from: "support",
+              text: "✅ Message received! Our team has been notified and will reply here shortly.",
+            });
+          }, 600);
+          setHasSentMessage(true);
+          setLastPollTs(Date.now());
+        }
       } else {
         setError("Couldn't send. Please email support@goldbuller.com directly.");
       }
@@ -151,8 +179,10 @@ export function ChatWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-24px)] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-          style={{ maxHeight: "520px" }}>
+        <div
+          className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-24px)] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          style={{ maxHeight: "520px" }}
+        >
           {/* Header */}
           <div className="bg-primary px-4 py-3 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5">
@@ -163,16 +193,19 @@ export function ChatWidget() {
                 <p className="text-black font-bold text-sm leading-tight">GoldBuller Support</p>
                 <p className="text-black/70 text-xs flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-800 inline-block" />
-                  Typically replies in a few hours
+                  {hasSentMessage ? "Waiting for reply…" : "We reply in Telegram"}
                 </p>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} className="text-black/60 hover:text-black transition-colors">
+            <button
+              onClick={() => setOpen(false)}
+              className="text-black/60 hover:text-black transition-colors"
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Name prompt (if not logged in and haven't set name) */}
+          {/* Name prompt */}
           {showNamePrompt && !user && (
             <div className="px-4 py-3 bg-secondary/30 border-b border-border shrink-0">
               <label className="text-xs text-muted-foreground font-medium block mb-1.5">
@@ -197,7 +230,7 @@ export function ChatWidget() {
                 key={msg.id}
                 className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
               >
-                {msg.from === "bot" && (
+                {msg.from === "support" && (
                   <div className="h-7 w-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 mt-0.5 shrink-0">
                     <span className="text-primary font-bold text-xs font-serif">G</span>
                   </div>
@@ -214,6 +247,7 @@ export function ChatWidget() {
               </div>
             ))}
 
+            {/* Typing indicator while sending */}
             {sending && (
               <div className="flex justify-start">
                 <div className="h-7 w-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 shrink-0">
@@ -237,7 +271,7 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input area */}
+          {/* Input */}
           <div className="px-3 py-3 border-t border-border shrink-0 bg-card">
             <div className="flex items-center gap-2">
               <input
@@ -259,7 +293,10 @@ export function ChatWidget() {
               </button>
             </div>
             <p className="text-[10px] text-muted-foreground text-center mt-2">
-              Powered by GoldBuller Support · <a href="mailto:support@goldbuller.com" className="hover:text-primary transition-colors">support@goldbuller.com</a>
+              GoldBuller Support ·{" "}
+              <a href="mailto:support@goldbuller.com" className="hover:text-primary transition-colors">
+                support@goldbuller.com
+              </a>
             </p>
           </div>
         </div>
