@@ -91,7 +91,7 @@ function mapProductDetail(p: typeof productsTable.$inferSelect) {
 
 router.get("/", async (req: Request, res: Response) => {
   const conditions = buildProductFilters(req.query);
-  const limit = Math.min(Number(req.query.limit) || 40, 100);
+  const limit = Math.min(Number(req.query.limit) || 40, 500);
   const offset = Number(req.query.offset) || 0;
 
   let orderBy;

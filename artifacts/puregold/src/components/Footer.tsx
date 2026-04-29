@@ -34,7 +34,7 @@ const COLS = [
       { label: "Gold Coins & Bars", href: "/gold" },
       { label: "Silver Coins & Bars", href: "/silver" },
       { label: "Platinum Bullion", href: "/platinum" },
-      { label: "Palladium", href: "/products?metal=palladium" },
+      { label: "Palladium", href: "/palladium" },
       { label: "Rare & Numismatic Coins", href: "/rare-coins" },
       { label: "IRA-Eligible Metals", href: "/ira" },
       { label: "New Arrivals", href: "/new-arrivals" },
