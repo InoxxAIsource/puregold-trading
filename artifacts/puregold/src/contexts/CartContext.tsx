@@ -6,6 +6,7 @@ interface CartContextType {
   addItem: (item: CartItem) => void;
   removeItem: (productId: string) => void;
   updateQty: (productId: string, quantity: number) => void;
+  clearCart: () => void;
   subtotal: number;
   totalItems: number;
   paymentMethod: string;
@@ -55,12 +56,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(prev => prev.map(i => i.productId === productId ? { ...i, quantity } : i));
   };
 
+  const clearCart = () => {
+    setItems([]);
+    localStorage.removeItem("pg_cart");
+  };
+
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <CartContext.Provider value={{
-      items, addItem, removeItem, updateQty, subtotal, totalItems, paymentMethod, setPaymentMethod
+      items, addItem, removeItem, updateQty, clearCart, subtotal, totalItems, paymentMethod, setPaymentMethod
     }}>
       {children}
     </CartContext.Provider>

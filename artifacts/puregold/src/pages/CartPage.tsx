@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Trash2, ShieldCheck, ArrowRight, Lock } from "lucide-react";
 import { useCartContext } from "@/contexts/CartContext";
@@ -61,8 +61,13 @@ function KYCGatePanel({ kycStatus }: { kycStatus: string }) {
 export default function CartPage() {
   const { items, removeItem, updateQty, subtotal, totalItems } = useCartContext();
   const { user } = useAuth();
-  const { isApproved, kycStatus } = useKYC();
+  const { isApproved, kycStatus, refreshStatus } = useKYC();
   const [, setLocation] = useLocation();
+
+  // Always refresh KYC status when landing on cart — ensures approval is recognized
+  useEffect(() => {
+    if (user) refreshStatus();
+  }, [user]);
 
   const shipping = subtotal > 499 ? 0 : 9.95;
   const insurance = subtotal * 0.005;

@@ -5,10 +5,24 @@ import { useCartContext } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShoppingBag, LogIn, UserPlus } from "lucide-react";
+import { ShoppingBag, LogIn, UserPlus, Eye, EyeOff } from "lucide-react";
 
 function getRedirectUrl() {
   return new URLSearchParams(window.location.search).get("redirect") || "/account/dashboard";
+}
+
+type StoredUser = { firstName: string; lastName: string; email: string; password: string };
+
+function getUsers(): StoredUser[] {
+  try { return JSON.parse(localStorage.getItem("pg_users") || "[]"); } catch { return []; }
+}
+
+function findUser(email: string, password: string): StoredUser | null {
+  return getUsers().find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password) || null;
+}
+
+function emailExists(email: string): boolean {
+  return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
 }
 
 export default function AccountLoginPage() {
@@ -17,10 +31,11 @@ export default function AccountLoginPage() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
 
   const redirectUrl = getRedirectUrl();
-  const isCartRedirect = redirectUrl.includes("/cart");
+  const isCartRedirect = redirectUrl.includes("/cart") || redirectUrl.includes("/checkout");
 
   const restorePendingCart = () => {
     try {
@@ -34,8 +49,33 @@ export default function AccountLoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) { setError("Please enter your email."); return; }
-    login({ email, name: email.split("@")[0] || "Member" });
+    setError("");
+
+    if (!email.trim()) { setError("Please enter your email address."); return; }
+    if (!password) { setError("Please enter your password."); return; }
+
+    const users = getUsers();
+
+    // If no users registered yet (legacy / demo mode) — allow any login for backward compat
+    if (users.length === 0) {
+      login({ email: email.trim().toLowerCase(), name: email.split("@")[0] || "Member" });
+      restorePendingCart();
+      setLocation(redirectUrl);
+      return;
+    }
+
+    if (!emailExists(email)) {
+      setError("No account found with this email. Please create an account first.");
+      return;
+    }
+
+    const user = findUser(email, password);
+    if (!user) {
+      setError("Incorrect password. Please try again.");
+      return;
+    }
+
+    login({ email: user.email, name: `${user.firstName} ${user.lastName}` });
     restorePendingCart();
     setLocation(redirectUrl);
   };
@@ -48,31 +88,22 @@ export default function AccountLoginPage() {
   return (
     <div className="container mx-auto px-4 py-16 flex justify-center">
       <div className="w-full max-w-md">
-        {/* Cart redirect notice */}
         {isCartRedirect && (
           <div className="flex items-start gap-3 bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6">
             <ShoppingBag className="h-5 w-5 text-primary shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-foreground mb-0.5">
-                Sign in to complete your purchase
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Your item has been saved. Sign in or continue as a guest.
-              </p>
+              <p className="text-sm font-semibold text-foreground mb-0.5">Sign in to complete your purchase</p>
+              <p className="text-xs text-muted-foreground">Your item has been saved. Sign in or continue as a guest.</p>
             </div>
           </div>
         )}
 
         <div className="bg-card border border-border rounded-lg p-8">
-          <h1 className="text-3xl font-serif font-bold text-center mb-2">
-            Sign In
-          </h1>
-          <p className="text-center text-muted-foreground text-sm mb-8">
-            Access your GoldBuller account
-          </p>
+          <h1 className="text-3xl font-serif font-bold text-center mb-2">Sign In</h1>
+          <p className="text-center text-muted-foreground text-sm mb-8">Access your GoldBuller account</p>
 
           {error && (
-            <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm text-destructive mb-4">
+            <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm text-destructive mb-5">
               {error}
             </div>
           )}
@@ -84,7 +115,7 @@ export default function AccountLoginPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
                 className="bg-background border-border"
@@ -94,30 +125,31 @@ export default function AccountLoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link href="#" className="text-xs text-primary hover:underline">
+                <button type="button" className="text-xs text-primary hover:underline">
                   Forgot password?
-                </Link>
+                </button>
               </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="bg-background border-border"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPw ? "text" : "password"}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="bg-background border-border pr-10"
+                />
+                <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full h-12 uppercase font-bold tracking-wider"
-            >
+            <Button type="submit" className="w-full h-12 uppercase font-bold tracking-wider">
               <LogIn className="h-4 w-4 mr-2" />
               Sign In
             </Button>
           </form>
 
-          {/* Guest checkout option — shown when redirected from cart */}
           {isCartRedirect && (
             <div className="mt-4">
               <div className="relative flex items-center gap-3 my-4">
@@ -133,21 +165,13 @@ export default function AccountLoginPage() {
                 <ShoppingBag className="h-4 w-4" />
                 Continue as Guest
               </button>
-              <p className="text-[11px] text-muted-foreground text-center mt-2">
-                No account required — checkout as a guest
-              </p>
+              <p className="text-[11px] text-muted-foreground text-center mt-2">No account required — checkout as a guest</p>
             </div>
           )}
 
           <div className="mt-8 pt-6 border-t border-border text-center space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Don't have an account?
-            </p>
-            <Button
-              variant="outline"
-              className="w-full h-12 uppercase font-bold tracking-wider"
-              asChild
-            >
+            <p className="text-sm text-muted-foreground">Don't have an account?</p>
+            <Button variant="outline" className="w-full h-12 uppercase font-bold tracking-wider" asChild>
               <Link href="/account/register">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Create Account

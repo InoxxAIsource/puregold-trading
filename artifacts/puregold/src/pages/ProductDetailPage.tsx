@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute, Link } from "wouter";
 import { Heart, ShoppingCart, ShieldCheck, Truck, Clock, Lock } from "lucide-react";
 import { useGetProduct, useGetRelatedProducts } from "@workspace/api-client-react";
@@ -23,7 +23,10 @@ export default function ProductDetailPage() {
   
   const { addItem } = useCartContext();
   const { hasItem, addItem: addToWatchlist, removeItem: removeFromWatchlist } = useWatchlist();
-  const { isApproved, kycStatus } = useKYC();
+  const { isApproved, kycStatus, refreshStatus } = useKYC();
+
+  // Refresh KYC status on every product page visit so approved users see "Add to Cart"
+  useEffect(() => { refreshStatus(); }, []);
   
   const [qty, setQty] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'wire' | 'crypto' | 'cc'>('wire');

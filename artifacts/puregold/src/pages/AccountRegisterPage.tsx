@@ -1,54 +1,146 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { UserPlus, Eye, EyeOff } from "lucide-react";
+
+function getRedirectUrl() {
+  return new URLSearchParams(window.location.search).get("redirect") || "/account/dashboard";
+}
+
+type StoredUser = { firstName: string; lastName: string; email: string; password: string };
+
+function getUsers(): StoredUser[] {
+  try { return JSON.parse(localStorage.getItem("pg_users") || "[]"); } catch { return []; }
+}
+function saveUser(u: StoredUser) {
+  const users = getUsers();
+  users.push(u);
+  localStorage.setItem("pg_users", JSON.stringify(users));
+}
+function emailTaken(email: string) {
+  return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
+}
 
 export default function AccountRegisterPage() {
+  const { login } = useAuth();
   const [, setLocation] = useLocation();
+  const redirectUrl = getRedirectUrl();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [btcInterest, setBtcInterest] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (btcInterest) {
-      localStorage.setItem("btc_otc_interest", "true");
-    }
-    setLocation("/account/login");
+    setError("");
+
+    if (!firstName.trim() || !lastName.trim()) { setError("Please enter your full name."); return; }
+    if (!email.trim()) { setError("Please enter your email."); return; }
+    if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (password !== confirm) { setError("Passwords do not match."); return; }
+    if (emailTaken(email)) { setError("An account with this email already exists. Please sign in."); return; }
+
+    setSubmitting(true);
+
+    saveUser({ firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim().toLowerCase(), password });
+    if (btcInterest) localStorage.setItem("btc_otc_interest", "true");
+
+    const name = `${firstName.trim()} ${lastName.trim()}`;
+    login({ email: email.trim().toLowerCase(), name });
+    setLocation(redirectUrl);
   };
 
   return (
     <div className="container mx-auto px-4 py-12 flex justify-center">
       <div className="w-full max-w-lg bg-card border border-border rounded-lg p-8">
-        <h1 className="text-3xl font-serif font-bold text-center mb-6">Create Account</h1>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <h1 className="text-3xl font-serif font-bold text-center mb-2">Create Account</h1>
+        <p className="text-center text-muted-foreground text-sm mb-8">Join GoldBuller — buy gold, silver, and Bitcoin OTC</p>
+
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm text-destructive mb-5">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>First Name</Label>
-              <Input required className="bg-background border-border" />
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
+                placeholder="John"
+                required
+                className="bg-background border-border"
+              />
             </div>
             <div className="space-y-2">
-              <Label>Last Name</Label>
-              <Input required className="bg-background border-border" />
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                value={lastName}
+                onChange={e => setLastName(e.target.value)}
+                placeholder="Smith"
+                required
+                className="bg-background border-border"
+              />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Email Address</Label>
-            <Input type="email" required className="bg-background border-border" />
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="bg-background border-border"
+            />
           </div>
-          
+
           <div className="space-y-2">
-            <Label>Password</Label>
-            <Input type="password" required className="bg-background border-border" />
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPw ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Min. 8 characters"
+                required
+                className="bg-background border-border pr-10"
+              />
+              <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Confirm Password</Label>
-            <Input type="password" required className="bg-background border-border" />
+            <Label htmlFor="confirm">Confirm Password</Label>
+            <Input
+              id="confirm"
+              type="password"
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+              placeholder="Re-enter password"
+              required
+              className="bg-background border-border"
+            />
           </div>
 
-          {/* Bitcoin OTC interest checkbox */}
           <div className="bg-orange-400/5 border border-orange-400/20 rounded-lg p-4">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
@@ -60,31 +152,27 @@ export default function AccountRegisterPage() {
               <div>
                 <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
                   <span className="text-orange-400 font-bold">₿</span>
-                  I am interested in Bitcoin OTC purchases
+                  I'm interested in Bitcoin OTC purchases
                 </span>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  We'll send you OTC onboarding information and KYC instructions to unlock Bitcoin purchasing.
+                  Complete KYC after sign-up to unlock purchasing 0.20–10 BTC via wire transfer.
                 </p>
               </div>
             </label>
           </div>
-          
-          <Button type="submit" className="w-full h-12 uppercase font-bold tracking-wider">
-            Create Account
+
+          <Button type="submit" className="w-full h-12 uppercase font-bold tracking-wider" disabled={submitting}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            {submitting ? "Creating Account…" : "Create Account"}
           </Button>
         </form>
-        
-        <div className="mt-8 text-center">
+
+        <div className="mt-8 pt-6 border-t border-border text-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account? <Link href="/account/login" className="text-primary hover:underline font-bold">Sign In</Link>
+            Already have an account?{" "}
+            <Link href="/account/login" className="text-primary hover:underline font-semibold">Sign In</Link>
           </p>
         </div>
-
-        {btcInterest && (
-          <div className="mt-4 bg-orange-400/10 border border-orange-400/20 rounded-lg p-3 text-xs text-orange-300 text-center">
-            ✅ Great! After creating your account, complete KYC verification to unlock Bitcoin OTC.
-          </div>
-        )}
       </div>
     </div>
   );
