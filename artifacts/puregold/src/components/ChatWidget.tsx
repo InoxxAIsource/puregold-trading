@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
-import { MessageCircle, X, Send, ChevronDown } from "lucide-react";
+import { MessageCircle, X, Send, ChevronDown, ShieldCheck, Clock, Star } from "lucide-react";
 
 interface Message {
   id: string;
@@ -9,8 +9,7 @@ interface Message {
   text: string;
 }
 
-// ─── Session ID ──────────────────────────────────────────────────────────────
-// 8-char uppercase hex, persisted for the browser session
+// ─── Session ID ───────────────────────────────────────────────────────────────
 function getOrCreateSessionId(): string {
   const KEY = "gb_chat_sid";
   const existing = sessionStorage.getItem(KEY);
@@ -33,12 +32,14 @@ const INTRO: Message = {
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [showTeaser, setShowTeaser] = useState(false);
+  const [teaserDismissed, setTeaserDismissed] = useState(false);
   const [messages, setMessages] = useState<Message[]>([INTRO]);
   const [input, setInput] = useState("");
   const [name, setName] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const [unread, setUnread] = useState(1);
+  const [unread, setUnread] = useState(0);
   const [showNamePrompt, setShowNamePrompt] = useState(true);
   const [hasSentMessage, setHasSentMessage] = useState(false);
   const [lastPollTs, setLastPollTs] = useState(Date.now());
@@ -50,6 +51,25 @@ export function ChatWidget() {
 
   const [location] = useLocation();
   const { user } = useAuth();
+
+  // Show teaser after 5 seconds (once per session)
+  useEffect(() => {
+    const dismissed = sessionStorage.getItem("gb_teaser_dismissed");
+    if (dismissed) return;
+    const timer = setTimeout(() => setShowTeaser(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const dismissTeaser = () => {
+    setShowTeaser(false);
+    setTeaserDismissed(true);
+    sessionStorage.setItem("gb_teaser_dismissed", "1");
+  };
+
+  const openChat = () => {
+    dismissTeaser();
+    setOpen(true);
+  };
 
   // Auto-fill name if logged in
   useEffect(() => {
@@ -74,10 +94,9 @@ export function ChatWidget() {
     setMessages((prev) => [...prev, { ...msg, id: crypto.randomUUID() }]);
   }, []);
 
-  // ─── Poll for replies from Telegram ───────────────────────────────────────
+  // ─── Poll for Telegram replies ────────────────────────────────────────────
   useEffect(() => {
     if (!hasSentMessage) return;
-
     const poll = async () => {
       try {
         const res = await fetch(
@@ -87,31 +106,26 @@ export function ChatWidget() {
         if (data.success && data.replies?.length) {
           for (const r of data.replies) {
             addMessage({ from: "support", text: r.text });
-            if (!openRef.current) {
-              setUnread((n) => n + 1);
-            }
+            if (!openRef.current) setUnread((n) => n + 1);
           }
           setLastPollTs(data.replies[data.replies.length - 1].ts);
         }
       } catch {
-        // silently ignore network errors
+        // ignore
       }
     };
-
     const interval = setInterval(poll, 3000);
     return () => clearInterval(interval);
   }, [hasSentMessage, lastPollTs, addMessage]);
 
-  // ─── Send message ──────────────────────────────────────────────────────────
+  // ─── Send message ─────────────────────────────────────────────────────────
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed || sending) return;
-
     setInput("");
     setError("");
     addMessage({ from: "user", text: trimmed });
     setSending(true);
-
     try {
       const res = await fetch("/api/chat/send", {
         method: "POST",
@@ -125,10 +139,8 @@ export function ChatWidget() {
         }),
       });
       const data = await res.json();
-
       if (data.success) {
         if (!hasSentMessage) {
-          // Show "we'll reply shortly" only on first message
           setTimeout(() => {
             addMessage({
               from: "support",
@@ -157,10 +169,90 @@ export function ChatWidget() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* ── Teaser card ─────────────────────────────────────────────────── */}
+      {showTeaser && !open && (
+        <div
+          className="fixed bottom-24 right-6 z-50 w-72 animate-in slide-in-from-bottom-4 fade-in duration-500"
+          style={{ animationFillMode: "both" }}
+        >
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/30"
+            style={{
+              background: "linear-gradient(135deg, #1a1608 0%, #0d0d0d 60%, #1a1200 100%)",
+            }}
+          >
+            {/* Gold top bar */}
+            <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #b8973a, #f0d060, #b8973a)" }} />
+
+            {/* Dismiss */}
+            <button
+              onClick={dismissTeaser}
+              className="absolute top-3 right-3 h-5 w-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            >
+              <X className="h-3 w-3 text-white/60" />
+            </button>
+
+            <div className="px-4 pt-4 pb-4">
+              {/* Avatar row */}
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="relative shrink-0">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center border-2"
+                    style={{ borderColor: "#b8973a", background: "linear-gradient(135deg, #2a1f00, #1a1200)" }}
+                  >
+                    <span className="font-serif font-bold text-base" style={{ color: "#f0d060" }}>G</span>
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-black bg-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm leading-tight">GoldBuller Expert</p>
+                  <p className="text-emerald-400 text-[11px] font-medium flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                    Online now
+                  </p>
+                </div>
+              </div>
+
+              {/* Headline */}
+              <p className="text-white font-serif font-bold text-[17px] leading-snug mb-1">
+                Talk to a Bullion Expert
+              </p>
+              <p className="text-white/60 text-[12px] leading-relaxed mb-4">
+                Get personalized advice on gold, silver & Bitcoin OTC. No pressure — just real answers.
+              </p>
+
+              {/* Trust badges */}
+              <div className="flex flex-col gap-1.5 mb-4">
+                <div className="flex items-center gap-2 text-[11px] text-white/50">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0" style={{ color: "#b8973a" }} />
+                  <span>KYC-verified · Insured shipping</span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-white/50">
+                  <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: "#b8973a" }} />
+                  <span>Avg. reply under 2 hours</span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-white/50">
+                  <Star className="h-3.5 w-3.5 shrink-0" style={{ color: "#b8973a" }} />
+                  <span>U.S.-based team · Mon–Fri, 9am–6pm ET</span>
+                </div>
+              </div>
+
+              {/* CTA button */}
+              <button
+                onClick={openChat}
+                className="w-full py-2.5 rounded-xl font-bold text-sm text-black transition-all hover:brightness-110 active:scale-95"
+                style={{ background: "linear-gradient(90deg, #b8973a, #f0d060, #b8973a)" }}
+              >
+                Start Free Consultation →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Floating button ──────────────────────────────────────────────── */}
       <button
-        onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-primary shadow-2xl flex items-center justify-center transition-all hover:scale-110 hover:bg-primary/90 active:scale-95"
+        onClick={() => { setOpen((o) => !o); if (!open) dismissTeaser(); }}
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+        style={{ background: "linear-gradient(135deg, #b8973a, #f0d060)" }}
         aria-label="Open chat"
       >
         {open ? (
@@ -177,38 +269,56 @@ export function ChatWidget() {
         )}
       </button>
 
-      {/* Chat panel */}
+      {/* ── Chat panel ───────────────────────────────────────────────────── */}
       {open && (
         <div
-          className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-24px)] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-          style={{ maxHeight: "520px" }}
+          className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-24px)] border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
+          style={{
+            maxHeight: "520px",
+            background: "#0d0d0d",
+          }}
         >
           {/* Header */}
-          <div className="bg-primary px-4 py-3 flex items-center justify-between shrink-0">
+          <div
+            className="px-4 py-3 flex items-center justify-between shrink-0"
+            style={{ background: "linear-gradient(135deg, #1a1608, #2a1f00)" }}
+          >
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-full bg-black/20 flex items-center justify-center">
-                <span className="text-black font-bold font-serif text-sm">G</span>
+              <div className="relative">
+                <div
+                  className="h-9 w-9 rounded-full flex items-center justify-center border-2"
+                  style={{ borderColor: "#b8973a", background: "#1a1200" }}
+                >
+                  <span className="font-serif font-bold text-sm" style={{ color: "#f0d060" }}>G</span>
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 bg-emerald-400"
+                  style={{ borderColor: "#1a1608" }} />
               </div>
               <div>
-                <p className="text-black font-bold text-sm leading-tight">GoldBuller Support</p>
-                <p className="text-black/70 text-xs flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-800 inline-block" />
-                  {hasSentMessage ? "Waiting for reply…" : "We reply in Telegram"}
+                <p className="font-bold text-sm leading-tight text-white">GoldBuller Support</p>
+                <p className="text-white/50 text-[11px] flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                  {hasSentMessage ? "Waiting for reply…" : "Bullion experts online"}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="text-black/60 hover:text-black transition-colors"
+              className="text-white/40 hover:text-white/80 transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
+          {/* Gold divider */}
+          <div className="h-px w-full shrink-0"
+            style={{ background: "linear-gradient(90deg, transparent, #b8973a55, transparent)" }} />
+
           {/* Name prompt */}
           {showNamePrompt && !user && (
-            <div className="px-4 py-3 bg-secondary/30 border-b border-border shrink-0">
-              <label className="text-xs text-muted-foreground font-medium block mb-1.5">
+            <div className="px-4 py-3 border-b shrink-0"
+              style={{ background: "#111", borderColor: "#222" }}>
+              <label className="text-[11px] text-white/40 font-medium block mb-1.5 uppercase tracking-wide">
                 Your name (optional)
               </label>
               <input
@@ -216,7 +326,8 @@ export function ChatWidget() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. John Smith"
-                className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1"
+                style={{ background: "#1a1a1a", border: "1px solid #333", focusRingColor: "#b8973a" }}
                 onBlur={() => { if (name.trim()) setShowNamePrompt(false); }}
                 onKeyDown={(e) => { if (e.key === "Enter") setShowNamePrompt(false); }}
               />
@@ -226,45 +337,49 @@ export function ChatWidget() {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
             {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={msg.id} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
                 {msg.from === "support" && (
-                  <div className="h-7 w-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 mt-0.5 shrink-0">
-                    <span className="text-primary font-bold text-xs font-serif">G</span>
+                  <div
+                    className="h-7 w-7 rounded-full flex items-center justify-center mr-2 mt-0.5 shrink-0 border"
+                    style={{ background: "#1a1200", borderColor: "#b8973a55" }}
+                  >
+                    <span className="font-bold text-xs font-serif" style={{ color: "#f0d060" }}>G</span>
                   </div>
                 )}
                 <div
                   className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                    msg.from === "user"
-                      ? "bg-primary text-black rounded-br-sm font-medium"
-                      : "bg-secondary/50 text-foreground rounded-bl-sm border border-border/50"
+                    msg.from === "user" ? "rounded-br-sm" : "rounded-bl-sm"
                   }`}
+                  style={
+                    msg.from === "user"
+                      ? { background: "linear-gradient(135deg, #b8973a, #f0d060)", color: "#000", fontWeight: 500 }
+                      : { background: "#1a1a1a", color: "#e5e5e5", border: "1px solid #2a2a2a" }
+                  }
                 >
                   {msg.text}
                 </div>
               </div>
             ))}
 
-            {/* Typing indicator while sending */}
             {sending && (
               <div className="flex justify-start">
-                <div className="h-7 w-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 shrink-0">
-                  <span className="text-primary font-bold text-xs font-serif">G</span>
+                <div className="h-7 w-7 rounded-full flex items-center justify-center mr-2 shrink-0 border"
+                  style={{ background: "#1a1200", borderColor: "#b8973a55" }}>
+                  <span className="font-bold text-xs font-serif" style={{ color: "#f0d060" }}>G</span>
                 </div>
-                <div className="bg-secondary/50 border border-border/50 rounded-2xl rounded-bl-sm px-4 py-3">
+                <div className="rounded-2xl rounded-bl-sm px-4 py-3" style={{ background: "#1a1a1a", border: "1px solid #2a2a2a" }}>
                   <div className="flex gap-1 items-center">
-                    <span className="h-1.5 w-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="h-1.5 w-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="h-1.5 w-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full animate-bounce" style={{ background: "#b8973a", animationDelay: "0ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full animate-bounce" style={{ background: "#b8973a", animationDelay: "150ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full animate-bounce" style={{ background: "#b8973a", animationDelay: "300ms" }} />
                   </div>
                 </div>
               </div>
             )}
 
             {error && (
-              <p className="text-xs text-destructive text-center bg-destructive/10 rounded-lg px-3 py-2">
+              <p className="text-xs text-red-400 text-center rounded-lg px-3 py-2"
+                style={{ background: "#2a0a0a" }}>
                 {error}
               </p>
             )}
@@ -272,7 +387,7 @@ export function ChatWidget() {
           </div>
 
           {/* Input */}
-          <div className="px-3 py-3 border-t border-border shrink-0 bg-card">
+          <div className="px-3 py-3 shrink-0" style={{ borderTop: "1px solid #222", background: "#0d0d0d" }}>
             <div className="flex items-center gap-2">
               <input
                 ref={inputRef}
@@ -280,21 +395,23 @@ export function ChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKey}
-                placeholder="Type a message…"
+                placeholder="Ask about gold, silver, OTC…"
                 disabled={sending}
-                className="flex-1 bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+                className="flex-1 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none disabled:opacity-50"
+                style={{ background: "#1a1a1a", border: "1px solid #333" }}
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || sending}
-                className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shrink-0 hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-all hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg, #b8973a, #f0d060)" }}
               >
                 <Send className="h-4 w-4 text-black" />
               </button>
             </div>
-            <p className="text-[10px] text-muted-foreground text-center mt-2">
+            <p className="text-[10px] text-white/20 text-center mt-2">
               GoldBuller Support ·{" "}
-              <a href="mailto:support@goldbuller.com" className="hover:text-primary transition-colors">
+              <a href="mailto:support@goldbuller.com" className="hover:text-yellow-600 transition-colors">
                 support@goldbuller.com
               </a>
             </p>
