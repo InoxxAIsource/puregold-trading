@@ -425,7 +425,7 @@ router.post("/admin/kyc/decline", async (req, res) => {
                 <a href="${siteUrl}/account/kyc" style="${btnStyle("#b8860b", "#000")}">Reapply Now →</a>
               </div>
               <p style="font-size:13px;color:#888;line-height:1.6">
-                Questions? Contact us at <a href="mailto:compliance@goldbuller.com" style="color:#b8860b">compliance@goldbuller.com</a>.
+                Questions? Contact us at <a href="mailto:support@goldbuller.com" style="color:#b8860b">support@goldbuller.com</a>.
               </p>
               <p style="font-size:11px;color:#555;margin-top:24px;border-top:1px solid #1f1f1f;padding-top:16px">
                 GoldBuller LLC · 1400 Precious Metals Way, Suite 400 · Dallas, TX 75201

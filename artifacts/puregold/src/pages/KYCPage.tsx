@@ -552,7 +552,7 @@ function SubmittedState({ appId }: { appId: string }) {
           {checking ? "Checking…" : "🔄 Check Approval Status"}
         </button>
         <p className="text-xs text-muted-foreground text-center">Status is also checked automatically every 45 seconds.</p>
-        <p className="text-xs text-muted-foreground text-center">Questions? Email <strong className="text-foreground">compliance@goldbuller.com</strong></p>
+        <p className="text-xs text-muted-foreground text-center">Questions? Email <strong className="text-foreground">support@goldbuller.com</strong></p>
       </div>
     </div>
   );
