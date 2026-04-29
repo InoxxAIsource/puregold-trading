@@ -21,8 +21,10 @@ function base64ToBuffer(dataUrl: string): { buffer: Buffer; ext: string } {
 
 function getSiteUrl() {
   const domains = process.env["REPLIT_DOMAINS"] || "localhost:3000";
-  const domain = domains.split(",")[0].trim();
-  return `https://${domain}`;
+  const list = domains.split(",").map(d => d.trim());
+  // Prefer a custom domain (not .replit.app) so email links go to the branded URL
+  const custom = list.find(d => !d.endsWith(".replit.app"));
+  return `https://${custom || list[0]}`;
 }
 
 // POST /api/kyc/submit

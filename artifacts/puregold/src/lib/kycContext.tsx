@@ -71,10 +71,10 @@ export function KYCProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, [kycStatus, setKYCStatus, setKYCApplicationId]);
 
-  // On mount: if pending_review, immediately check server status
+  // On mount: always sync with server if user is logged in
   useEffect(() => {
-    const current = (localStorage.getItem("kyc_status") as KYCStatus) || KYC_STATUS.NOT_STARTED;
-    if (current === KYC_STATUS.PENDING_REVIEW) {
+    const email = getUserEmail();
+    if (email) {
       refreshStatus();
     }
   }, []);
