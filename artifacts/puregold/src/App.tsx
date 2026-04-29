@@ -38,6 +38,7 @@ const FearGreedIndexPage = lazy(() => import("@/pages/FearGreedIndexPage"));
 const JunkSilverPage = lazy(() => import("@/pages/JunkSilverPage"));
 const AutoBuyPage = lazy(() => import("@/pages/AutoBuyPage"));
 const SellToUsPage = lazy(() => import("@/pages/SellToUsPage"));
+const BuybackGuaranteePage = lazy(() => import("@/pages/BuybackGuaranteePage"));
 const IRAPage = lazy(() => import("@/pages/IRAPage"));
 const TaxPage = lazy(() => import("@/pages/TaxPage"));
 const BlogPage = lazy(() => import("@/pages/BlogPage"));
@@ -126,6 +127,7 @@ function Router() {
         <Route path="/fear-greed-index" component={FearGreedIndexPage} />
         <Route path="/autobuy" component={AutoBuyPage} />
         <Route path="/sell-to-us" component={SellToUsPage} />
+        <Route path="/buyback-guarantee" component={BuybackGuaranteePage} />
         <Route path="/ira" component={IRAPage} />
         <Route path="/tax" component={TaxPage} />
 

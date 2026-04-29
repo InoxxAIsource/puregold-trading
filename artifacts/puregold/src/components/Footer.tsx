@@ -22,7 +22,7 @@ const COLS = [
       { label: "What Should I Buy?", href: "/guides" },
       { label: "Shipping / FAQ", href: "/faq" },
       { label: "Sell To Us", href: "/sell-to-us" },
-      { label: "Buy Back Guarantee", href: "/sell-to-us" },
+      { label: "Buy Back Guarantee", href: "/buyback-guarantee" },
       { label: "Returns Policy", href: "/shipping" },
       { label: "Bitcoin OTC Desk", href: "/bitcoin-otc" },
       { label: "Bulk & Wholesale", href: "/contact" },
