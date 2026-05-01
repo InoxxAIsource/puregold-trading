@@ -53,26 +53,26 @@ const PAGE_METAS: Record<string, PageMeta> = {
   "/": {
     title: "Buy Gold & Silver Bullion Online | GoldBuller LLC",
     description:
-      "Shop 107 gold, silver, platinum & palladium bullion products. Competitive spot prices, fully insured shipping, and KYC-compliant Bitcoin OTC desk. GoldBuller LLC — trusted since 2018.",
+      "Shop gold, silver, platinum & palladium bullion at GoldBuller LLC. Competitive spot prices, insured shipping, and Bitcoin OTC desk. Trusted since 2018.",
     h1: "Buy Gold & Silver Bullion Online",
     schema: ORG_SCHEMA,
   },
   "/gold": {
     title: "Buy Gold Coins & Bars | 50 Products | GoldBuller LLC",
     description:
-      "Browse 50 gold bullion products — American Eagles, PAMP Suisse bars, fractional gold, kilo bars & more. Competitive spot pricing updated daily. Free insured shipping on orders $99+.",
+      "Browse gold bullion — American Eagles, PAMP Suisse bars, fractional gold & kilo bars. Competitive spot pricing updated daily. Free insured shipping $99+.",
     h1: "Buy Gold Bullion Coins & Bars",
   },
   "/silver": {
     title: "Buy Silver Coins & Bars | 35 Products | GoldBuller LLC",
     description:
-      "Shop 35 silver bullion products including Silver Eagles, Maple Leafs, silver rounds & 100 oz bars. Competitive spot pricing. Free insured shipping on orders $99+. GoldBuller LLC.",
+      "Shop silver bullion including Silver Eagles, Maple Leafs, rounds & 100 oz bars. Competitive pricing. Free insured shipping $99+. GoldBuller LLC.",
     h1: "Buy Silver Bullion Coins & Bars",
   },
   "/platinum": {
     title: "Buy Platinum Bullion Coins & Bars | GoldBuller LLC",
     description:
-      "Shop platinum bullion — American Eagle Platinum coins and platinum bars from the world's leading mints. Competitive spot pricing, fully insured shipping. GoldBuller LLC.",
+      "Shop platinum bullion — American Eagle Platinum coins and bars from leading mints. Competitive spot pricing, fully insured shipping. GoldBuller LLC.",
     h1: "Buy Platinum Bullion Coins & Bars",
   },
   "/palladium": {
@@ -90,25 +90,25 @@ const PAGE_METAS: Record<string, PageMeta> = {
   "/ira": {
     title: "Gold & Silver IRA | Precious Metals IRA | GoldBuller LLC",
     description:
-      "Protect your retirement with IRA-eligible gold and silver bullion. GoldBuller LLC guides you through setting up a self-directed precious metals IRA with IRS-approved custodians.",
+      "Open a precious metals IRA with GoldBuller LLC. IRA-eligible gold and silver bullion, IRS-approved custodians, and expert guidance for your retirement.",
     h1: "Gold & Silver Precious Metals IRA",
   },
   "/sell-to-us": {
     title: "Sell Your Gold & Silver | GoldBuller LLC Buyback Prices",
     description:
-      "Sell your precious metals to GoldBuller LLC at competitive spot prices — typically 97–99% of spot for bullion. Fast payment, insured shipping, streamlined process. Get a free quote.",
+      "Sell gold & silver to GoldBuller LLC at competitive spot prices — 97–99% of spot for bullion. Fast payment, insured shipping. Get a free quote today.",
     h1: "Sell Your Gold & Silver to GoldBuller",
   },
   "/buyback-guarantee": {
     title: "Buyback Guarantee | Sell Precious Metals | GoldBuller LLC",
     description:
-      "GoldBuller LLC buys back gold, silver, platinum & palladium at competitive spot prices. Immediate liquidation or consignment program. Fast payment, insured shipping. Free quote.",
+      "GoldBuller LLC buys back gold, silver, platinum & palladium at competitive spot prices. Immediate liquidation or consignment program. Fast payment. Free quote.",
     h1: "GoldBuller Buyback Guarantee",
   },
   "/faq": {
     title: "Precious Metals FAQ | Help Center | GoldBuller LLC",
     description:
-      "Answers to common questions about buying gold & silver, shipping & insurance, pricing, payments, KYC verification, product types, and investing with GoldBuller LLC.",
+      "Common questions about buying gold & silver, shipping, pricing, payments, KYC verification, and investing with GoldBuller LLC.",
     h1: "Precious Metals Frequently Asked Questions",
     schema: JSON.stringify({
       "@context": "https://schema.org",
@@ -160,19 +160,19 @@ const PAGE_METAS: Record<string, PageMeta> = {
   "/shipping": {
     title: "Shipping, Handling & Insurance | GoldBuller LLC",
     description:
-      "GoldBuller LLC ships via UPS, USPS & FedEx. Free insured shipping on orders $99+. All packages are fully insured and discreetly packaged. Delivery in 3–5 business days.",
+      "GoldBuller LLC ships via UPS, USPS & FedEx. Free insured shipping on orders $99+. Fully insured and discreetly packaged. Delivery in 3–5 business days.",
     h1: "Shipping, Handling & Insurance Policy",
   },
   "/bitcoin-otc": {
     title: "Bitcoin OTC Desk | Buy Gold & Silver with BTC | GoldBuller LLC",
     description:
-      "Use Bitcoin to buy physical gold and silver at GoldBuller LLC's OTC desk. Trades from 0.20 to 10 BTC. Insured wire settlement, KYC required. No exchange slippage.",
+      "Buy physical gold and silver with Bitcoin at GoldBuller LLC's OTC desk. Trades from 0.20–10 BTC. KYC required. No exchange slippage.",
     h1: "Bitcoin OTC Desk — Buy Gold & Silver with BTC",
   },
   "/bitcoin-otc/how-it-works": {
     title: "How Bitcoin OTC Works | GoldBuller LLC BTC Desk",
     description:
-      "Learn how GoldBuller LLC's Bitcoin OTC desk works — step-by-step process for buying gold and silver with BTC. No exchange, no slippage, fully insured settlement.",
+      "How GoldBuller LLC's Bitcoin OTC desk works — step-by-step for buying gold and silver with BTC. No exchange, no slippage, fully insured settlement.",
     h1: "How the Bitcoin OTC Desk Works",
   },
   "/charts": {
@@ -208,31 +208,31 @@ const PAGE_METAS: Record<string, PageMeta> = {
   "/tax": {
     title: "Precious Metals Sales Tax by State | GoldBuller LLC",
     description:
-      "Understand sales tax rules for buying gold and silver in your state. GoldBuller LLC's guide covers state-by-state bullion tax exemptions and IRS reporting thresholds.",
+      "Understand precious metals sales tax rules by state. GoldBuller LLC covers state-by-state bullion tax exemptions and IRS reporting thresholds.",
     h1: "Precious Metals Sales Tax by State",
   },
   "/contact": {
     title: "Contact GoldBuller LLC | Precious Metals Support",
     description:
-      "Contact GoldBuller LLC. Email support@goldbuller.com or call 1-800-GOLD-NOW (Mon–Fri 9am–6pm ET). Dallas, TX. Bullion purchase inquiries, quote requests & support.",
+      "Contact GoldBuller LLC: support@goldbuller.com or 1-800-GOLD-NOW (Mon–Fri 9am–6pm ET), Dallas TX. Purchase inquiries, quotes & support.",
     h1: "Contact GoldBuller LLC",
   },
   "/about": {
     title: "About GoldBuller LLC | Trusted Precious Metals Dealer",
     description:
-      "GoldBuller LLC is a trusted Texas-based precious metals dealer offering gold, silver, platinum, palladium & copper bullion since 2018. A+ BBB rated, NGC authorized.",
+      "GoldBuller LLC is a trusted Texas-based precious metals dealer offering gold, silver, platinum & copper bullion since 2018. A+ BBB rated, NGC authorized.",
     h1: "About GoldBuller LLC — Trusted Precious Metals Dealer",
   },
   "/privacy-policy": {
     title: "Privacy Policy | GoldBuller LLC",
     description:
-      "GoldBuller LLC's Privacy Policy — how we collect, use, and protect your personal information across our website, communications, in-person visits, and transactions.",
+      "GoldBuller LLC's Privacy Policy: how we collect, use, and protect your personal information across our website, communications, and transactions.",
     h1: "GoldBuller LLC Privacy Policy",
   },
   "/terms-of-service": {
     title: "Client Agreement & Terms of Service | GoldBuller LLC",
     description:
-      "GoldBuller LLC's Client Agreement covering purchasing, market loss policy, KYC verification, shipping & insurance, returns, governing law (Texas), and dispute resolution.",
+      "GoldBuller LLC Client Agreement: purchasing terms, market loss policy, KYC, shipping & insurance, returns, and Texas governing law.",
     h1: "Client Agreement & Terms of Service",
   },
   "/autobuy": {
@@ -244,7 +244,7 @@ const PAGE_METAS: Record<string, PageMeta> = {
   "/silver/junk-silver": {
     title: "Junk Silver Coins | 90% Silver US Coins | GoldBuller LLC",
     description:
-      "Buy junk silver — 90% silver US coins (pre-1965 dimes, quarters, half-dollars) at GoldBuller LLC. Great value for silver investors. Free shipping on orders $99+.",
+      "Buy junk silver — 90% silver US coins (pre-1965 dimes, quarters, half-dollars) at GoldBuller LLC. Great value for investors. Free shipping $99+.",
     h1: "Junk Silver Coins — 90% US Silver",
   },
 };
