@@ -165,7 +165,7 @@ function ssrFooter(): string {
         <ul class="ssr-footer-list">
           <li><a href="/account/dashboard">My Account</a></li>
           <li><a href="/account/orders">Track Order</a></li>
-          <li><a href="/about/shipping">Shipping &amp; Returns</a></li>
+          <li><a href="/shipping">Shipping &amp; Returns</a></li>
           <li><a href="/faq">FAQ</a></li>
           <li><a href="/contact">Contact Us</a></li>
           <li><a href="/ira">Gold IRA</a></li>
