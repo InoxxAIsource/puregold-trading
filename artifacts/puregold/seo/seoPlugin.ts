@@ -14,6 +14,7 @@ const OG_IMAGE = `${SITE_URL}/opengraph.jpg`;
 interface PageMeta {
   title: string;
   description: string;
+  h1: string;
   schema?: string; // raw JSON-LD string
 }
 
@@ -53,52 +54,62 @@ const PAGE_METAS: Record<string, PageMeta> = {
     title: "Buy Gold & Silver Bullion Online | GoldBuller LLC",
     description:
       "Shop 107 gold, silver, platinum & palladium bullion products. Competitive spot prices, fully insured shipping, and KYC-compliant Bitcoin OTC desk. GoldBuller LLC — trusted since 2018.",
+    h1: "Buy Gold & Silver Bullion Online",
     schema: ORG_SCHEMA,
   },
   "/gold": {
     title: "Buy Gold Coins & Bars | 50 Products | GoldBuller LLC",
     description:
       "Browse 50 gold bullion products — American Eagles, PAMP Suisse bars, fractional gold, kilo bars & more. Competitive spot pricing updated daily. Free insured shipping on orders $99+.",
+    h1: "Buy Gold Bullion Coins & Bars",
   },
   "/silver": {
     title: "Buy Silver Coins & Bars | 35 Products | GoldBuller LLC",
     description:
       "Shop 35 silver bullion products including Silver Eagles, Maple Leafs, silver rounds & 100 oz bars. Competitive spot pricing. Free insured shipping on orders $99+. GoldBuller LLC.",
+    h1: "Buy Silver Bullion Coins & Bars",
   },
   "/platinum": {
     title: "Buy Platinum Bullion Coins & Bars | GoldBuller LLC",
     description:
       "Shop platinum bullion — American Eagle Platinum coins and platinum bars from the world's leading mints. Competitive spot pricing, fully insured shipping. GoldBuller LLC.",
+    h1: "Buy Platinum Bullion Coins & Bars",
   },
   "/palladium": {
     title: "Buy Palladium Bullion Coins & Bars | GoldBuller LLC",
     description:
       "Shop palladium bullion products including American Eagle Palladium coins and palladium bars. Fully insured discreet shipping nationwide. GoldBuller LLC.",
+    h1: "Buy Palladium Bullion Coins & Bars",
   },
   "/copper": {
     title: "Buy Copper Bullion Rounds & Bars | GoldBuller LLC",
     description:
       "Shop copper bullion rounds, bars, and coins at GoldBuller LLC. Affordable entry-level precious metals investing. Free insured shipping on orders $99+.",
+    h1: "Buy Copper Bullion Rounds & Bars",
   },
   "/ira": {
     title: "Gold & Silver IRA | Precious Metals IRA | GoldBuller LLC",
     description:
       "Protect your retirement with IRA-eligible gold and silver bullion. GoldBuller LLC guides you through setting up a self-directed precious metals IRA with IRS-approved custodians.",
+    h1: "Gold & Silver Precious Metals IRA",
   },
   "/sell-to-us": {
     title: "Sell Your Gold & Silver | GoldBuller LLC Buyback Prices",
     description:
       "Sell your precious metals to GoldBuller LLC at competitive spot prices — typically 97–99% of spot for bullion. Fast payment, insured shipping, streamlined process. Get a free quote.",
+    h1: "Sell Your Gold & Silver to GoldBuller",
   },
   "/buyback-guarantee": {
     title: "Buyback Guarantee | Sell Precious Metals | GoldBuller LLC",
     description:
       "GoldBuller LLC buys back gold, silver, platinum & palladium at competitive spot prices. Immediate liquidation or consignment program. Fast payment, insured shipping. Free quote.",
+    h1: "GoldBuller Buyback Guarantee",
   },
   "/faq": {
     title: "Precious Metals FAQ | Help Center | GoldBuller LLC",
     description:
       "Answers to common questions about buying gold & silver, shipping & insurance, pricing, payments, KYC verification, product types, and investing with GoldBuller LLC.",
+    h1: "Precious Metals Frequently Asked Questions",
     schema: JSON.stringify({
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -150,76 +161,91 @@ const PAGE_METAS: Record<string, PageMeta> = {
     title: "Shipping, Handling & Insurance | GoldBuller LLC",
     description:
       "GoldBuller LLC ships via UPS, USPS & FedEx. Free insured shipping on orders $99+. All packages are fully insured and discreetly packaged. Delivery in 3–5 business days.",
+    h1: "Shipping, Handling & Insurance Policy",
   },
   "/bitcoin-otc": {
     title: "Bitcoin OTC Desk | Buy Gold & Silver with BTC | GoldBuller LLC",
     description:
       "Use Bitcoin to buy physical gold and silver at GoldBuller LLC's OTC desk. Trades from 0.20 to 10 BTC. Insured wire settlement, KYC required. No exchange slippage.",
+    h1: "Bitcoin OTC Desk — Buy Gold & Silver with BTC",
   },
   "/bitcoin-otc/how-it-works": {
     title: "How Bitcoin OTC Works | GoldBuller LLC BTC Desk",
     description:
       "Learn how GoldBuller LLC's Bitcoin OTC desk works — step-by-step process for buying gold and silver with BTC. No exchange, no slippage, fully insured settlement.",
+    h1: "How the Bitcoin OTC Desk Works",
   },
   "/charts": {
     title: "Live Gold & Silver Price Charts | GoldBuller LLC",
     description:
       "Track live gold, silver, platinum, and palladium spot prices with interactive real-time charts on GoldBuller LLC. Updated continuously during market hours.",
+    h1: "Live Gold & Silver Price Charts",
   },
   "/fear-greed-index": {
     title: "Precious Metals Fear & Greed Index | GoldBuller LLC",
     description:
       "Track investor sentiment in the gold and silver market with GoldBuller LLC's Fear & Greed Index. Updated daily. Use it to time your precious metals purchases.",
+    h1: "Precious Metals Fear & Greed Index",
   },
   "/on-sale": {
     title: "Gold & Silver On Sale | Discounted Bullion | GoldBuller LLC",
     description:
       "Shop sale-priced gold and silver bullion at GoldBuller LLC. Discounted coins, bars, and rounds at competitive spot-based pricing. Free insured shipping $99+.",
+    h1: "Gold & Silver Bullion On Sale",
   },
   "/new-arrivals": {
     title: "New Gold & Silver Arrivals | Latest Bullion | GoldBuller LLC",
     description:
       "Browse the latest additions to GoldBuller LLC's precious metals catalog — new gold coins, silver bars, and bullion products added regularly.",
+    h1: "New Precious Metals Arrivals",
   },
   "/rare-coins": {
     title: "Rare & Numismatic Coins | NGC & PCGS Graded | GoldBuller LLC",
     description:
       "Shop NGC and PCGS-graded rare and numismatic coins at GoldBuller LLC. Pre-1933 gold coins, proof sets, Morgan dollars, and investment-grade certified coins.",
+    h1: "Rare & Numismatic Coins — NGC & PCGS Graded",
   },
   "/tax": {
     title: "Precious Metals Sales Tax by State | GoldBuller LLC",
     description:
       "Understand sales tax rules for buying gold and silver in your state. GoldBuller LLC's guide covers state-by-state bullion tax exemptions and IRS reporting thresholds.",
+    h1: "Precious Metals Sales Tax by State",
   },
   "/contact": {
     title: "Contact GoldBuller LLC | Precious Metals Support",
     description:
       "Contact GoldBuller LLC. Email support@goldbuller.com or call 1-800-GOLD-NOW (Mon–Fri 9am–6pm ET). Dallas, TX. Bullion purchase inquiries, quote requests & support.",
+    h1: "Contact GoldBuller LLC",
   },
   "/about": {
     title: "About GoldBuller LLC | Trusted Precious Metals Dealer",
     description:
       "GoldBuller LLC is a trusted Texas-based precious metals dealer offering gold, silver, platinum, palladium & copper bullion since 2018. A+ BBB rated, NGC authorized.",
+    h1: "About GoldBuller LLC — Trusted Precious Metals Dealer",
   },
   "/privacy-policy": {
     title: "Privacy Policy | GoldBuller LLC",
     description:
       "GoldBuller LLC's Privacy Policy — how we collect, use, and protect your personal information across our website, communications, in-person visits, and transactions.",
+    h1: "GoldBuller LLC Privacy Policy",
   },
   "/terms-of-service": {
     title: "Client Agreement & Terms of Service | GoldBuller LLC",
     description:
       "GoldBuller LLC's Client Agreement covering purchasing, market loss policy, KYC verification, shipping & insurance, returns, governing law (Texas), and dispute resolution.",
+    h1: "Client Agreement & Terms of Service",
   },
   "/autobuy": {
     title: "Auto-Buy Precious Metals | Dollar-Cost Averaging | GoldBuller LLC",
     description:
       "Set up automatic recurring purchases of gold and silver bullion with GoldBuller LLC's Auto-Buy program. Dollar-cost averaging made simple and fully automated.",
+    h1: "Auto-Buy Precious Metals — Dollar-Cost Averaging",
   },
   "/silver/junk-silver": {
     title: "Junk Silver Coins | 90% Silver US Coins | GoldBuller LLC",
     description:
       "Buy junk silver — 90% silver US coins (pre-1965 dimes, quarters, half-dollars) at GoldBuller LLC. Great value for silver investors. Free shipping on orders $99+.",
+    h1: "Junk Silver Coins — 90% US Silver",
   },
 };
 
@@ -239,7 +265,7 @@ function injectPageMeta(html: string, pathname: string): string {
   if (!meta) return html;
 
   const canonical = `${SITE_URL}${pathname === "/" ? "" : pathname}`;
-  const { title, description, schema } = meta;
+  const { title, description, h1, schema } = meta;
 
   const tags = [
     `  <link rel="canonical" href="${canonical}" />`,
@@ -260,13 +286,20 @@ function injectPageMeta(html: string, pathname: string): string {
     .filter(Boolean)
     .join("\n");
 
+  // Inject an <h1> inside #root so crawlers that don't execute JS still find
+  // a heading. React replaces the contents of #root immediately on hydration,
+  // so human visitors never see this element. Styled to match the dark theme
+  // to prevent any brief flash before the app mounts.
+  const h1Tag = `<h1 style="background:#0c0c0e;color:#f9f9f7;margin:0;padding:2rem;font-family:Georgia,serif;font-size:2rem;">${esc(h1)}</h1>`;
+
   return html
     .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
     .replace(
       /<meta name="description"[^>]*>/,
       `<meta name="description" content="${esc(description)}" />`,
     )
-    .replace("</head>", `${tags}\n</head>`);
+    .replace("</head>", `${tags}\n</head>`)
+    .replace('<div id="root"></div>', `<div id="root">${h1Tag}</div>`);
 }
 
 // ---------------------------------------------------------------------------
