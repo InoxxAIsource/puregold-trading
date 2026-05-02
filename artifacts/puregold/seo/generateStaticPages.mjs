@@ -425,11 +425,34 @@ function buildGuidePage(guide) {
     ${guide.body}
     ${relatedHtml}`;
 
+  const datePublished = guide.datePublished ?? "2024-09-01";
+  const dateModified  = guide.dateModified  ?? "2025-03-15";
+
   return shell({
     title: `${guide.title} | ${BRAND}`,
     description: guide.meta,
     canonical: `${SITE_URL}/guides/${guide.slug}`,
-    schemaJson: JSON.stringify({ "@context": "https://schema.org", "@type": "Article", headline: guide.title, description: guide.meta, url: `${SITE_URL}/guides/${guide.slug}` }),
+    schemaJson: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": guide.title,
+      "description": guide.meta,
+      "url": `${SITE_URL}/guides/${guide.slug}`,
+      "datePublished": datePublished,
+      "dateModified": dateModified,
+      "author": {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        "name": "GoldBuller LLC"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        "name": "GoldBuller LLC",
+        "logo": { "@type": "ImageObject", "url": `${SITE_URL}/favicon.svg` }
+      },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": `${SITE_URL}/guides/${guide.slug}` }
+    }),
     breadcrumbs: [{ name: "Guides", url: `${SITE_URL}/guides` }, { name: guide.title, url: `${SITE_URL}/guides/${guide.slug}` }],
     body,
   });

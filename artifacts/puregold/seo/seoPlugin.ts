@@ -426,14 +426,14 @@ function handleSeoRequest(
     return;
   }
 
-  if (url === "/learn") {
+  if (url === "/learn" || url === "/learn/") {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=86400");
     res.end(getGlossaryIndexHtml());
     return;
   }
 
-  const learnMatch = url.match(/^\/learn\/([a-z0-9-]+)$/);
+  const learnMatch = url.match(/^\/learn\/([a-z0-9-]+)\/?$/);
   if (learnMatch) {
     const html = getGlossaryTermHtml(learnMatch[1]);
     if (html) {
@@ -447,14 +447,14 @@ function handleSeoRequest(
     return;
   }
 
-  if (url === "/guides") {
+  if (url === "/guides" || url === "/guides/") {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=86400");
     res.end(getGuidesIndexHtml());
     return;
   }
 
-  const guideMatch = url.match(/^\/guides\/([a-z0-9-]+)$/);
+  const guideMatch = url.match(/^\/guides\/([a-z0-9-]+)\/?$/);
   if (guideMatch) {
     const html = getGuideHtml(guideMatch[1]);
     if (html) {

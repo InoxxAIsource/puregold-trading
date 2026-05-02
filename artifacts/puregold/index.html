@@ -21,6 +21,49 @@
     <meta name="twitter:description" content="Shop gold, silver, platinum &amp; palladium bullion products. Competitive spot prices, fully insured shipping, and KYC-compliant Bitcoin OTC desk." />
     <meta name="twitter:image" content="https://goldbuller.com/opengraph.jpg" />
 
+    <!-- Organization + WebSite JSON-LD: embedded directly so crawlers always see it -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://goldbuller.com/#organization",
+          "name": "GoldBuller LLC",
+          "url": "https://goldbuller.com",
+          "logo": "https://goldbuller.com/favicon.svg",
+          "foundingDate": "2018",
+          "description": "GoldBuller LLC is an A+ BBB-rated, NGC-authorized precious metals dealer based in Dallas, TX. We offer gold, silver, platinum, and copper bullion with transparent spot-based pricing, fully insured discreet shipping, and a KYC-compliant Bitcoin OTC desk.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Dallas",
+            "addressRegion": "TX",
+            "addressCountry": "US"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "support@goldbuller.com",
+            "telephone": "+18004656669",
+            "contactType": "customer service",
+            "hoursAvailable": "Mo-Fr 09:00-18:00"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://goldbuller.com/#website",
+          "url": "https://goldbuller.com",
+          "name": "GoldBuller LLC",
+          "publisher": { "@id": "https://goldbuller.com/#organization" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://goldbuller.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- Preconnect to third-party origins used above the fold -->
@@ -49,7 +92,33 @@
     </noscript>
   </head>
   <body>
-    <div id="root"><h1 style="background:#0c0c0e;color:#f9f9f7;margin:0;padding:2rem;font-family:Georgia,serif;font-size:2rem;">Buy Gold &amp; Silver Bullion Online</h1></div>
+    <div id="root"><h1 style="background:#0c0c0e;color:#f9f9f7;margin:0;padding:2rem;font-family:Georgia,serif;font-size:2rem;">Buy Gold &amp; Silver Bullion Online</h1>
+    <noscript>
+      <div style="background:#0c0c0e;color:#d1d5db;font-family:Georgia,serif;padding:2rem;max-width:860px;margin:0 auto;line-height:1.8;">
+        <p style="font-size:1.1rem;color:#9ca3af;margin-bottom:1.5rem;">GoldBuller LLC is an A+ BBB-rated precious metals dealer based in Dallas, TX, serving investors since 2018. We offer gold, silver, platinum, and copper bullion with transparent spot-based pricing, fully insured discreet shipping, and a KYC-compliant Bitcoin OTC desk.</p>
+        <h2 style="color:#c9a84c;font-size:1.3rem;margin:1.5rem 0 0.5rem;">Why Buy from GoldBuller?</h2>
+        <ul style="padding-left:1.5rem;">
+          <li><strong>Trusted since 2018</strong> — 7+ years serving precious metals investors nationwide</li>
+          <li><strong>A+ Better Business Bureau rating</strong> — accredited with no unresolved complaints</li>
+          <li><strong>NGC Authorized Dealer</strong> — certified for graded numismatic coins</li>
+          <li><strong>Transparent pricing</strong> — all products priced at competitive premiums above live spot</li>
+          <li><strong>Free insured shipping</strong> — on orders $99+, fully insured to your door</li>
+          <li><strong>Bitcoin OTC desk</strong> — trade 0.20–10 BTC for physical gold and silver</li>
+          <li><strong>Gold &amp; Silver IRA</strong> — with IRS-approved custodians and insured depositories</li>
+        </ul>
+        <h2 style="color:#c9a84c;font-size:1.3rem;margin:1.5rem 0 0.5rem;">Products Available</h2>
+        <ul style="padding-left:1.5rem;">
+          <li>Gold: American Eagles, Canadian Maples, PAMP bars, kilo bars, fractional coins — 50+ products</li>
+          <li>Silver: Silver Eagles, Maple Leafs, 100 oz bars, junk silver, rounds — 35+ products</li>
+          <li>Platinum: American Platinum Eagles and platinum bars</li>
+          <li>Copper: Copper rounds and bars for entry-level investors</li>
+          <li>Rare Coins: NGC/PCGS-graded numismatic coins</li>
+        </ul>
+        <h2 style="color:#c9a84c;font-size:1.3rem;margin:1.5rem 0 0.5rem;">Contact</h2>
+        <p>Phone: 1-800-GOLD-NOW (Mon–Fri 9am–6pm CT) | Email: support@goldbuller.com | Dallas, TX</p>
+      </div>
+    </noscript>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
