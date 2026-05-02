@@ -1,0 +1,74 @@
+Content-Length : 2244
+
+Content-Type : text/html; charset=utf-8
+
+Expires : Wed, 29 Apr 2026 05:24:16 GMT
+
+Last-Modified : Wed, 29 Apr 2026 05:21:29 GMT
+
+Accept-Ranges : bytes
+
+Cache-Control : private
+
+Date : Wed, 29 Apr 2026 05:24:16 GMT
+
+Server : Google
+
+Server : Frontend
+
+Set-Cookie : GAESA=CpwBMDAwN2I3MzRkOWE5MjdlMzQ5YzhlMmFhNmExMmFlNDgyNGMxYWNiZjg4M2U0ZWEwMjhjZjQ1MTc1MTMwZDA1YWEyNzI5NjdlZjQ0OThiMjY5OTQzYjAwYzY3NjFiNjEzOWRlOTkxMDhmYTFhNTAyMjI4YTY1ZTBiZDczYzI5OTE3MzQ0MDgyZmNkZDU3NDhjMjgwMThjMTBhNmM3EPDix73dMw; expires=Fri, 29-May-2026 05:24:16 GMT; path=/
+
+Strict-Transport-Security : max-age=63072000; includeSubDomains
+
+x-cloud-trace-context : 6aae89e4c34577e09609b88134de0511
+
+Via : 1.1 google
+
+Alt-Svc : h3=":443"; ma=2592000
+
+Alt-Svc : h3-29=":443"; ma=2592000
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>GoldBuller — Buy Gold, Silver & Precious Metals</title>
+    <meta name="description" content="GoldBuller is your trusted source for physical gold, silver, platinum, and copper bullion. Competitive prices, insured shipping, and KYC-compliant Bitcoin OTC." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+​
+    <!-- Preconnect to third-party origins used above the fold -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+​
+    <!-- Preload the LCP hero image so browser fetches it as early as possible -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=2000&q=75&fm=webp"
+      imagesrcset="https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=800&q=70&fm=webp 800w, https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=2000&q=75&fm=webp 2000w"
+      imagesizes="100vw"
+    >
+​
+    <!-- Fonts: async (non-render-blocking) -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    </noscript>
+    <script type="module" crossorigin src="/assets/index-CtRDBGA9.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-DSJJda9y.js">
+    <link rel="modulepreload" crossorigin href="/assets/tanstack-vendor-DcDvzKSZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/radix-vendor-FWmOAUq-.js">
+    <link rel="modulepreload" crossorigin href="/assets/icons-vendor-cnAddO7h.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-pbiUUcyi.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
