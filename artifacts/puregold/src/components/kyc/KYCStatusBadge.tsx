@@ -36,7 +36,7 @@ export function KYCStatusBadge({ showCTA = false, compact = false }: KYCStatusBa
     },
   };
 
-  const cfg = configs[kycStatus];
+  const cfg = configs[kycStatus] ?? configs[KYC_STATUS.NOT_STARTED];
 
   if (compact) {
     return (

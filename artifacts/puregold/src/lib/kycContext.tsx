@@ -93,8 +93,10 @@ export function KYCProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return;
       const data = await res.json();
       if (data.success && data.status) {
-        if (data.status !== kycStatus) {
-          setKYCStatus(data.status as KYCStatus);
+        // Normalise DB value "declined" → frontend enum "rejected"
+        const normalised = (data.status === "declined" ? KYC_STATUS.REJECTED : data.status) as KYCStatus;
+        if (normalised !== kycStatus) {
+          setKYCStatus(normalised);
           window.dispatchEvent(new Event("kycUpdated"));
         }
         if (data.applicationId) setKYCApplicationId(data.applicationId);
