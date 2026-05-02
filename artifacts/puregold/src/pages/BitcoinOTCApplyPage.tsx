@@ -131,6 +131,14 @@ export default function BitcoinOTCApplyPage() {
 
   const { price, isLoading, lastUpdated } = useBTCPrice();
 
+  // If the previous wire deadline has passed, the bank details are stale —
+  // user must request fresh instructions by submitting a new application.
+  const wireExpired = wireInfo?.wireDeadline
+    ? new Date(wireInfo.wireDeadline) < new Date()
+    : false;
+  // Only show pre-filled wire details when they are still valid
+  const activeWireInfo = wireExpired ? null : wireInfo;
+
   const [btcAmount, setBtcAmount] = useState(() => {
     const v = parseFloat(params.get("btc") || "1");
     return isNaN(v) ? 1.0 : Math.min(10, Math.max(0.2, v));
@@ -328,36 +336,62 @@ export default function BitcoinOTCApplyPage() {
           {/* Section 2: Wire Details */}
           <section className="bg-card border border-border rounded-xl p-6 space-y-5">
             <h2 className="font-semibold text-foreground border-b border-border pb-3">Wire Transfer Details</h2>
-            <p className="text-sm text-muted-foreground">After submission, you'll receive personalized wire instructions. Here's what to expect:</p>
 
-            <div className="bg-secondary/20 rounded-xl p-5 text-sm font-mono space-y-2 text-muted-foreground">
-              <p className="font-semibold text-foreground mb-2 not-italic">
-                {wireInfo?.bankName ? "🏦 Your Wire Instructions" : "Wire Instructions (confirmed after KYC approval)"}
-              </p>
-              <div className="space-y-1.5">
-                {(
-                  [
-                    ["Bank Name", wireInfo?.bankName || "Confirmed after KYC approval"],
-                    ["Account Name", wireInfo?.accountName || "GoldBuller LLC"],
-                    ["ABA Routing", wireInfo?.routingNumber || "Confirmed after KYC approval"],
-                    ["Account Number", wireInfo?.accountNumber || "Confirmed after KYC approval"],
-                    wireInfo?.swiftCode ? ["SWIFT / BIC", wireInfo.swiftCode] : null,
-                    ["Reference/Memo", kycApplicationId || "[YOUR KYC APPLICATION ID]"],
-                    ["Amount", `$${fmt(finalTotal)} USD`],
-                  ] as (string[] | null)[]
-                ).filter((x): x is string[] => x !== null).map(([k, v]) => (
-                  <div key={k as string} className="flex gap-2 text-xs sm:text-sm">
-                    <span className="w-36 shrink-0 text-muted-foreground">{k}:</span>
-                    <span className={`${!(wireInfo?.bankName) && (v as string).includes("Confirmed") ? "text-amber-400/70 italic" : "text-foreground"}`}>{v as string}</span>
+            {wireExpired ? (
+              /* ── Expired wire window ── */
+              <div className="space-y-4">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-5 flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-400 mb-1">Previous Wire Window Expired</p>
+                    <p className="text-sm text-muted-foreground">
+                      Your previous 4-hour wire window has closed and those bank details are no longer valid.
+                      Submit this application and our team will email you a fresh set of wire instructions within a few hours during business hours.
+                    </p>
                   </div>
-                ))}
+                </div>
+                <div className="bg-secondary/20 rounded-xl p-4 text-sm text-muted-foreground space-y-1">
+                  <p className="font-semibold text-foreground mb-2">What happens next:</p>
+                  <p>1. Submit this application below</p>
+                  <p>2. Our OTC desk will generate a <strong className="text-foreground">new quote</strong> and fresh wire instructions</p>
+                  <p>3. You'll receive an email with updated bank details and a new 4-hour wire window</p>
+                  <p>4. Send your wire using only the new instructions — do not use any expired details</p>
+                </div>
               </div>
-              <div className="border-t border-border/40 pt-3 mt-2 text-xs space-y-1">
-                <p>⚠️ Wire must be received within 4 hours of approval</p>
-                <p>⚠️ Reference number MUST appear in wire memo field</p>
-                <p>⚠️ Wire must come from account in your verified name</p>
+            ) : (
+              /* ── Active / pending wire details ── */
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">After submission, you'll receive personalized wire instructions. Here's what to expect:</p>
+                <div className="bg-secondary/20 rounded-xl p-5 text-sm font-mono space-y-2 text-muted-foreground">
+                  <p className="font-semibold text-foreground mb-2 not-italic">
+                    {activeWireInfo?.bankName ? "🏦 Your Wire Instructions" : "Wire Instructions (confirmed after KYC approval)"}
+                  </p>
+                  <div className="space-y-1.5">
+                    {(
+                      [
+                        ["Bank Name", activeWireInfo?.bankName || "Confirmed after KYC approval"],
+                        ["Account Name", activeWireInfo?.accountName || "GoldBuller LLC"],
+                        ["ABA Routing", activeWireInfo?.routingNumber || "Confirmed after KYC approval"],
+                        ["Account Number", activeWireInfo?.accountNumber || "Confirmed after KYC approval"],
+                        activeWireInfo?.swiftCode ? ["SWIFT / BIC", activeWireInfo.swiftCode] : null,
+                        ["Reference/Memo", kycApplicationId || "[YOUR KYC APPLICATION ID]"],
+                        ["Amount", `$${fmt(finalTotal)} USD`],
+                      ] as (string[] | null)[]
+                    ).filter((x): x is string[] => x !== null).map(([k, v]) => (
+                      <div key={k as string} className="flex gap-2 text-xs sm:text-sm">
+                        <span className="w-36 shrink-0 text-muted-foreground">{k}:</span>
+                        <span className={`${!(activeWireInfo?.bankName) && (v as string).includes("Confirmed") ? "text-amber-400/70 italic" : "text-foreground"}`}>{v as string}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t border-border/40 pt-3 mt-2 text-xs space-y-1">
+                    <p>⚠️ Wire must be received within 4 hours of approval</p>
+                    <p>⚠️ Reference number MUST appear in wire memo field</p>
+                    <p>⚠️ Wire must come from account in your verified name</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Your Bank Name *</label>
