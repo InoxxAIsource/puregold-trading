@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "kE3nPkYHsKYQmqDz88urX"
@@ -120,3 +119,9 @@ id = "6wS3SaTWkj6bgtgGSBqRo"
 uri = "file://artifacts/puregold/public/images/products/silver-eagle-monster-box.png"
 type = "image"
 title = "silver eagle monster box"
+
+[[outputs]]
+id = "6bbXKMUAzjWn8ItY5aBk4"
+uri = "file://.local/geo-audit-goldbuller.pdf"
+type = "pdf"
+title = "GoldBuller GEO Audit Report — May 2026"
