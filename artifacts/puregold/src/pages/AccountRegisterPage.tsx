@@ -10,20 +10,6 @@ function getRedirectUrl() {
   return new URLSearchParams(window.location.search).get("redirect") || "/account/dashboard";
 }
 
-type StoredUser = { firstName: string; lastName: string; email: string; password: string };
-
-function getUsers(): StoredUser[] {
-  try { return JSON.parse(localStorage.getItem("pg_users") || "[]"); } catch { return []; }
-}
-function saveUser(u: StoredUser) {
-  const users = getUsers();
-  users.push(u);
-  localStorage.setItem("pg_users", JSON.stringify(users));
-}
-function emailTaken(email: string) {
-  return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
-}
-
 export default function AccountRegisterPage() {
   const { login } = useAuth();
   const [, setLocation] = useLocation();
@@ -38,7 +24,7 @@ export default function AccountRegisterPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -46,14 +32,31 @@ export default function AccountRegisterPage() {
     if (!email.trim()) { setError("Please enter your email."); return; }
     if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
     if (password !== confirm) { setError("Passwords do not match."); return; }
-    if (emailTaken(email)) { setError("An account with this email already exists. Please sign in."); return; }
 
     setSubmitting(true);
-
-    saveUser({ firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim().toLowerCase(), password });
-    const name = `${firstName.trim()} ${lastName.trim()}`;
-    login({ email: email.trim().toLowerCase(), name });
-    setLocation(redirectUrl);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || "Registration failed. Please try again.");
+        return;
+      }
+      login(data.user);
+      setLocation(redirectUrl);
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

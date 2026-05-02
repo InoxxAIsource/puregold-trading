@@ -11,20 +11,6 @@ function getRedirectUrl() {
   return new URLSearchParams(window.location.search).get("redirect") || "/account/dashboard";
 }
 
-type StoredUser = { firstName: string; lastName: string; email: string; password: string };
-
-function getUsers(): StoredUser[] {
-  try { return JSON.parse(localStorage.getItem("pg_users") || "[]"); } catch { return []; }
-}
-
-function findUser(email: string, password: string): StoredUser | null {
-  return getUsers().find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password) || null;
-}
-
-function emailExists(email: string): boolean {
-  return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
-}
-
 export default function AccountLoginPage() {
   const { login } = useAuth();
   const { addItem } = useCartContext();
@@ -33,6 +19,7 @@ export default function AccountLoginPage() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const redirectUrl = getRedirectUrl();
   const isCartRedirect = redirectUrl.includes("/cart") || redirectUrl.includes("/checkout");
@@ -47,37 +34,33 @@ export default function AccountLoginPage() {
     } catch {}
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (!email.trim()) { setError("Please enter your email address."); return; }
     if (!password) { setError("Please enter your password."); return; }
 
-    const users = getUsers();
-
-    // If no users registered yet (legacy / demo mode) — allow any login for backward compat
-    if (users.length === 0) {
-      login({ email: email.trim().toLowerCase(), name: email.split("@")[0] || "Member" });
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || "Login failed. Please try again.");
+        return;
+      }
+      login(data.user);
       restorePendingCart();
       setLocation(redirectUrl);
-      return;
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
     }
-
-    if (!emailExists(email)) {
-      setError("No account found with this email. Please create an account first.");
-      return;
-    }
-
-    const user = findUser(email, password);
-    if (!user) {
-      setError("Incorrect password. Please try again.");
-      return;
-    }
-
-    login({ email: user.email, name: `${user.firstName} ${user.lastName}` });
-    restorePendingCart();
-    setLocation(redirectUrl);
   };
 
   const handleGuestCheckout = () => {
@@ -144,9 +127,9 @@ export default function AccountLoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-12 uppercase font-bold tracking-wider">
+            <Button type="submit" className="w-full h-12 uppercase font-bold tracking-wider" disabled={submitting}>
               <LogIn className="h-4 w-4 mr-2" />
-              Sign In
+              {submitting ? "Signing In…" : "Sign In"}
             </Button>
           </form>
 

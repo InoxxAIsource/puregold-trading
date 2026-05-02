@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { Resend } from "resend";
+import bcrypt from "bcryptjs";
+import { db, usersTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -9,6 +12,96 @@ function getSiteUrl() {
   const custom = list.find((d) => !d.endsWith(".replit.app"));
   return `https://${custom || list[0]}`;
 }
+
+// POST /api/auth/register
+router.post("/auth/register", async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body as {
+      firstName?: string; lastName?: string; email?: string; password?: string;
+    };
+
+    if (!firstName?.trim() || !lastName?.trim() || !email?.trim() || !password) {
+      res.status(400).json({ success: false, error: "All fields are required." });
+      return;
+    }
+    if (password.length < 8) {
+      res.status(400).json({ success: false, error: "Password must be at least 8 characters." });
+      return;
+    }
+
+    const normalEmail = email.trim().toLowerCase();
+
+    const existing = await db
+      .select({ id: usersTable.id })
+      .from(usersTable)
+      .where(eq(usersTable.email, normalEmail))
+      .limit(1);
+
+    if (existing.length > 0) {
+      res.status(409).json({ success: false, error: "An account with this email already exists. Please sign in." });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const [user] = await db
+      .insert(usersTable)
+      .values({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: normalEmail,
+        passwordHash,
+      })
+      .returning({ id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName, email: usersTable.email });
+
+    res.json({
+      success: true,
+      user: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+    });
+  } catch (err) {
+    req.log.error({ err }, "Registration error");
+    res.status(500).json({ success: false, error: "Registration failed. Please try again." });
+  }
+});
+
+// POST /api/auth/login
+router.post("/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body as { email?: string; password?: string };
+
+    if (!email?.trim() || !password) {
+      res.status(400).json({ success: false, error: "Email and password are required." });
+      return;
+    }
+
+    const normalEmail = email.trim().toLowerCase();
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, normalEmail))
+      .limit(1);
+
+    if (!user) {
+      res.status(401).json({ success: false, error: "No account found with this email. Please create an account." });
+      return;
+    }
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ success: false, error: "Incorrect password. Please try again." });
+      return;
+    }
+
+    res.json({
+      success: true,
+      user: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+    });
+  } catch (err) {
+    req.log.error({ err }, "Login error");
+    res.status(500).json({ success: false, error: "Login failed. Please try again." });
+  }
+});
 
 // POST /api/auth/forgot-password
 // Body: { email: string; code: string }
