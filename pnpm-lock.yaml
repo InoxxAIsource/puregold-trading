@@ -423,6 +423,9 @@ importers:
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       react-chartjs-2:
         specifier: ^5.3.1
         version: 5.3.1(chart.js@4.5.1)(react@19.1.0)
