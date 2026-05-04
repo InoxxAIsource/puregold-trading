@@ -219,6 +219,32 @@ allocated-storage, american-gold-eagle, assay, backwardation, basel-iii, bid-ask
 - **`public/llms.txt`** — Structured plain-text site overview for AI retrieval systems (Claude, Perplexity, GPT-4, etc.). Covers products, policies, pricing, contacts, and all content URLs.
 - **`public/robots.txt`** — Differentiates AI retrieval bots (OAI-SearchBot, PerplexityBot, ClaudeBot, anthropic-ai, cohere-ai, YouBot → `Allow: /`) from AI training scrapers (GPTBot, CCBot, Bytespider, Diffbot, omgili → `Disallow: /`). Google-Extended allowed for AI Overviews.
 
+### Agent-Ready (isitagentready.com) — all implemented
+
+Served by the Express API server (`/.well-known` is routed to `/api` service):
+
+| Endpoint | Standard | Content-Type |
+|---|---|---|
+| `/.well-known/api-catalog` | RFC 9727 | `application/linkset+json` |
+| `/.well-known/oauth-authorization-server` | RFC 8414 | `application/json` |
+| `/.well-known/oauth-protected-resource` | RFC 9728 | `application/json` |
+| `/.well-known/mcp/server-card.json` | SEP-1649 | `application/json` |
+| `/.well-known/agent-skills/index.json` | agentskills.io v0.2.0 | `application/json` |
+| `/.well-known/markdown` | Markdown negotiation | 307 → `/llms.txt` |
+
+**Link headers (RFC 8288)** — Set on every Express response AND every Vite dev server response:
+```
+Link: </.well-known/api-catalog>; rel="api-catalog",
+      </llms.txt>; rel="alternate"; type="text/plain",
+      </.well-known/agent-skills/index.json>; rel="agent-skills",
+      </.well-known/mcp/server-card.json>; rel="mcp-server-card"
+```
+Also declared as `<link>` elements in `index.html` for static hosting fallback.
+
+**Markdown for Agents** — Express middleware: `Accept: text/markdown` requests redirect 307 → `/llms.txt`.
+
+**WebMCP** — `navigator.modelContext.provideContext()` in `src/main.tsx` exposes 3 tools: `get_spot_prices`, `search_products`, `get_price_history`.
+
 ### Sitemap (`public/sitemap.xml`)
 
 152 URLs covering all routes. Includes: /copper, /palladium, /rare-coins, /buyback-guarantee, all 25 glossary terms, 10 guides, 7 insights, 17 buy-keyword pages, 50 location pages. All lastmod dates reflect actual update dates.

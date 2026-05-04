@@ -62,6 +62,31 @@ function assetCachePlugin(): Plugin {
   };
 }
 
+// Vite plugin: adds RFC 8288 Link headers for agent discovery on every dev response
+function agentDiscoveryPlugin(): Plugin {
+  const LINK_HEADERS = [
+    `<https://goldbuller.com/.well-known/api-catalog>; rel="api-catalog"`,
+    `<https://goldbuller.com/llms.txt>; rel="alternate"; type="text/plain"`,
+    `<https://goldbuller.com/.well-known/agent-skills/index.json>; rel="agent-skills"`,
+    `<https://goldbuller.com/.well-known/mcp/server-card.json>; rel="mcp-server-card"`,
+  ].join(", ");
+
+  function addLinkHeaders(_req: IncomingMessage, res: ServerResponse, next: () => void) {
+    res.setHeader("Link", LINK_HEADERS);
+    next();
+  }
+
+  return {
+    name: "agent-discovery",
+    configureServer(server) {
+      server.middlewares.use(addLinkHeaders);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(addLinkHeaders);
+    },
+  };
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
@@ -69,6 +94,7 @@ export default defineConfig({
     tailwindcss(),
     runtimeErrorOverlay(),
     assetCachePlugin(),
+    agentDiscoveryPlugin(),
     seoPlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
