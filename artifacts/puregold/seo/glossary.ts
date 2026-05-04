@@ -491,6 +491,163 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 </div>`,
   },
   {
+    slug: "kyc",
+    term: "KYC (Know Your Customer)",
+    shortDef: "The identity verification process required for large precious metals purchases and Bitcoin OTC trades to comply with US anti-money laundering laws.",
+    category: "Compliance & Regulations",
+    related: ["bullion", "otc-desk", "form-1099-b"],
+    body: `<p class="ssr-intro"><strong>KYC (Know Your Customer)</strong> is a federally mandated identity verification process that precious metals dealers must perform for certain transaction types under the Bank Secrecy Act (BSA) and anti-money laundering (AML) regulations enforced by FinCEN.</p>
+<h2>When Does GoldBuller Require KYC?</h2>
+<p>At GoldBuller LLC, KYC verification is required for:</p>
+<ul>
+  <li><strong>Bank wire transfers over $10,000</strong> — Federal reporting requirements trigger at this threshold.</li>
+  <li><strong>All Bitcoin OTC desk trades</strong> — Regardless of dollar amount, cryptocurrency-to-bullion trades require identity verification.</li>
+  <li><strong>Cumulative purchases exceeding $10,000 in a rolling 12-month period</strong></li>
+</ul>
+<p>Standard online orders paid by credit card, ACH, or smaller wire amounts typically do not require KYC verification. You can place most orders without completing KYC.</p>
+<h2>What Documents Are Required?</h2>
+<p>GoldBuller's KYC process requires:</p>
+<ul>
+  <li><strong>Government-issued photo ID:</strong> US passport, driver's license, or state ID</li>
+  <li><strong>Proof of address:</strong> Utility bill, bank statement, or official mail (dated within 90 days)</li>
+  <li><strong>Selfie verification:</strong> A real-time photo to confirm document authenticity</li>
+  <li><strong>Personal information:</strong> Social Security Number (last 4 digits), occupation, and source of funds</li>
+</ul>
+<h2>How Long Does KYC Approval Take?</h2>
+<p>GoldBuller's compliance team reviews KYC applications within 1–2 business days. You'll receive an email confirmation when your account is approved. Once approved, your KYC status is valid for future transactions — you won't need to re-verify for subsequent orders.</p>
+<h2>Why Does This Matter?</h2>
+<p>Dealers are required by law to file Currency Transaction Reports (CTRs) for cash transactions over $10,000 and Suspicious Activity Reports (SARs) for unusual transaction patterns. KYC verification allows dealers to meet these obligations while protecting legitimate investors.</p>`,
+  },
+  {
+    slug: "form-1099-b",
+    term: "Form 1099-B",
+    shortDef: "The IRS tax form used to report proceeds from precious metals sales. Dealers are required to file 1099-B forms for certain bullion transactions exceeding IRS reporting thresholds.",
+    category: "Tax & Compliance",
+    related: ["bullion", "kyc", "junk-silver"],
+    body: `<p class="ssr-intro"><strong>IRS Form 1099-B</strong> (Proceeds from Broker and Barter Exchange Transactions) is the tax document that precious metals dealers file with the IRS and send to customers when a qualifying sale is made. It reports the gross proceeds of your sale — not your profit — and the IRS uses it to cross-reference income reported on your tax return.</p>
+<h2>Which Precious Metals Sales Trigger a 1099-B?</h2>
+<p>Under IRS regulations, dealers are required to file Form 1099-B for sales of the following specific bullion items:</p>
+<ul>
+  <li><strong>Gold:</strong> Any quantity of gold bars or rounds (not coins), and specific gold coins in quantities of 25 or more (American Gold Eagles, Canadian Maple Leafs, Mexican Onzas, Austrian Philharmonics, South African Krugerrands)</li>
+  <li><strong>Silver:</strong> Silver bars or rounds of 1,000 oz or more, and 90% junk silver bags of $1,000 face value or more</li>
+  <li><strong>Platinum:</strong> Platinum bars or rounds of 25 oz or more</li>
+  <li><strong>Palladium:</strong> Palladium bars or rounds of 100 oz or more</li>
+</ul>
+<p><strong>Important:</strong> Most retail purchases of gold and silver coins do NOT trigger 1099-B reporting from the dealer. However, you are still legally required to report capital gains on your tax return regardless of whether you receive a 1099-B.</p>
+<h2>Capital Gains on Precious Metals</h2>
+<p>The IRS classifies physical precious metals as collectibles, subject to a maximum long-term capital gains rate of <strong>28%</strong> — higher than the 15%–20% rate for stocks held over one year. Short-term gains (assets held under 12 months) are taxed as ordinary income at your marginal rate.</p>
+<div class="ssr-table-wrap"><table><thead><tr><th>Holding Period</th><th>Tax Rate</th></tr></thead><tbody>
+<tr><td>Under 12 months</td><td>Ordinary income rate (up to 37%)</td></tr>
+<tr><td>Over 12 months</td><td>Collectibles rate (max 28%)</td></tr>
+</tbody></table></div>
+<h2>What to Do When You Receive a 1099-B</h2>
+<p>If you receive a 1099-B from GoldBuller, report the transaction on Schedule D and Form 8949 of your federal tax return. You'll need your original purchase records (receipts, invoices) to calculate your cost basis and determine actual gain or loss. Keep all purchase documentation permanently — precious metals are long-term holdings and you may need records years later.</p>`,
+  },
+  {
+    slug: "comex",
+    term: "COMEX",
+    shortDef: "The Commodity Exchange (COMEX) is the world's leading futures and options exchange for precious metals, where gold, silver, copper, and platinum contracts set global benchmark prices.",
+    category: "Market Analysis",
+    related: ["spot-price", "paper-gold", "gold-silver-ratio"],
+    body: `<p class="ssr-intro">The <strong>COMEX</strong> (Commodity Exchange) is a division of the CME Group (Chicago Mercantile Exchange) and is the world's most important futures exchange for precious metals. Gold, silver, copper, and platinum futures traded on COMEX set the benchmark prices — known as <a href="https://goldbuller.com/learn/spot-price">spot prices</a> — that every bullion dealer worldwide uses to price physical metal.</p>
+<h2>How COMEX Works</h2>
+<p>COMEX trades standardized futures contracts — agreements to buy or sell a fixed quantity of metal at a set price on a future date. The most actively traded contracts are:</p>
+<ul>
+  <li><strong>Gold (GC):</strong> 100 troy oz per contract</li>
+  <li><strong>Silver (SI):</strong> 5,000 troy oz per contract</li>
+  <li><strong>Copper (HG):</strong> 25,000 lbs per contract</li>
+  <li><strong>Platinum (PL):</strong> 50 troy oz per contract</li>
+</ul>
+<p>The "spot price" you see on bullion pricing pages is derived from the price of the nearest-expiring COMEX futures contract. Only a small fraction of COMEX contracts result in physical delivery — the vast majority are cash-settled by traders who never intend to take possession of metal.</p>
+<h2>COMEX vs. Physical Gold</h2>
+<p>Critics of COMEX argue that the paper gold market — where traders can control hundreds of times more gold in contracts than physically exists in COMEX warehouses — allows institutional traders to influence spot prices in ways that may not reflect true physical supply and demand. The term "<a href="https://goldbuller.com/learn/paper-gold">paper gold</a>" is often used to describe COMEX futures positions.</p>
+<h2>COMEX Warehouse Stocks</h2>
+<p>COMEX publishes daily reports of registered (deliverable) and eligible (stored but not deliverable) gold and silver in its approved warehouses. Analysts watch warehouse stock levels as an indicator of physical market tightness. Significant drawdowns in registered inventory sometimes precede upward pressure on physical premiums.</p>
+<h2>The LBMA and COMEX Together</h2>
+<p>COMEX sets North American benchmark prices, while the London Bullion Market Association (LBMA) publishes official AM and PM fixes used for large institutional physical settlements. Together, COMEX and the LBMA constitute the core of global precious metals price discovery.</p>`,
+  },
+  {
+    slug: "paper-gold",
+    term: "Paper Gold",
+    shortDef: "Financial instruments such as ETFs, futures contracts, and unallocated accounts that track gold prices without giving the holder ownership of physical metal.",
+    category: "Market Analysis",
+    related: ["comex", "allocated-storage", "spot-price", "bullion"],
+    body: `<p class="ssr-intro"><strong>Paper gold</strong> refers to any gold-linked financial instrument where the investor has an economic exposure to gold prices but does not hold physical gold. Common forms include gold ETFs, COMEX futures contracts, gold certificates, unallocated gold accounts, and gold mining stocks.</p>
+<h2>Types of Paper Gold</h2>
+<ul>
+  <li><strong>Gold ETFs (e.g., GLD, IAU):</strong> Exchange-traded funds that hold physical gold in trust. You own shares, not the gold itself. Redemption for physical gold is typically only available for institutional investors in large lot sizes.</li>
+  <li><strong>COMEX futures:</strong> Standardized contracts to buy or sell gold at a future date. Most are cash-settled without physical delivery.</li>
+  <li><strong>Unallocated gold accounts:</strong> Bank accounts denominated in gold weight where the bank holds pooled gold. You are a creditor of the bank, not the owner of specific bars.</li>
+  <li><strong>Gold certificates:</strong> Documents certifying gold ownership, typically through a bank or vault, without taking physical delivery.</li>
+  <li><strong>Gold mining stocks:</strong> Equity stakes in companies that mine gold — highly leveraged to gold prices but subject to operational, political, and management risk unrelated to gold itself.</li>
+</ul>
+<h2>Paper Gold vs. Physical Gold: Key Differences</h2>
+<div class="ssr-table-wrap"><table><thead><tr><th>Factor</th><th>Paper Gold</th><th>Physical Gold</th></tr></thead><tbody>
+<tr><td>Counterparty risk</td><td>Yes — ETF manager, bank, or broker</td><td>None — you own the metal</td></tr>
+<tr><td>Liquidity</td><td>Very high — trades like a stock</td><td>Good — dealer buyback within days</td></tr>
+<tr><td>Storage costs</td><td>Built into ETF expense ratio (~0.25%/yr)</td><td>Home safe or vault fees</td></tr>
+<tr><td>Tax treatment</td><td>Collectibles rate (28% max) for ETFs</td><td>Collectibles rate (28% max)</td></tr>
+<tr><td>Confiscation/systemic risk</td><td>Exposed to broker/ETF failure</td><td>Not exposed if physically held</td></tr>
+</tbody></table></div>
+<h2>The Basel III Impact on Paper Gold</h2>
+<p>Under <a href="https://goldbuller.com/learn/basel-iii">Basel III</a>, unallocated gold positions held by banks are subject to a Net Stable Funding Ratio (NSFR) charge, making paper gold more expensive for banks to maintain. This regulatory shift is seen by analysts as a structural incentive for institutions to prefer <a href="https://goldbuller.com/learn/allocated-storage">allocated physical gold</a> over unallocated paper positions.</p>
+<h2>Why Investors Choose Physical Over Paper</h2>
+<p>Physical bullion buyers typically cite: no counterparty risk, portability, privacy (for smaller purchases), no annual fees, and the psychological certainty of holding a tangible asset. During financial crises, paper gold instruments have historically maintained price correlation with gold, but some investors prefer to eliminate the institutional layers entirely.</p>`,
+  },
+  {
+    slug: "backwardation",
+    term: "Backwardation",
+    shortDef: "A rare precious metals market condition where spot prices exceed futures prices, signaling unusually strong immediate physical demand or supply tightness in the market.",
+    category: "Market Analysis",
+    related: ["contango", "spot-price", "comex", "paper-gold"],
+    body: `<p class="ssr-intro"><strong>Backwardation</strong> is a futures market condition where the spot price (current market price) of a commodity is <em>higher</em> than the prices of futures contracts expiring in the future. In normal markets, futures prices are higher than spot due to carrying costs — when this relationship inverts, it signals unusual immediate demand or supply pressure.</p>
+<h2>Normal Markets vs. Backwardation</h2>
+<p>In a typical precious metals market, the futures price is higher than spot because it incorporates:</p>
+<ul>
+  <li>Storage costs (vault fees)</li>
+  <li>Insurance</li>
+  <li>Financing costs (interest on capital tied up in metal)</li>
+</ul>
+<p>This normal state is called <a href="https://goldbuller.com/learn/contango">contango</a>. When backwardation occurs — spot price above futures — it implies that the market is willing to pay a premium to get metal <em>right now</em> rather than waiting.</p>
+<h2>What Causes Gold or Silver Backwardation?</h2>
+<ul>
+  <li><strong>Physical supply shortage:</strong> Significant drawdowns in COMEX or LBMA deliverable stocks</li>
+  <li><strong>Delivery failures or concerns:</strong> Market participants doubting the availability of metal at futures delivery dates</li>
+  <li><strong>Flight-to-safety crisis:</strong> Sudden surge in physical demand (geopolitical crisis, banking stress)</li>
+  <li><strong>Short squeezes:</strong> Large short positions being forced to cover via physical delivery</li>
+</ul>
+<h2>Historical Examples</h2>
+<p>Brief gold backwardation was observed in late 2008 during the peak of the financial crisis. Silver has experienced backwardation more frequently, notably in the 2011 silver run-up and during the 2021 retail silver squeeze. Extended backwardation in gold is exceptionally rare and watched closely by analysts as a systemic signal.</p>
+<h2>What It Means for Bullion Buyers</h2>
+<p>For physical bullion investors, backwardation is generally a bullish signal — it suggests strong physical demand and potential supply constraints. However, it can also mean wider dealer premiums and reduced inventory availability in the short term, as dealers compete for immediate delivery metal.</p>`,
+  },
+  {
+    slug: "contango",
+    term: "Contango",
+    shortDef: "The normal state of precious metals futures markets, where prices for future delivery are higher than current spot prices, reflecting storage, insurance, and financing costs.",
+    category: "Market Analysis",
+    related: ["backwardation", "spot-price", "comex", "paper-gold"],
+    body: `<p class="ssr-intro"><strong>Contango</strong> is the typical structure of precious metals futures markets, where the price for future delivery is higher than the current spot price. This upward-sloping forward curve reflects the "cost of carry" — the cumulative cost of storing, insuring, and financing a physical metal position until the delivery date.</p>
+<h2>Why Precious Metals Are Usually in Contango</h2>
+<p>Holding physical gold or silver involves real costs:</p>
+<ul>
+  <li><strong>Vault/storage fees:</strong> Typically 0.10%–0.50% per year of metal value</li>
+  <li><strong>Insurance:</strong> 0.10%–0.20% per year</li>
+  <li><strong>Financing:</strong> The opportunity cost of capital tied up in metal (risk-free interest rate)</li>
+</ul>
+<p>These costs are bundled into a metric called the <strong>lease rate</strong> or the <strong>cost of carry</strong>. In contango, futures prices = spot price + cost of carry for the period. This is the expected, arbitrage-free relationship in a functioning market.</p>
+<h2>Contango and the Gold Lease Rate</h2>
+<p>The relationship between spot and futures prices in gold markets is formally expressed through the <strong>GOFO (Gold Forward Offered Rate)</strong>. When GOFO is positive (the usual state), the market is in contango. When GOFO turns negative, gold enters backwardation — a rare market stress signal.</p>
+<h2>What Contango Means for ETF and Futures Investors</h2>
+<p>Contango has an important implication for futures-based investors: "roll cost." When a futures trader holds a position by rolling expiring contracts into the next delivery month, they sell the lower-priced near-month contract and buy the higher-priced far-month contract — locking in a loss equal to the spread (the cost of carry). Over time, this roll cost erodes returns in contango markets.</p>
+<p>Physical bullion buyers avoid roll cost entirely, since they hold the metal directly. This is one reason long-term precious metals investors often prefer physical ownership or ETFs backed by allocated metal over leveraged futures positions.</p>
+<h2>Contango vs. Backwardation: Quick Reference</h2>
+<div class="ssr-table-wrap"><table><thead><tr><th>Condition</th><th>Futures Price vs. Spot</th><th>Typical Signal</th></tr></thead><tbody>
+<tr><td>Contango</td><td>Futures &gt; Spot</td><td>Normal market; low immediate demand pressure</td></tr>
+<tr><td><a href="https://goldbuller.com/learn/backwardation">Backwardation</a></td><td>Spot &gt; Futures</td><td>Unusual; strong immediate demand / supply stress</td></tr>
+</tbody></table></div>`,
+  },
+  {
     slug: "basel-iii",
     term: "Basel III and Gold",
     shortDef: "International banking regulations that reclassified physical gold as a Tier 1 zero-risk-weight asset in 2021.",

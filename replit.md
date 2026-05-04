@@ -207,6 +207,22 @@ node seo/generateStaticPages.mjs && node seo/generateFunnelPages.mjs
 ```
 (configured as `prebuild` in `artifacts/puregold/package.json`)
 
+### Static per-route HTML (`artifacts/puregold/public/`)
+
+Vite dev server (and production) serves route-specific `index.html` files from `public/<route>/index.html`. These have unique title, description, canonical, OG tags, JSON-LD schema (`DefinedTerm` + `BreadcrumbList`), and H1 — visible to bots without JS.
+
+**Glossary terms with static HTML** (`public/learn/`):
+allocated-storage, american-gold-eagle, assay, backwardation, basel-iii, bid-ask-spread, bullion, comex, contango, fineness, form-1099-b, gold-ira, gold-silver-ratio, junk-silver, karat, kyc, legal-tender, monster-box, numismatic, otc-desk, paper-gold, premium, proof-coin, spot-price, troy-ounce
+
+### AI Search Optimization
+
+- **`public/llms.txt`** — Structured plain-text site overview for AI retrieval systems (Claude, Perplexity, GPT-4, etc.). Covers products, policies, pricing, contacts, and all content URLs.
+- **`public/robots.txt`** — Differentiates AI retrieval bots (OAI-SearchBot, PerplexityBot, ClaudeBot, anthropic-ai, cohere-ai, YouBot → `Allow: /`) from AI training scrapers (GPTBot, CCBot, Bytespider, Diffbot, omgili → `Disallow: /`). Google-Extended allowed for AI Overviews.
+
+### Sitemap (`public/sitemap.xml`)
+
+152 URLs covering all routes. Includes: /copper, /palladium, /rare-coins, /buyback-guarantee, all 25 glossary terms, 10 guides, 7 insights, 17 buy-keyword pages, 50 location pages. All lastmod dates reflect actual update dates.
+
 ---
 
 ## Full API Route Reference

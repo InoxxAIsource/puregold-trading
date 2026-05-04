@@ -8,4 +8,49 @@ Disallow: /platinum?*
 Disallow: /account/
 Disallow: /api/
 
+# ---------------------------------------------------------------
+# AI RETRIEVAL bots — Allow (index our content for AI answers)
+# ---------------------------------------------------------------
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+# ---------------------------------------------------------------
+# AI TRAINING scrapers — Disallow (do not train on our content)
+# ---------------------------------------------------------------
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: omgili
+Disallow: /
+
+# ---------------------------------------------------------------
+# Allow Gemini (Google AI Overviews — beneficial retrieval)
+# ---------------------------------------------------------------
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://goldbuller.com/sitemap.xml
