@@ -49,60 +49,86 @@ function getUserEmail(): string | null {
   return null;
 }
 
-function loadWireInfo(): WireInfo | null {
+// Scope every localStorage key to the logged-in user's email so that
+// signing in as a different account never inherits another user's KYC state.
+function statusKey(email: string | null): string {
+  return email ? `kyc_status_${email}` : "kyc_status";
+}
+function appIdKey(email: string | null): string {
+  return email ? `kyc_app_id_${email}` : "kyc_application_id";
+}
+function wireKey(email: string | null): string {
+  return email ? `kyc_wire_${email}` : "kyc_wire_info";
+}
+
+function loadWireInfo(email: string | null): WireInfo | null {
   try {
-    const s = localStorage.getItem("kyc_wire_info");
+    const s = localStorage.getItem(wireKey(email));
     return s ? JSON.parse(s) : null;
   } catch { return null; }
 }
 
-function saveWireInfo(info: WireInfo | null) {
-  if (info) localStorage.setItem("kyc_wire_info", JSON.stringify(info));
-  else localStorage.removeItem("kyc_wire_info");
+function saveWireInfo(email: string | null, info: WireInfo | null) {
+  if (info) localStorage.setItem(wireKey(email), JSON.stringify(info));
+  else localStorage.removeItem(wireKey(email));
+}
+
+// Remove all kyc_* keys from localStorage (used on logout so no stale
+// data from this user can bleed into the next session on the same browser).
+function clearAllKycKeys() {
+  const toRemove = Object.keys(localStorage).filter(k =>
+    k.startsWith("kyc_") ||
+    k === "kyc_status" ||
+    k === "kyc_application_id" ||
+    k === "kyc_wire_info"
+  );
+  toRemove.forEach(k => localStorage.removeItem(k));
 }
 
 export function KYCProvider({ children }: { children: ReactNode }) {
+  const email = getUserEmail();
+
   const [kycStatus, setKYCStatusState] = useState<KYCStatus>(() =>
-    (localStorage.getItem("kyc_status") as KYCStatus) || KYC_STATUS.NOT_STARTED
+    (localStorage.getItem(statusKey(email)) as KYCStatus) || KYC_STATUS.NOT_STARTED
   );
   const [kycApplicationId, setKYCApplicationIdState] = useState<string | null>(
-    () => localStorage.getItem("kyc_application_id")
+    () => localStorage.getItem(appIdKey(email))
   );
-  const [wireInfo, setWireInfoState] = useState<WireInfo | null>(() => loadWireInfo());
+  const [wireInfo, setWireInfoState] = useState<WireInfo | null>(() => loadWireInfo(email));
 
   const setKYCStatus = useCallback((status: KYCStatus) => {
-    localStorage.setItem("kyc_status", status);
+    const e = getUserEmail();
+    localStorage.setItem(statusKey(e), status);
     setKYCStatusState(status);
   }, []);
 
   const setKYCApplicationId = useCallback((id: string) => {
-    localStorage.setItem("kyc_application_id", id);
+    const e = getUserEmail();
+    localStorage.setItem(appIdKey(e), id);
     setKYCApplicationIdState(id);
   }, []);
 
   const setWireInfo = useCallback((info: WireInfo | null) => {
-    saveWireInfo(info);
+    const e = getUserEmail();
+    saveWireInfo(e, info);
     setWireInfoState(info);
   }, []);
 
   const refreshStatus = useCallback(async () => {
-    const email = getUserEmail();
-    if (!email) return;
+    const e = getUserEmail();
+    if (!e) return;
     try {
-      const res = await fetch(`/api/kyc/status?email=${encodeURIComponent(email)}`);
+      const res = await fetch(`/api/kyc/status?email=${encodeURIComponent(e)}`);
       if (!res.ok) return;
       const data = await res.json();
       if (data.success && data.status) {
-        // Normalise DB value "declined" → frontend enum "rejected"
         const normalised = (data.status === "declined" ? KYC_STATUS.REJECTED : data.status) as KYCStatus;
-        if (normalised !== kycStatus) {
-          setKYCStatus(normalised);
-          window.dispatchEvent(new Event("kycUpdated"));
-        }
+        setKYCStatus(normalised);
+        window.dispatchEvent(new Event("kycUpdated"));
         if (data.applicationId) setKYCApplicationId(data.applicationId);
 
         if (data.status === "approved") {
-          const info: WireInfo = {
+          setWireInfo({
             wireDeadline:  data.wireDeadline  ?? null,
             bankName:      data.bankName      ?? null,
             accountName:   data.accountName   ?? null,
@@ -110,30 +136,38 @@ export function KYCProvider({ children }: { children: ReactNode }) {
             routingNumber: data.routingNumber ?? null,
             swiftCode:     data.swiftCode     ?? null,
             bankAddress:   data.bankAddress   ?? null,
-          };
-          setWireInfo(info);
+          });
         } else {
           setWireInfo(null);
         }
       }
     } catch {}
-  }, [kycStatus, setKYCStatus, setKYCApplicationId, setWireInfo]);
+  }, [setKYCStatus, setKYCApplicationId, setWireInfo]);
 
   useEffect(() => {
-    const email = getUserEmail();
-    if (email) refreshStatus();
+    const e = getUserEmail();
+    if (e) refreshStatus();
   }, []);
 
   useEffect(() => {
-    const handleLogin = () => refreshStatus();
+    const handleLogin = () => {
+      // Immediately reset to NOT_STARTED so no stale status from a previous
+      // user (or a previous session) is shown while the server fetch runs.
+      setKYCStatusState(KYC_STATUS.NOT_STARTED);
+      setKYCApplicationIdState(null);
+      setWireInfoState(null);
+      refreshStatus();
+    };
+
     const handleLogout = () => {
-      localStorage.removeItem("kyc_status");
-      localStorage.removeItem("kyc_application_id");
-      localStorage.removeItem("kyc_wire_info");
+      // Clear ALL kyc_* localStorage keys so the next user on this browser
+      // starts with a clean slate.
+      clearAllKycKeys();
       setKYCStatusState(KYC_STATUS.NOT_STARTED);
       setKYCApplicationIdState(null);
       setWireInfoState(null);
     };
+
     window.addEventListener("authLogin", handleLogin);
     window.addEventListener("authLogout", handleLogout);
     return () => {
@@ -150,7 +184,8 @@ export function KYCProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handle = () => {
-      const status = localStorage.getItem("kyc_status") as KYCStatus;
+      const e = getUserEmail();
+      const status = localStorage.getItem(statusKey(e)) as KYCStatus;
       if (status) setKYCStatusState(status);
     };
     window.addEventListener("kycUpdated", handle);
