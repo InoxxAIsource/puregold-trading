@@ -304,6 +304,7 @@ function OrderWireCard({
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
+  const { kycStatus } = useKYC();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -344,7 +345,12 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               </Link>
               <Link href="/account/kyc" className="px-4 py-3 text-sm font-medium hover:bg-secondary/50 rounded transition-colors text-foreground flex items-center justify-between">
                 <span>KYC Status</span>
-                <span className="h-2 w-2 rounded-full bg-orange-400" />
+                <span className={`h-2 w-2 rounded-full ${
+                  kycStatus === "approved" ? "bg-green-500" :
+                  kycStatus === "pending_review" ? "bg-blue-400" :
+                  kycStatus === "rejected" ? "bg-red-500" :
+                  "bg-orange-400"
+                }`} />
               </Link>
               <button onClick={handleLogout} className="px-4 py-3 text-sm font-medium hover:bg-destructive/10 text-destructive rounded transition-colors text-left flex items-center justify-between mt-4">
                 Sign Out <LogOut className="h-4 w-4" />

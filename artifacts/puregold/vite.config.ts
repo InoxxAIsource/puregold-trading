@@ -148,6 +148,12 @@ export default defineConfig({
     strictPort: true,
     host: "0.0.0.0",
     allowedHosts: true,
+    // HMR WebSocket cannot connect through Replit's path-based proxy.
+    // The failed connection triggers the runtime-error-modal plugin which
+    // loads a second React instance and causes an "Invalid hook call" crash.
+    // Disabling HMR eliminates the crash with no user-visible downside
+    // (the proxy blocks the WebSocket regardless).
+    hmr: false,
     fs: {
       strict: true,
     },

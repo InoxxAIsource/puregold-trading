@@ -51,6 +51,23 @@ router.post("/kyc/submit", async (req, res) => {
       userEmail: string;
     };
 
+    if (!personal || !identity || !address || !applicationId || !userEmail) {
+      res.status(400).json({ success: false, error: "Missing required fields: personal, identity, address, applicationId, userEmail" });
+      return;
+    }
+    if (!personal.firstName || !personal.lastName) {
+      res.status(400).json({ success: false, error: "Personal information is incomplete." });
+      return;
+    }
+    if (!identity.docType || !identity.frontFile) {
+      res.status(400).json({ success: false, error: "Identity document type and front image are required." });
+      return;
+    }
+    if (!address.street || !address.city || !address.country) {
+      res.status(400).json({ success: false, error: "Address information is incomplete." });
+      return;
+    }
+
     const apiKey = process.env["RESEND_API_KEY"];
     if (!apiKey) throw new Error("RESEND_API_KEY is not configured");
 
