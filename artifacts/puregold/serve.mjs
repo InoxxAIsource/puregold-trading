@@ -18,6 +18,16 @@ const LINK_HEADER = [
 
 const app = express();
 
+// www → non-www permanent redirect (must be first, before all other middleware)
+app.use((req, res, next) => {
+  if (req.hostname && req.hostname.startsWith("www.")) {
+    const target = `https://goldbuller.com${req.url}`;
+    res.redirect(301, target);
+    return;
+  }
+  next();
+});
+
 // RFC 8288 — Link headers on every response
 app.use((_req, res, next) => {
   res.set("Link", LINK_HEADER);

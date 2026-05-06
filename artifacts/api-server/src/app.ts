@@ -8,6 +8,15 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// www → non-www permanent redirect — must be first, before logging/CORS
+app.use((req, res, next) => {
+  if (req.hostname && req.hostname.startsWith("www.")) {
+    res.redirect(301, `https://goldbuller.com${req.url}`);
+    return;
+  }
+  next();
+});
+
 app.use(
   pinoHttp({
     logger,
