@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { GLOSSARY_TERMS } from "../../seo/glossary";
+import { useCanonical } from "@/hooks/use-canonical";
 
 export default function GlossaryIndexPage() {
+  useCanonical("/learn");
   useEffect(() => {
     document.title = "Precious Metals Glossary — Gold, Silver & Platinum Terms | GoldBuller";
   }, []);

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { GUIDES } from "../../seo/guides";
 import "@/styles/seo-content.css";
+import { useCanonical } from "@/hooks/use-canonical";
 
 export default function GuideDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -10,6 +11,7 @@ export default function GuideDetailPage() {
   const guide = GUIDES.find((g) => g.slug === slug);
   const related = guide ? GUIDES.filter((g) => g.slug !== guide.slug).slice(0, 3) : [];
 
+  useCanonical(slug ? `/guides/${slug}` : "/guides");
   useEffect(() => {
     if (guide) {
       document.title = `${guide.title} | GoldBuller`;

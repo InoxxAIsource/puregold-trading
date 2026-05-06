@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { GLOSSARY_TERMS } from "../../seo/glossary";
 import "@/styles/seo-content.css";
+import { useCanonical } from "@/hooks/use-canonical";
 
 export default function GlossaryTermPage() {
   const params = useParams<{ slug: string }>();
@@ -12,6 +13,7 @@ export default function GlossaryTermPage() {
     ? GLOSSARY_TERMS.filter((t) => term.related.includes(t.slug))
     : [];
 
+  useCanonical(slug ? `/learn/${slug}` : "/learn");
   useEffect(() => {
     if (term) {
       document.title = `${term.term} — Precious Metals Definition | GoldBuller Glossary`;

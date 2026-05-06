@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { GUIDES } from "../../seo/guides";
+import { useCanonical } from "@/hooks/use-canonical";
 
 export default function GuidesIndexPage() {
+  useCanonical("/guides");
   useEffect(() => {
     document.title = "Precious Metals Buying Guides — Gold, Silver & IRA | GoldBuller";
   }, []);
