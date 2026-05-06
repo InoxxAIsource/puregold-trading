@@ -45,17 +45,23 @@ export default function HomePage() {
         <h2 className="text-3xl font-serif font-bold text-center mb-10 text-foreground">Shop by Category</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { name: 'Gold', href: '/gold', bg: 'from-amber-500/20 to-amber-700/20', color: 'text-amber-500' },
-            { name: 'Silver', href: '/silver', bg: 'from-slate-400/20 to-slate-600/20', color: 'text-slate-300' },
-            { name: 'Platinum', href: '/platinum', bg: 'from-zinc-300/20 to-zinc-500/20', color: 'text-zinc-300' },
-            { name: 'Copper', href: '/copper', bg: 'from-orange-600/20 to-orange-800/20', color: 'text-orange-500' },
-            { name: 'New Arrivals', href: '/new-arrivals', bg: 'from-primary/20 to-primary/10', color: 'text-primary' },
-            { name: 'On Sale', href: '/on-sale', bg: 'from-destructive/20 to-destructive/10', color: 'text-destructive' }
+            { name: 'Gold', href: '/gold', bg: 'from-amber-500/20 to-amber-700/20', color: 'text-amber-500', image: '/images/products/gold-eagle.png' },
+            { name: 'Silver', href: '/silver', bg: 'from-slate-400/20 to-slate-600/20', color: 'text-slate-300', image: '/images/products/silver-eagle.png' },
+            { name: 'Platinum', href: '/platinum', bg: 'from-zinc-300/20 to-zinc-500/20', color: 'text-zinc-300', image: '/images/products/platinum-bar.png' },
+            { name: 'Copper', href: '/copper', bg: 'from-orange-600/20 to-orange-800/20', color: 'text-orange-500', image: '/images/products/copper-round.png' },
+            { name: 'New Arrivals', href: '/new-arrivals', bg: 'from-primary/20 to-primary/10', color: 'text-primary', image: '/images/products/gold-maple.png' },
+            { name: 'On Sale', href: '/on-sale', bg: 'from-destructive/20 to-destructive/10', color: 'text-destructive', image: '/images/products/silver-bar-100oz.png' }
           ].map(cat => (
             <Link key={cat.name} href={cat.href} className={`block aspect-square relative rounded-lg border border-border overflow-hidden group transition-transform hover:scale-105`}>
-              <div className={`absolute inset-0 bg-gradient-to-br ${cat.bg} opacity-50 group-hover:opacity-80 transition-opacity`} />
-              <div className="absolute inset-0 flex items-center justify-center p-4 text-center">
-                <span className={`font-serif font-bold text-lg md:text-xl ${cat.color}`}>{cat.name}</span>
+              <div className={`absolute inset-0 bg-gradient-to-br ${cat.bg}`} />
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="absolute inset-0 w-full h-full object-contain p-4 opacity-70 group-hover:opacity-90 group-hover:scale-110 transition-all duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
+                <span className={`font-serif font-bold text-base md:text-lg drop-shadow ${cat.color}`}>{cat.name}</span>
               </div>
             </Link>
           ))}

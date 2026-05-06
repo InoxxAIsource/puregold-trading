@@ -14,58 +14,90 @@ const HARDCODED_PRICES = {
 
 let cachedPrices: typeof HARDCODED_PRICES | null = null;
 let lastFetch = 0;
+let lastBtcPrice = HARDCODED_PRICES.bitcoin.price;
+let lastBtcFetch = 0;
+let btcOpenPrice: number | null = null;
+
+async function fetchLiveBTCPrice(): Promise<number> {
+  if (Date.now() - lastBtcFetch < 60000) return lastBtcPrice;
+  try {
+    const res = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) {
+      const data = await res.json() as { data: { amount: string } };
+      const price = parseFloat(data.data.amount);
+      if (price > 0) {
+        lastBtcPrice = price;
+        lastBtcFetch = Date.now();
+        return price;
+      }
+    }
+  } catch { /* fall through */ }
+  try {
+    const res2 = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res2.ok) {
+      const data2 = await res2.json() as { price: string };
+      const price = parseFloat(data2.price);
+      if (price > 0) {
+        lastBtcPrice = price;
+        lastBtcFetch = Date.now();
+        return price;
+      }
+    }
+  } catch { /* fall through */ }
+  return lastBtcPrice;
+}
 
 async function fetchLivePrices() {
   if (Date.now() - lastFetch < 60000 && cachedPrices) {
     return cachedPrices;
   }
-  try {
-    const res = await fetch("https://api.metals.live/v1/spot", {
-      signal: AbortSignal.timeout(5000),
-    });
-    if (res.ok) {
-      const data = await res.json() as Array<{ gold?: number; silver?: number; platinum?: number; palladium?: number; copper?: number }>;
-      if (Array.isArray(data) && data.length > 0) {
-        const entry = data[0];
-        const prices: typeof HARDCODED_PRICES = {
-          gold: {
-            price: entry.gold ?? HARDCODED_PRICES.gold.price,
-            change: HARDCODED_PRICES.gold.change,
-            changePercent: HARDCODED_PRICES.gold.changePercent,
-          },
-          silver: {
-            price: entry.silver ?? HARDCODED_PRICES.silver.price,
-            change: HARDCODED_PRICES.silver.change,
-            changePercent: HARDCODED_PRICES.silver.changePercent,
-          },
-          platinum: {
-            price: entry.platinum ?? HARDCODED_PRICES.platinum.price,
-            change: HARDCODED_PRICES.platinum.change,
-            changePercent: HARDCODED_PRICES.platinum.changePercent,
-          },
-          palladium: {
-            price: entry.palladium ?? HARDCODED_PRICES.palladium.price,
-            change: HARDCODED_PRICES.palladium.change,
-            changePercent: HARDCODED_PRICES.palladium.changePercent,
-          },
-          copper: {
-            price: entry.copper ?? HARDCODED_PRICES.copper.price,
-            change: HARDCODED_PRICES.copper.change,
-            changePercent: HARDCODED_PRICES.copper.changePercent,
-          },
-          bitcoin: HARDCODED_PRICES.bitcoin,
-        };
-        cachedPrices = prices;
-        lastFetch = Date.now();
-        return prices;
-      }
+
+  const [btcPrice, metalsResult] = await Promise.allSettled([
+    fetchLiveBTCPrice(),
+    (async () => {
+      const res = await fetch("https://api.metals.live/v1/spot", {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error("metals API error");
+      return res.json() as Promise<Array<{ gold?: number; silver?: number; platinum?: number; palladium?: number; copper?: number }>>;
+    })(),
+  ]);
+
+  const liveBTC = btcPrice.status === "fulfilled" ? btcPrice.value : lastBtcPrice;
+  if (btcOpenPrice === null) btcOpenPrice = liveBTC * (1 - 0.013);
+  const btcChange = liveBTC - btcOpenPrice;
+
+  let prices: typeof HARDCODED_PRICES = {
+    ...HARDCODED_PRICES,
+    bitcoin: {
+      price: liveBTC,
+      change: btcChange,
+      changePercent: btcOpenPrice > 0 ? (btcChange / btcOpenPrice) * 100 : 0,
+    },
+  };
+
+  if (metalsResult.status === "fulfilled") {
+    const data = metalsResult.value;
+    if (Array.isArray(data) && data.length > 0) {
+      const entry = data[0];
+      prices = {
+        ...prices,
+        gold: { price: entry.gold ?? HARDCODED_PRICES.gold.price, change: HARDCODED_PRICES.gold.change, changePercent: HARDCODED_PRICES.gold.changePercent },
+        silver: { price: entry.silver ?? HARDCODED_PRICES.silver.price, change: HARDCODED_PRICES.silver.change, changePercent: HARDCODED_PRICES.silver.changePercent },
+        platinum: { price: entry.platinum ?? HARDCODED_PRICES.platinum.price, change: HARDCODED_PRICES.platinum.change, changePercent: HARDCODED_PRICES.platinum.changePercent },
+        palladium: { price: entry.palladium ?? HARDCODED_PRICES.palladium.price, change: HARDCODED_PRICES.palladium.change, changePercent: HARDCODED_PRICES.palladium.changePercent },
+        copper: { price: entry.copper ?? HARDCODED_PRICES.copper.price, change: HARDCODED_PRICES.copper.change, changePercent: HARDCODED_PRICES.copper.changePercent },
+      };
     }
-  } catch {
-    // Fall through to fallback
   }
-  cachedPrices = HARDCODED_PRICES;
+
+  cachedPrices = prices;
   lastFetch = Date.now();
-  return HARDCODED_PRICES;
+  return prices;
 }
 
 router.get("/spot", async (req: Request, res: Response) => {
