@@ -103,6 +103,89 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
+// POST /api/auth/update-profile
+router.post("/auth/update-profile", async (req, res) => {
+  try {
+    const { email, firstName, lastName } = req.body as {
+      email?: string; firstName?: string; lastName?: string;
+    };
+
+    if (!email?.trim()) {
+      res.status(400).json({ success: false, error: "email is required." });
+      return;
+    }
+
+    const normalEmail = email.trim().toLowerCase();
+    const [user] = await db.select({ id: usersTable.id }).from(usersTable).where(eq(usersTable.email, normalEmail)).limit(1);
+    if (!user) {
+      res.status(404).json({ success: false, error: "Account not found." });
+      return;
+    }
+
+    const updates: Record<string, string> = {};
+    if (firstName?.trim()) updates["firstName"] = firstName.trim();
+    if (lastName?.trim()) updates["lastName"] = lastName.trim();
+
+    if (Object.keys(updates).length === 0) {
+      res.status(400).json({ success: false, error: "Nothing to update." });
+      return;
+    }
+
+    const [updated] = await db
+      .update(usersTable)
+      .set(updates)
+      .where(eq(usersTable.email, normalEmail))
+      .returning({ firstName: usersTable.firstName, lastName: usersTable.lastName, email: usersTable.email });
+
+    res.json({
+      success: true,
+      user: { email: updated.email, name: `${updated.firstName} ${updated.lastName}` },
+    });
+  } catch (err) {
+    req.log.error({ err }, "Update profile error");
+    res.status(500).json({ success: false, error: "Failed to update profile." });
+  }
+});
+
+// POST /api/auth/change-password
+router.post("/auth/change-password", async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body as {
+      email?: string; currentPassword?: string; newPassword?: string;
+    };
+
+    if (!email?.trim() || !currentPassword || !newPassword) {
+      res.status(400).json({ success: false, error: "email, currentPassword, and newPassword are required." });
+      return;
+    }
+    if (newPassword.length < 8) {
+      res.status(400).json({ success: false, error: "New password must be at least 8 characters." });
+      return;
+    }
+
+    const normalEmail = email.trim().toLowerCase();
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.email, normalEmail)).limit(1);
+    if (!user) {
+      res.status(404).json({ success: false, error: "Account not found." });
+      return;
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ success: false, error: "Current password is incorrect." });
+      return;
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 12);
+    await db.update(usersTable).set({ passwordHash: newHash }).where(eq(usersTable.email, normalEmail));
+
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, "Change password error");
+    res.status(500).json({ success: false, error: "Failed to change password." });
+  }
+});
+
 // POST /api/auth/forgot-password
 // Body: { email: string; code: string }
 // Frontend generates the 6-digit code and stores it in localStorage.

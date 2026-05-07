@@ -1,22 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Package, Heart, Bell, Bitcoin, UserCircle, Save, CheckCircle } from "lucide-react";
+import { LogOut, Package, Heart, Bell, Bitcoin, UserCircle, Save, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-type StoredUser = { firstName: string; lastName: string; email: string; password: string };
-
-function getUsers(): StoredUser[] {
-  try { return JSON.parse(localStorage.getItem("pg_users") || "[]"); } catch { return []; }
-}
-
-function updateUser(email: string, updates: Partial<StoredUser>) {
-  const users = getUsers();
-  const updated = users.map(u => u.email.toLowerCase() === email.toLowerCase() ? { ...u, ...updates } : u);
-  localStorage.setItem("pg_users", JSON.stringify(updated));
-}
 
 const TABS = [
   { id: "dashboard", label: "Dashboard", href: "/account/dashboard" },
@@ -75,45 +63,81 @@ export default function AccountProfilePage() {
     if (!user) setLocation("/account/login?redirect=/account/profile");
   }, [user, setLocation]);
 
-  // Load stored profile info
-  const stored = getUsers().find(u => u.email.toLowerCase() === (user?.email || "").toLowerCase());
+  const nameParts = (user?.name || "").split(" ");
+  const [firstName, setFirstName] = useState(nameParts[0] || "");
+  const [lastName, setLastName] = useState(nameParts.slice(1).join(" ") || "");
 
-  const [firstName, setFirstName] = useState(stored?.firstName || user?.name?.split(" ")[0] || "");
-  const [lastName, setLastName] = useState(stored?.lastName || user?.name?.split(" ").slice(1).join(" ") || "");
-  const [phone, setPhone] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileError, setProfileError] = useState("");
+
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
-  const [profileSaved, setProfileSaved] = useState(false);
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [pwSaving, setPwSaving] = useState(false);
   const [pwSaved, setPwSaved] = useState(false);
   const [pwError, setPwError] = useState("");
 
   if (!user) return null;
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    const name = `${firstName.trim()} ${lastName.trim()}`.trim();
-    updateUser(user.email, { firstName: firstName.trim(), lastName: lastName.trim() });
-    login({ ...user, name });
-    setProfileSaved(true);
-    setTimeout(() => setProfileSaved(false), 3000);
+    setProfileError("");
+    if (!firstName.trim() || !lastName.trim()) {
+      setProfileError("Please enter your first and last name.");
+      return;
+    }
+    setProfileSaving(true);
+    try {
+      const res = await fetch("/api/auth/update-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email, firstName: firstName.trim(), lastName: lastName.trim() }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setProfileError(data.error || "Failed to save profile.");
+        return;
+      }
+      login({ ...user, name: data.user.name });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch {
+      setProfileError("Network error. Please try again.");
+    } finally {
+      setProfileSaving(false);
+    }
   };
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwError("");
-
-    // If user is in the registered users list, validate current password
-    if (stored) {
-      if (currentPw !== stored.password) { setPwError("Current password is incorrect."); return; }
-    }
+    if (!currentPw) { setPwError("Please enter your current password."); return; }
     if (newPw.length < 8) { setPwError("New password must be at least 8 characters."); return; }
     if (newPw !== confirmPw) { setPwError("New passwords do not match."); return; }
 
-    updateUser(user.email, { password: newPw });
-    setCurrentPw(""); setNewPw(""); setConfirmPw("");
-    setPwSaved(true);
-    setTimeout(() => setPwSaved(false), 3000);
+    setPwSaving(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email, currentPassword: currentPw, newPassword: newPw }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setPwError(data.error || "Failed to change password.");
+        return;
+      }
+      setCurrentPw(""); setNewPw(""); setConfirmPw("");
+      setPwSaved(true);
+      setTimeout(() => setPwSaved(false), 3000);
+    } catch {
+      setPwError("Network error. Please try again.");
+    } finally {
+      setPwSaving(false);
+    }
   };
 
   return (
@@ -127,7 +151,6 @@ export default function AccountProfilePage() {
             <h1 className="text-3xl font-serif font-bold text-foreground">My Profile</h1>
           </div>
 
-          {/* Account tabs */}
           <div className="flex gap-1 border-b border-border mb-6">
             {TABS.map(tab => (
               <Link
@@ -163,14 +186,13 @@ export default function AccountProfilePage() {
                 <Input value={user.email} disabled className="bg-background border-border opacity-60 cursor-not-allowed" />
                 <p className="text-xs text-muted-foreground">Email cannot be changed. Contact support if needed.</p>
               </div>
-              <div className="space-y-2">
-                <Label>Phone Number</Label>
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="(555) 000-0000" type="tel" className="bg-background border-border" />
-              </div>
+              {profileError && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm text-destructive">{profileError}</div>
+              )}
               <div className="flex items-center gap-3">
-                <Button type="submit" className="flex items-center gap-2">
+                <Button type="submit" className="flex items-center gap-2" disabled={profileSaving}>
                   <Save className="h-4 w-4" />
-                  Save Changes
+                  {profileSaving ? "Saving…" : "Save Changes"}
                 </Button>
                 {profileSaved && (
                   <span className="flex items-center gap-1.5 text-sm text-green-400">
@@ -185,25 +207,56 @@ export default function AccountProfilePage() {
           <section className="bg-card border border-border rounded-xl p-6">
             <h2 className="font-bold text-lg mb-5">Change Password</h2>
             <form onSubmit={handleChangePassword} className="space-y-4">
-              {stored && (
-                <div className="space-y-2">
-                  <Label>Current Password</Label>
-                  <Input type="password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} placeholder="Enter current password" className="bg-background border-border" required />
+              <div className="space-y-2">
+                <Label>Current Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showCurrent ? "text" : "password"}
+                    value={currentPw}
+                    onChange={e => setCurrentPw(e.target.value)}
+                    placeholder="Enter your current password"
+                    className="bg-background border-border pr-10"
+                    required
+                  />
+                  <button type="button" onClick={() => setShowCurrent(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-              )}
+              </div>
               <div className="space-y-2">
                 <Label>New Password</Label>
-                <Input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Min. 8 characters" className="bg-background border-border" required />
+                <div className="relative">
+                  <Input
+                    type={showNew ? "text" : "password"}
+                    value={newPw}
+                    onChange={e => setNewPw(e.target.value)}
+                    placeholder="Min. 8 characters"
+                    className="bg-background border-border pr-10"
+                    required
+                  />
+                  <button type="button" onClick={() => setShowNew(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Confirm New Password</Label>
-                <Input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="Re-enter new password" className="bg-background border-border" required />
+                <Input
+                  type="password"
+                  value={confirmPw}
+                  onChange={e => setConfirmPw(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className="bg-background border-border"
+                  required
+                />
               </div>
               {pwError && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm text-destructive">{pwError}</div>
               )}
               <div className="flex items-center gap-3">
-                <Button type="submit" variant="outline">Update Password</Button>
+                <Button type="submit" variant="outline" disabled={pwSaving}>
+                  {pwSaving ? "Updating…" : "Update Password"}
+                </Button>
                 {pwSaved && (
                   <span className="flex items-center gap-1.5 text-sm text-green-400">
                     <CheckCircle className="h-4 w-4" /> Password changed
