@@ -10,6 +10,7 @@ import statsRouter from "./stats";
 import kycRouter from "./kyc";
 import authRouter from "./auth";
 import chatRouter from "./chat";
+import otcRouter from "./otc";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use("/stats", statsRouter);
 router.use(kycRouter);
 router.use(authRouter);
 router.use(chatRouter);
+router.use(otcRouter);
 
 export default router;

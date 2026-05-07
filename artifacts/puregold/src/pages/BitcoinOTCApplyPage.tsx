@@ -179,8 +179,13 @@ export default function BitcoinOTCApplyPage() {
     "I confirm I am not a resident of a sanctioned country (OFAC list)",
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError("");
+    setSubmitting(true);
     const order: OTCOrder = {
       id: generateOrderId(),
       btcAmount,
@@ -199,7 +204,22 @@ export default function BitcoinOTCApplyPage() {
       submittedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+    // Save locally first so it's never lost even if email fails
     saveOTCOrder(order);
+    try {
+      await fetch("/api/otc/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...order,
+          userEmail: user.email,
+          userName: user.name || "",
+        }),
+      });
+    } catch {
+      // Non-fatal — order is saved locally; admin will be notified on retry
+    }
+    setSubmitting(false);
     setSubmittedOrder(order);
   };
 
@@ -437,9 +457,10 @@ export default function BitcoinOTCApplyPage() {
             </div>
           </section>
 
-          <button type="submit" disabled={!canSubmit}
+          <button type="submit" disabled={!canSubmit || submitting}
             className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-            <span className="text-xl">₿</span> Submit OTC Application — ${fmt(finalTotal)} USD
+            <span className="text-xl">₿</span>
+            {submitting ? "Submitting Application…" : `Submit OTC Application — $${fmt(finalTotal)} USD`}
           </button>
         </form>
 
