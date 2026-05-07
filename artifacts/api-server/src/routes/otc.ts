@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Resend } from "resend";
+import { db, ordersTable } from "@workspace/db";
 
 const router = Router();
 
@@ -10,7 +11,7 @@ function getSiteUrl() {
   return `https://${custom || list[0]}`;
 }
 
-// POST /api/otc/submit — notify admin of a new BTC OTC order
+// POST /api/otc/submit — save OTC order to DB and notify admin
 router.post("/otc/submit", async (req, res) => {
   try {
     const {
@@ -43,16 +44,58 @@ router.post("/otc/submit", async (req, res) => {
       return;
     }
 
+    const fmt = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // ── 1. Persist to DB so it appears in admin Orders tab ──────────────────
+    // Store OTC-specific details in adminNote so the admin sees them
+    const adminNote = [
+      `BTC OTC Order`,
+      `Wallet: ${walletAddress}`,
+      `Spot: $${fmt(spotPrice)} | Spread: +${(Number(spread) * 100).toFixed(2)}%`,
+      `Settlement: ${settlementType} (${settlementTimeline})`,
+      `Customer bank: ${bankName} (last 4: ${bankAccountLast4 || "—"}) — ${bankCountry}`,
+      `Purpose: ${purpose}`,
+      notes ? `Notes: ${notes}` : "",
+    ].filter(Boolean).join("\n");
+
+    const nameParts = (userName || "").split(" ");
+    await db.insert(ordersTable).values({
+      orderNumber: id,
+      userEmail: userEmail.toLowerCase(),
+      status: "pending_wire_instructions",
+      paymentMethod: "btc_otc",
+      items: [{
+        productId: "btc_otc",
+        name: `Bitcoin OTC — ${Number(btcAmount).toFixed(4)} BTC`,
+        price: Number(usdTotal),
+        quantity: 1,
+      }],
+      subtotal: String(usdTotal),
+      shipping: "0",
+      insurance: "0",
+      tax: "0",
+      total: String(usdTotal),
+      shippingAddress: {
+        firstName: nameParts[0] || "",
+        lastName: nameParts.slice(1).join(" ") || "",
+        email: userEmail,
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
+      },
+      adminNote,
+    }).onConflictDoNothing();
+
+    // ── 2. Email admin notification ─────────────────────────────────────────
     const apiKey = process.env["RESEND_API_KEY"];
     if (!apiKey) {
-      // Email not configured — still return success so the order is saved locally
-      res.json({ success: true, message: "Order received (email not configured)." });
+      res.json({ success: true, message: "Order saved. Email notification skipped (not configured)." });
       return;
     }
 
     const adminEmail = process.env["KYC_ADMIN_EMAIL"] || "chainlayer650@gmail.com";
     const siteUrl = getSiteUrl();
-    const fmt = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const submittedDate = new Date(submittedAt).toLocaleString("en-US", {
       timeZone: "America/New_York",
       month: "long", day: "numeric", year: "numeric",
@@ -63,7 +106,7 @@ router.post("/otc/submit", async (req, res) => {
       ? "Priority — within 4 hrs of wire clearance (+0.25%)"
       : "Standard — within 24 hrs of wire clearance";
 
-    const adminPanelUrl = `${siteUrl}/admin`;
+    const adminPanelUrl = `${siteUrl}/admin#orders`;
     const btnStyle = `display:inline-block;padding:14px 32px;background:#b8860b;color:#000;font-size:15px;font-weight:bold;text-decoration:none;border-radius:8px;letter-spacing:0.5px;`;
 
     const rows = (pairs: [string, string][]) =>
@@ -85,10 +128,11 @@ router.post("/otc/submit", async (req, res) => {
         </div>
 
         <div style="background:#1c0a00;border:2px solid #c2410c;border-radius:10px;padding:20px;margin-bottom:28px">
-          <p style="margin:0;font-size:16px;font-weight:bold;color:#fb923c">⚡ Action Required — Send Wire Instructions to Customer</p>
+          <p style="margin:0;font-size:16px;font-weight:bold;color:#fb923c">⚡ Action Required — Send Wire Instructions via Admin Panel</p>
           <p style="margin:8px 0 0;font-size:13px;color:#fed7aa;line-height:1.6">
             A verified customer has submitted a Bitcoin OTC purchase application.
-            Please send personalised wire instructions to <strong style="color:#fff">${userEmail}</strong> as soon as possible.
+            Log into the Admin Panel → Orders tab, find order <strong style="color:#fff">${id}</strong>,
+            and click <strong style="color:#fff">"Send Wire Instructions"</strong> to deliver bank details to the customer's email and dashboard.
           </p>
         </div>
 
@@ -125,10 +169,8 @@ router.post("/otc/submit", async (req, res) => {
         </div>` : ""}
 
         <div style="text-align:center;margin-bottom:28px;padding:20px;background:#1a1a1a;border-radius:12px;border:1px solid #2a2a2a">
-          <p style="margin:0 0 16px;font-size:14px;color:#e5e5e5;font-weight:600">
-            Reply to <strong>${userEmail}</strong> with wire instructions, or open the admin panel:
-          </p>
-          <a href="${adminPanelUrl}" style="${btnStyle}">🔐 Open Admin Panel →</a>
+          <a href="${adminPanelUrl}" style="${btnStyle}">🔐 Open Admin Panel → Orders Tab</a>
+          <p style="margin:12px 0 0;font-size:12px;color:#666">Find order ${id} and click "Send Wire Instructions to Customer"</p>
         </div>
 
         <p style="font-size:11px;color:#555;margin-top:24px;border-top:1px solid #1f1f1f;padding-top:16px">
@@ -150,7 +192,7 @@ router.post("/otc/submit", async (req, res) => {
 
     res.json({ success: true });
   } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message || "Failed to notify admin." });
+    res.status(500).json({ success: false, error: err.message || "Failed to submit OTC order." });
   }
 });
 

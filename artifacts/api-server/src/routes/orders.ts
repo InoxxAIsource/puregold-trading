@@ -63,7 +63,7 @@ router.get("/", async (req: Request, res: Response) => {
   res.json({ success: true, orders: orders.map(mapOrder) });
 });
 
-// GET /api/orders/pending-check?email=xxx — check if user has a pending order
+// GET /api/orders/pending-check?email=xxx — check if user has a pending metals order
 router.get("/pending-check", async (req: Request, res: Response) => {
   const email = req.query["email"] as string | undefined;
   if (!email) {
@@ -76,6 +76,8 @@ router.get("/pending-check", async (req: Request, res: Response) => {
     .where(and(
       eq(ordersTable.userEmail, email.toLowerCase()),
       inArray(ordersTable.status, PENDING_STATUSES),
+      // Exclude BTC OTC orders — they don't block metals checkouts
+      eq(ordersTable.paymentMethod, "wire_transfer"),
     ))
     .limit(1);
   res.json({ hasPending: pending.length > 0, order: pending[0] ?? null });

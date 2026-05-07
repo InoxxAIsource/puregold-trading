@@ -24,6 +24,7 @@ interface AdminOrder {
   orderNumber: string;
   userEmail: string;
   status: string;
+  paymentMethod: string | null;
   items: Array<{ name: string; price: number; quantity: number }>;
   subtotal: number;
   shipping: number;
@@ -651,6 +652,9 @@ export default function AdminKYCPage() {
                           <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${ORDER_STATUS_BADGE[order.status] || "bg-secondary text-muted-foreground border-border"}`}>
                             {ORDER_STATUS_LABEL[order.status] || order.status}
                           </span>
+                          {order.paymentMethod === "btc_otc" && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 font-medium">₿ BTC OTC</span>
+                          )}
                         </div>
                         <div className="text-xs text-muted-foreground mt-0.5">
                           {order.userEmail} · ${Number(order.total).toLocaleString(undefined, { minimumFractionDigits: 2 })} · {formatDate(order.createdAt)}
