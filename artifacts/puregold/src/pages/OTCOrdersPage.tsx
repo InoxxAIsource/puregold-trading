@@ -105,21 +105,34 @@ function OrderDetail({ orderId }: { orderId: string }) {
       {/* Wire instructions */}
       <div className="bg-card border border-border rounded-xl p-6 mb-6">
         <h3 className="font-semibold text-foreground text-base border-b border-border pb-2 mb-4">Wire Instructions</h3>
-        <div className="bg-secondary/20 rounded-lg p-4 text-xs font-mono space-y-2 text-muted-foreground">
-          {[
-            ["Bank Name", "JPMorgan Chase Bank, N.A."],
-            ["Account Name", "GoldBuller LLC"],
-            ["ABA Routing", "021000021"],
-            ["Account Number", "847293018475"],
-            ["Reference/Memo", order.id],
-            ["Amount", `$${fmt(order.usdTotal)} USD`],
-          ].map(([k, v]) => (
-            <div key={k} className="flex gap-2">
-              <span className="w-32 shrink-0">{k}:</span>
-              <span className="text-foreground">{v}</span>
-              <CopyButton text={v} />
+        <div className="bg-secondary/20 rounded-xl p-5 space-y-3 text-sm">
+          <p className="font-semibold text-foreground">Check your email for wire instructions.</p>
+          <p className="text-muted-foreground leading-relaxed">
+            Our OTC desk issues personalised wire instructions by email for every order. Banking details
+            change with each transaction, so we never display them here. Look for an email from
+            <strong className="text-foreground"> support@goldbuller.com</strong> with the subject line
+            containing your order reference.
+          </p>
+          <div className="bg-secondary/30 rounded-lg px-4 py-3 font-mono text-xs space-y-1.5">
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 text-muted-foreground">Reference/Memo:</span>
+              <span className="text-foreground font-bold">{order.id}</span>
+              <CopyButton text={order.id} />
             </div>
-          ))}
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 text-muted-foreground">Amount:</span>
+              <span className="text-foreground font-bold">${fmt(order.usdTotal)} USD</span>
+            </div>
+          </div>
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-xs text-amber-300 space-y-1">
+            <p>⚠️ Only use the wire details sent to your email for this specific order</p>
+            <p>⚠️ Do not reuse wire details from any previous order — bank details change</p>
+            <p>⚠️ Always include your reference number in the wire memo field</p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Didn't receive an email? Check your spam folder or contact{" "}
+            <a href="mailto:otc@goldbuller.com" className="text-primary hover:underline">otc@goldbuller.com</a>.
+          </p>
         </div>
       </div>
 

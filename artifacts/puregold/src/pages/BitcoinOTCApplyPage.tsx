@@ -131,13 +131,11 @@ export default function BitcoinOTCApplyPage() {
 
   const { price, isLoading, lastUpdated } = useBTCPrice();
 
-  // If the previous wire deadline has passed, the bank details are stale —
-  // user must request fresh instructions by submitting a new application.
+  // If the user had a previous wire window, detect if it has expired
+  // so we can show a clear "expired" warning (we never display actual bank details on this page)
   const wireExpired = wireInfo?.wireDeadline
     ? new Date(wireInfo.wireDeadline) < new Date()
     : false;
-  // Only show pre-filled wire details when they are still valid
-  const activeWireInfo = wireExpired ? null : wireInfo;
 
   const [btcAmount, setBtcAmount] = useState(() => {
     const v = parseFloat(params.get("btc") || "1");
@@ -359,35 +357,26 @@ export default function BitcoinOTCApplyPage() {
                 </div>
               </div>
             ) : (
-              /* ── Active / pending wire details ── */
+              /* ── Always-fresh: instructions sent by email after submission ── */
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">After submission, you'll receive personalized wire instructions. Here's what to expect:</p>
-                <div className="bg-secondary/20 rounded-xl p-5 text-sm font-mono space-y-2 text-muted-foreground">
-                  <p className="font-semibold text-foreground mb-2 not-italic">
-                    {activeWireInfo?.bankName ? "🏦 Your Wire Instructions" : "Wire Instructions (confirmed after KYC approval)"}
+                <div className="bg-secondary/20 rounded-xl p-5 text-sm space-y-3">
+                  <p className="font-semibold text-foreground">Wire instructions are issued fresh with every order.</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Because our banking details change frequently, we do <strong className="text-foreground">not</strong> display
+                    wire information here. After you submit this application, our OTC desk will generate a
+                    personalised quote and email you a complete set of wire instructions — including bank name,
+                    account details, and a unique reference number — within a few hours during business hours.
                   </p>
-                  <div className="space-y-1.5">
-                    {(
-                      [
-                        ["Bank Name", activeWireInfo?.bankName || "Confirmed after KYC approval"],
-                        ["Account Name", activeWireInfo?.accountName || "GoldBuller LLC"],
-                        ["ABA Routing", activeWireInfo?.routingNumber || "Confirmed after KYC approval"],
-                        ["Account Number", activeWireInfo?.accountNumber || "Confirmed after KYC approval"],
-                        activeWireInfo?.swiftCode ? ["SWIFT / BIC", activeWireInfo.swiftCode] : null,
-                        ["Reference/Memo", kycApplicationId || "[YOUR KYC APPLICATION ID]"],
-                        ["Amount", `$${fmt(finalTotal)} USD`],
-                      ] as (string[] | null)[]
-                    ).filter((x): x is string[] => x !== null).map(([k, v]) => (
-                      <div key={k as string} className="flex gap-2 text-xs sm:text-sm">
-                        <span className="w-36 shrink-0 text-muted-foreground">{k}:</span>
-                        <span className={`${!(activeWireInfo?.bankName) && (v as string).includes("Confirmed") ? "text-amber-400/70 italic" : "text-foreground"}`}>{v as string}</span>
-                      </div>
-                    ))}
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-xs text-amber-300 space-y-1">
+                    <p>⚠️ Wire must be received within 4 hours of the instructions being issued</p>
+                    <p>⚠️ Reference number MUST appear in the wire memo field</p>
+                    <p>⚠️ Wire must come from a bank account in your verified name</p>
+                    <p>⚠️ Do <strong>not</strong> use any wire details from a previous order — details change each time</p>
                   </div>
-                  <div className="border-t border-border/40 pt-3 mt-2 text-xs space-y-1">
-                    <p>⚠️ Wire must be received within 4 hours of approval</p>
-                    <p>⚠️ Reference number MUST appear in wire memo field</p>
-                    <p>⚠️ Wire must come from account in your verified name</p>
+                  <div className="border-t border-border/40 pt-3">
+                    <p className="text-xs text-muted-foreground">Estimated amount for this order:</p>
+                    <p className="text-lg font-mono font-bold text-foreground mt-0.5">${fmt(finalTotal)} USD</p>
+                    <p className="text-xs text-muted-foreground mt-1">Final amount will be confirmed in your wire instructions email.</p>
                   </div>
                 </div>
               </div>
