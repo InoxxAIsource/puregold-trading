@@ -362,10 +362,9 @@ export default function BitcoinOTCApplyPage() {
                 <div className="bg-secondary/20 rounded-xl p-5 text-sm space-y-3">
                   <p className="font-semibold text-foreground">Wire instructions are issued fresh with every order.</p>
                   <p className="text-muted-foreground leading-relaxed">
-                    Because our banking details change frequently, we do <strong className="text-foreground">not</strong> display
-                    wire information here. After you submit this application, our OTC desk will generate a
-                    personalised quote and email you a complete set of wire instructions — including bank name,
-                    account details, and a unique reference number — within a few hours during business hours.
+                    After you submit this application, our OTC desk will generate a personalised quote and
+                    email you a complete set of wire instructions — including bank name, account details, and
+                    a unique reference number — within a few hours during business hours.
                   </p>
                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-xs text-amber-300 space-y-1">
                     <p>⚠️ Wire must be received within 4 hours of the instructions being issued</p>
